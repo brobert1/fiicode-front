@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'normalize.css';
+@import 'buttons.css';
+@import 'calendar.css';
+@import 'components.css';
+@import 'forms.css';
+@import 'layout.css';
+@import 'loading.css';
+@import 'menu.css';
+@import 'toast.css';

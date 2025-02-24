@@ -10,6 +10,7 @@ module.exports = {
     RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
     SHOW_FORM_DEBUG: process.env.SHOW_FORM_DEBUG,
     SHOW_LOGS_EVERYWHERE: process.env.SHOW_LOGS_EVERYWHERE,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   },
   eslint: {
     ignoreDuringBuilds: true,

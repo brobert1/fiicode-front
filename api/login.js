@@ -4,7 +4,7 @@ import { decode } from 'jsonwebtoken';
 
 const login = async (ref, data) => {
   try {
-    // execute google recaptcha
+    // Execute google recaptcha
     data['g-recaptcha-response'] = await ref.current.executeAsync();
 
     const { token } = await axios.post('login', data);
@@ -13,13 +13,20 @@ const login = async (ref, data) => {
     }
     store.dispatch({ type: 'SET', jwt: token });
 
-    // notify user and other actions
-    toaster.success('Login successful');
-    router.push('/admin');
-  } catch (err) {
-    toaster.error(err.message);
+    // Decode token to get user role
+    const { role } = decode(token) || {};
+    if (!role) {
+      throw new Error('Error! We cannot log you in at the moment');
+    }
 
-    // reset google recaptcha on invalid login
+    // Notify user and other actions
+    toaster.success('Login successful');
+    router.push(`/${role}`);
+  } catch (err) {
+    // Handle error
+    toaster.error(err.message);
+  } finally {
+    // Reset recaptcha
     ref.current.reset();
   }
 };

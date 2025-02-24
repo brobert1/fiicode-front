@@ -1,8 +1,8 @@
-import { login } from '@api/identity';
-import { Email, Password, Recaptcha } from '@components/Fields';
-import { Field, Fieldset, HookForm, Submit } from '@components/HookForm';
-import { initialValues, validationSchema } from '@models/login';
-import { useRef } from 'react';
+import { login } from "@api/identity";
+import { Email, Password, Recaptcha } from "@components/Fields";
+import { Field, Fieldset, HookForm, Submit } from "@components/HookForm";
+import { initialValues, validationSchema } from "@models/login";
+import { useRef } from "react";
 
 const LoginForm = () => {
   const ref = useRef(null);
@@ -17,11 +17,11 @@ const LoginForm = () => {
       onSubmit={handleSubmit}
     >
       <div className="space-y-4">
-        <Fieldset name="email" label="Your email">
+        <Fieldset name="email" label="Email">
           <Field id="email" name="email" as={Email} autoFocus={true} />
         </Fieldset>
 
-        <Fieldset name="password" label="Your password">
+        <Fieldset name="password" label="Password">
           <Field id="password" name="password" as={Password} />
         </Fieldset>
 

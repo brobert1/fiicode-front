@@ -29,7 +29,9 @@ const SignupForm = () => {
           <Field id="password" name="password" as={Password} />
         </Fieldset>
 
-        <Submit className="button full primary">Signup</Submit>
+        <Submit className="button mt-4 full primary w-full rounded-lg text-base sm:text-sm font-medium p-2.5">
+          Sign up
+        </Submit>
         <Recaptcha ref={ref} />
       </Form>
     </HookForm>

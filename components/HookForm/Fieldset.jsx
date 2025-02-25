@@ -1,5 +1,5 @@
-import { classnames } from '@lib';
-import { useFormContext } from 'react-hook-form';
+import { classnames } from "@lib";
+import { useFormContext } from "react-hook-form";
 
 const Fieldset = ({ label, help, name, children }) => {
   const {
@@ -9,9 +9,12 @@ const Fieldset = ({ label, help, name, children }) => {
   const hasError = touchedFields[name] && errors[name] && isSubmitted;
 
   return (
-    <fieldset className={classnames(hasError && 'has-error')}>
+    <fieldset className={classnames(hasError && "has-error")}>
       {label && (
-        <label htmlFor={name} className="form-label mb-0 w-full cursor-pointer">
+        <label
+          htmlFor={name}
+          className="form-label mb-0 w-full cursor-pointer font-semibold text-base"
+        >
           {label}
         </label>
       )}

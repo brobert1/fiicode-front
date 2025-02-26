@@ -1,5 +1,5 @@
 import confirm from "@api/confirm";
-import { Link } from "@components";
+import { Link, ThankYouBg } from "@components";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
@@ -13,29 +13,35 @@ const Page = () => {
   const { status } = useQuery(`/public/confirm/${hash}`, () => confirm(hash));
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-8">
-      <>
+    <ThankYouBg>
+      <div className="bg-white p-8 rounded-lg shadow-xl mx-auto">
+        <h2 className="font-bold text-2xl mb-4 text-center">Account status</h2>
         {status === "loading" && (
-          <p>
-            Contul tău este în curs de verificare. Te rugăm sa aștepți.{" "}
-            <i className="fa-solid fa-spinner fa-spin ml-2"></i>
+          <p className="flex flex-col gap-1 text-center">
+            Your account is being verified.
+            <span>
+              Please wait.
+              <i className="fa-solid fa-spinner fa-spin ml-2"></i>
+            </span>
           </p>
         )}
         {status === "error" && (
-          <p className="animated fadeIn text-red-600">Eroare! Contul tău nu a fost confirmat.</p>
+          <p className="animated fadeIn text-red-600">
+            Error! Your account could not be confirmed.
+          </p>
         )}
         {status === "success" && (
-          <>
+          <div className="flex w-full flex-col gap-2 items-center">
             <p className="animated fadeIn text-green-700">
-              Succes! Adresa ta de e-mail a fost confirmată.
+              Your email address has been successfully confirmed.
             </p>
-            <Link href="/login" className="animated fadeIn mt-4">
+            <Link href="/login" className="button primary full animated fadeIn mt-4">
               Go to login
             </Link>
-          </>
+          </div>
         )}
-      </>
-    </main>
+      </div>
+    </ThankYouBg>
   );
 };
 

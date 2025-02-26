@@ -5,7 +5,7 @@
 .cover,
 .cover-error {
   background: no-repeat center center / cover fixed;
-  background-image: url('/images/cover.jpg');
+  background-image: url('/images/thank-you-bg.jpg');
   background-color: #777;
   background-blend-mode: multiply;
 }

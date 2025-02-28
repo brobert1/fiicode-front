@@ -1,5 +1,5 @@
 import { axiosAuth } from "@lib";
 
 export const setPreferences = (data) => {
-  return axiosAuth.post("/client/set-preferences", data);
+  return axiosAuth.post("/client/add-preferences", data);
 };

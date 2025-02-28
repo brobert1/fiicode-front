@@ -1,18 +1,16 @@
 import { Field, Fieldset, Form, HookForm, Submit } from "@components/HookForm";
 import { initialValues, validationSchema } from "@models/preferences-form";
 import { Dropdown } from "@components/Fields";
-import { useMutation, useProfile } from "@hooks";
+import { useMutation } from "@hooks";
 import { setPreferences } from "@api/client";
 
 const ClientPreferencesForm = () => {
-  const { me } = useProfile();
   const mutation = useMutation(setPreferences, {
     redirectOnSuccess: "/client",
   });
 
   const handleSubmit = async (values) => {
-    const updatedValues = { ...values, identity: me };
-    await mutation.mutate(updatedValues);
+    await mutation.mutate(values);
   };
 
   return (
@@ -26,12 +24,12 @@ const ClientPreferencesForm = () => {
           <div className="w-full sm:w-1/2">
             <Fieldset
               label="What's your favourite mean of transport?"
-              name="favourite_transportation"
+              name="favouriteTransportation"
             >
               <Field
                 as={Dropdown}
-                id="favourite_transportation"
-                name="favourite_transportation"
+                id="favouriteTransportation"
+                name="favouriteTransportation"
                 placeholder="Select one"
               >
                 <option value="public_transport">Public Transport</option>
@@ -45,12 +43,12 @@ const ClientPreferencesForm = () => {
           <div className="w-full sm:w-1/2">
             <Fieldset
               label="What mean of transport you usually avoid?"
-              name="avoided_transportation"
+              name="avoidedTransportation"
             >
               <Field
                 as={Dropdown}
-                id="avoided_transportation"
-                name="avoided_transportation"
+                id="avoidedTransportation"
+                name="avoidedTransportation"
                 placeholder="Select one"
               >
                 <option value="public_transport">Public Transport</option>
@@ -67,12 +65,12 @@ const ClientPreferencesForm = () => {
           <div className="w-full sm:w-1/2">
             <Fieldset
               label="Do you have a public transport subscription?"
-              name="transportation_subscription"
+              name="transportationSubscription"
             >
               <Field
                 as={Dropdown}
-                id="transportation_subscription"
-                name="transportation_subscription"
+                id="transportationSubscription"
+                name="transportationSubscription"
                 placeholder="Select one"
               >
                 <option value="true">Yes, I buy one monthly</option>
@@ -81,11 +79,11 @@ const ClientPreferencesForm = () => {
             </Fieldset>
           </div>
           <div className="w-full sm:w-1/2">
-            <Fieldset label="What's the best route for you?" name="prrefered_route">
+            <Fieldset label="What's the best route for you?" name="prreferedRoute">
               <Field
                 as={Dropdown}
-                id="prrefered_route"
-                name="prrefered_route"
+                id="prreferedRoute"
+                name="prreferedRoute"
                 placeholder="Select one"
               >
                 <option value="quickest">Quickest</option>
@@ -100,16 +98,16 @@ const ClientPreferencesForm = () => {
 
         <div className="w-full flex flex-col sm:flex-row gap-4">
           <div className="w-full sm:w-1/2">
-            <Fieldset label="You have a fixed route every day?" name="usual_route">
-              <Field as={Dropdown} id="usual_route" name="usual_route" placeholder="Select one">
+            <Fieldset label="You have a fixed route every day?" name="usualRoute">
+              <Field as={Dropdown} id="usualRoute" name="usualRoute" placeholder="Select one">
                 <option value="true">Yes</option>
                 <option value="false">No</option>
               </Field>
             </Fieldset>
           </div>
           <div className="w-full sm:w-1/2">
-            <Fieldset label="During what time period do you travel?" name="route_hours">
-              <Field as={Dropdown} id="route_hours" name="route_hours" placeholder="Select one">
+            <Fieldset label="During what time period do you travel?" name="routeHours">
+              <Field as={Dropdown} id="routeHours" name="routeHours" placeholder="Select one">
                 <option value="morning">Morning (06:00 - 10:00)</option>
                 <option value="lunch">Lunch (11:00 - 15:00)</option>
                 <option value="afternoon">Afternoon (16:00 - 20:00)</option>
@@ -123,9 +121,9 @@ const ClientPreferencesForm = () => {
 
         <Fieldset
           label="Do you want to receive traffic notifications & updates?"
-          name="routes_alerts"
+          name="routesAlerts"
         >
-          <Field as={Dropdown} id="routes_alerts" name="routes_alerts" placeholder="Select one">
+          <Field as={Dropdown} id="routesAlerts" name="routesAlerts" placeholder="Select one">
             <option value="true">Yes</option>
             <option value="false">No</option>
           </Field>

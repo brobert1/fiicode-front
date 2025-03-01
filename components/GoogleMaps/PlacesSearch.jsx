@@ -9,6 +9,8 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
   const [placesService, setPlacesService] = useState(null);
   const [predictions, setPredictions] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [isActive, setIsActive] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const inputRef = useRef(null);
   const predictionsRef = useRef(null);
   const places = useMapsLibrary("places");
@@ -20,18 +22,27 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
     setPlacesService(new places.PlacesService(document.createElement("div")));
   }, [places]);
 
-  // Focus input when search becomes visible
+  // Handle visibility changes
   useEffect(() => {
-    if (isVisible && inputRef.current) {
-      setTimeout(() => {
-        inputRef.current.focus();
-      }, 100);
-    } else {
+    if (!isVisible) {
+      setIsActive(false);
       setInputValue("");
       setPredictions([]);
       setHighlightedIndex(-1);
     }
   }, [isVisible]);
+
+  const handleInputFocus = () => {
+    setIsActive(true);
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 300);
+  };
 
   const fetchPredictions = (input) => {
     if (!autocompleteService || !input) {
@@ -99,7 +110,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
 
           // Close search after selection
           setTimeout(() => {
-            onClose();
+            handleClose();
           }, 300);
         }
       }
@@ -109,7 +120,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
   const handleKeyDown = (e) => {
     if (!predictions.length) {
       if (e.key === "Escape") {
-        onClose();
+        handleClose();
       }
       return;
     }
@@ -131,7 +142,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
 
       case "Escape":
         setPredictions([]);
-        onClose();
+        handleClose();
         break;
 
       default:
@@ -150,7 +161,10 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="absolute top-4 left-0 right-0 z-20 px-4 animate-fadeIn">
+    <div className={classnames(
+      "absolute top-4 left-0 right-0 z-20 px-4",
+      isClosing ? "animate-fadeOut" : "animate-fadeIn"
+    )}>
       <div className="relative max-w-md mx-auto">
         <div className="relative">
           <input
@@ -159,15 +173,19 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            onFocus={handleInputFocus}
+            onClick={handleInputFocus}
             placeholder="Search for a place..."
-            className="w-full py-3 pl-10 pr-12 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={classnames(
+              "w-full py-3 pl-10 pr-3 rounded-full border border-gray-300 shadow-md",
+              isActive
+                ? "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                : "outline-none"
+            )}
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i className={classnames("fas fa-search text-gray-400")}></i>
           </div>
-          <button onClick={onClose} className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <i className={classnames("fas fa-times text-gray-400 hover:text-gray-600")}></i>
-          </button>
         </div>
 
         {predictions.length > 0 && (

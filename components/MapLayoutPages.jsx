@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { MapSearchContext } from "contexts/MapSearchContext";
 
 const MapLayoutPages = () => {
-  const { setSearchVisible } = useContext(MapSearchContext);
+  const { searchVisible, setSearchVisible } = useContext(MapSearchContext);
 
   return (
     <>
@@ -17,7 +17,7 @@ const MapLayoutPages = () => {
         className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
         onClick={(e) => {
           e.preventDefault();
-          setSearchVisible(true);
+          setSearchVisible(!searchVisible);
         }}
       >
         <i className="fa fa-magnifying-glass"></i>

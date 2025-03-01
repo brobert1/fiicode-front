@@ -13,6 +13,21 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
 /* Google Places Autocomplete Styling */
 .pac-container {
   border-radius: 0.5rem;

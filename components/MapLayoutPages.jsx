@@ -3,7 +3,13 @@ import { useContext } from "react";
 import { MapSearchContext } from "contexts/MapSearchContext";
 
 const MapLayoutPages = () => {
-  const { searchVisible, setSearchVisible } = useContext(MapSearchContext);
+  const mapSearchContext = useContext(MapSearchContext);
+  const { searchVisible, setSearchVisible } = mapSearchContext || {
+    searchVisible: false,
+    setSearchVisible: () => {},
+  };
+
+  const isMapPage = !!mapSearchContext;
 
   return (
     <>
@@ -13,15 +19,17 @@ const MapLayoutPages = () => {
       >
         <i className="fa fa-house"></i>
       </MenuItem>
-      <Button
-        className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
-        onClick={(e) => {
-          e.preventDefault();
-          setSearchVisible(!searchVisible);
-        }}
-      >
-        <i className="fa fa-magnifying-glass"></i>
-      </Button>
+      {isMapPage && (
+        <Button
+          className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+          onClick={(e) => {
+            e.preventDefault();
+            setSearchVisible(!searchVisible);
+          }}
+        >
+          <i className="fa fa-magnifying-glass"></i>
+        </Button>
+      )}
       <MenuItem
         href="#"
         className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
@@ -35,7 +43,7 @@ const MapLayoutPages = () => {
         <i className="fa fa-gear"></i>
       </MenuItem>
       <MenuItem
-        href="#"
+        href="/client/account"
         className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
       >
         <i className="fa fa-user"></i>

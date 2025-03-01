@@ -1,25 +1,28 @@
 import { Link } from '@components';
-import { LoginForm } from '@components/Forms';
+import SlideContainer_Slide from '@components/SlideContainer_Slide';
 
 const Page = () => {
   return (
-    <main className="cover flex min-h-screen flex-col items-center justify-center px-4 py-8">
-      <div className="my-8 flex w-full max-w-xl flex-col rounded-lg bg-white px-4 py-8 lg:px-12">
-        <h2 className="mb-4 text-2xl font-bold">Login</h2>
-        <LoginForm />
-        <div className="mt-2">
-          <Link href="/forgot" className="text-gray-600">
-            Forgot password?
+<SlideContainer_Slide>
+        <div className="flex flex-col text-white items-center">
+          <h2 className="text-2xl font-bold">Prima parte</h2>
+  <p>Welcome to the first slide!</p>
+        </div>
+
+     
+    <div className="flex flex-col text-white items-center">
+          <h2 className="text-2xl font-bold">A doua parte</h2>
+         <p>Kurwa Bober</p>
+        </div>
+
+        <div className="flex flex-col text-white items-center">
+          <h2 className="text-2xl font-bold">A treia parte</h2>
+          <Link href="/signup" className="font-bold text-purple-800">
+            Signup now
           </Link>
         </div>
-        <div className="mt-2">
-          <Link href="/signup" className="text-gray-600">
-            <span className="mr-1">No account yet?</span>
-            <span className="font-bold text-purple-800">Signup now</span>
-          </Link>
-        </div>
-      </div>
-    </main>
+      </SlideContainer_Slide>
+   
   );
 };
 

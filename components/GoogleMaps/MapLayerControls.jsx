@@ -22,7 +22,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white h-12 w-12 p-3 rounded-full shadow-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
+        className="bg-white h-12 w-12 p-3 rounded-lg shadow-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
         title="Map layers"
       >
         <i className="fas fa-layer-group text-blue-500"></i>

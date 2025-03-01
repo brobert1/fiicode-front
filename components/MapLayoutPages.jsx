@@ -8,7 +8,7 @@ const MapLayoutPages = () => {
   return (
     <>
       <MenuItem
-        href="#"
+        href="/client"
         className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
       >
         <i className="fa fa-house"></i>

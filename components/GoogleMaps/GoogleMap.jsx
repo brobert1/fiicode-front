@@ -85,7 +85,7 @@ const GoogleMap = () => {
               onPlaceSelect={handlePlaceSelect}
             />
 
-            <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 flex flex-col gap-2">
               <MapLayerControls layers={layers} toggleLayer={toggleLayer} />
               <LocationButton refreshLocation={refreshLocation} userLocation={location} />
             </div>

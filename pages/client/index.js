@@ -1,14 +1,14 @@
-import { checkAuth, withAuth } from '@auth';
-import { Layout } from '@components';
+import { checkAuth, withAuth } from "@auth";
+import { ClientLayout } from "@components";
+import { GoogleMap } from "@components/GoogleMaps";
 
 const Page = () => {
   return (
-    <Layout title="Dashboard">
-      <div className="prose max-w-full">
-        <h2 className="mb-4 font-semibold">Hello world</h2>
-        <p>This is the client page</p>
+    <ClientLayout>
+      <div className="h-full w-full">
+        <GoogleMap />
       </div>
-    </Layout>
+    </ClientLayout>
   );
 };
 

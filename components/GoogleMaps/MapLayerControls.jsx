@@ -1,3 +1,4 @@
+import { Button } from "@components";
 import { classnames } from "@lib";
 import React, { useEffect, useState, useRef } from "react";
 
@@ -20,13 +21,13 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         className="bg-white h-12 w-12 p-3 rounded-lg shadow-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
         title="Map layers"
       >
         <i className="fas fa-layer-group text-blue-500"></i>
-      </button>
+      </Button>
 
       {isOpen && (
         <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl overflow-hidden w-48 transition-all duration-200 origin-top-right">
@@ -35,7 +36,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
           </div>
           <div className="p-3">
             <div className="flex flex-col gap-3">
-              <button
+              <Button
                 className={classnames(
                   "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
                   layers.traffic
@@ -61,8 +62,8 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                     "ml-2"
                   )}
                 ></i>
-              </button>
-              <button
+              </Button>
+              <Button
                 className={classnames(
                   "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
                   layers.transit
@@ -88,7 +89,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                     "ml-2"
                   )}
                 ></i>
-              </button>
+              </Button>
             </div>
           </div>
         </div>

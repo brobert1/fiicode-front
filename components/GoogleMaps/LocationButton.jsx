@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
+import { Button } from "@components";
+import { classnames } from "@lib";
 
 const LocationButton = ({ refreshLocation, userLocation }) => {
   const map = useMap();
@@ -32,17 +34,20 @@ const LocationButton = ({ refreshLocation, userLocation }) => {
   };
 
   return (
-    <button
+    <Button
       onClick={handleClick}
       disabled={isAnimating}
-      className={`flex h-12 w-12 items-center justify-center rounded-lg bg-white text-blue-500 shadow-md hover:bg-gray-50 transition-all duration-200 border border-gray-200 ${
-        isAnimating ? "location-pulse" : ""
-      }`}
+      className={classnames(
+        "flex h-12 w-12 items-center justify-center rounded-lg bg-white text-blue-500 shadow-md hover:bg-gray-50 transition-all duration-200 border border-gray-200",
+        isAnimating && "location-pulse"
+      )}
       aria-label="Get current location"
       title="Get current location"
     >
-      <i className={`fas fa-location-crosshairs text-lg ${isAnimating ? "zoom-in-out" : ""}`}></i>
-    </button>
+      <i
+        className={classnames("fas fa-location-crosshairs text-lg", isAnimating && "zoom-in-out")}
+      ></i>
+    </Button>
   );
 };
 

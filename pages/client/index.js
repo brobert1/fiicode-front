@@ -1,14 +1,20 @@
-import { checkAuth, withAuth } from '@auth';
-import { Layout } from '@components';
+import { checkAuth, withAuth } from "@auth";
+import { ClientLayout } from "@components";
+import { GoogleMap } from "@components/GoogleMaps";
+import { useUserLocation } from "@hooks";
+import MapSearchProvider from "contexts/MapSearchContext";
 
 const Page = () => {
+  const { location, loading, error, refreshLocation } = useUserLocation();
+
   return (
-    <Layout title="Dashboard">
-      <div className="prose max-w-full">
-        <h2 className="mb-4 font-semibold">Hello world</h2>
-        <p>This is the client page</p>
-      </div>
-    </Layout>
+    <MapSearchProvider>
+      <ClientLayout>
+        <div className="h-full w-full">
+          <GoogleMap {...{ location, loading, error, refreshLocation }} />
+        </div>
+      </ClientLayout>
+    </MapSearchProvider>
   );
 };
 

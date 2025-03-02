@@ -3,7 +3,7 @@ import { axios, router, toaster } from "@lib";
 import { decode } from "jsonwebtoken";
 
 const loginGoogle = async (data) => {
-  const { token } = await axios.post("/login-google", data);
+  const { token, needsPasswordSetup } = await axios.post("/login-google", data);
   const decoded = decode(token);
   if (!decoded) {
     throw new Error("Eroare! Nu te putem autentifica în acest moment");
@@ -16,6 +16,9 @@ const loginGoogle = async (data) => {
 
   // Notify user and other actions
   toaster.success("Autentificare reușită");
+  if (needsPasswordSetup) {
+    toaster.error("Change your password from your profile page");
+  }
   if (role == "client" && !hasPreferences) {
     router.push("/client/preferences");
     return;

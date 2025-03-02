@@ -1,3 +1,4 @@
+export { default as ActionModal } from "./ActionModal";
 export { default as AppHead } from "./AppHead";
 export { default as AreYouSure } from "./AreYouSure";
 export { default as BaseClientLayout } from "./BaseClientLayout";

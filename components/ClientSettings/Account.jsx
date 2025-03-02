@@ -2,10 +2,13 @@ import { Button } from "@components";
 import { useDisclosure } from "@hooks";
 import ImageCombo from "./Image/ImageCombo";
 import { Badges } from "./index";
+import { ChangePasswordModal, DeleteAccountModal, EditClientInfoModal } from "@components/Modals";
 
 const Account = ({ me }) => {
   const editInfoDisclosure = useDisclosure();
   const changePasswordDisclosure = useDisclosure();
+
+  const accType = me?.type;
 
   return (
     <div className="flex flex-col p-10 gap-10 w-full max-w-2xl">
@@ -38,27 +41,32 @@ const Account = ({ me }) => {
               Edit
             </Button>
           </div>
-          {/* <EditClientInfoModal
+          <EditClientInfoModal
             hide={editInfoDisclosure.hide}
             isOpen={editInfoDisclosure.isOpen}
             client={me}
-          /> */}
-          <div className="flex justify-between py-4">
-            <div className="flex flex-col gap-1">
-              <p className="font-bold text-black">Password</p>
-              <p className="text-sm text-gray-500 font-medium">••••••••••••</p>
-            </div>
-            <Button
-              onClick={changePasswordDisclosure.show}
-              className="text-black hover:underline font-semibold"
-            >
-              Edit
-            </Button>
-          </div>
-          {/* <ChangePasswordModal
-            hide={changePasswordDisclosure.hide}
-            isOpen={changePasswordDisclosure.isOpen}
-          /> */}
+            accType={accType}
+          />
+          {accType === "default" && (
+            <>
+              <div className="flex justify-between py-4">
+                <div className="flex flex-col gap-1">
+                  <p className="font-bold text-black">Password</p>
+                  <p className="text-sm text-gray-500 font-medium">••••••••••••</p>
+                </div>
+                <Button
+                  onClick={changePasswordDisclosure.show}
+                  className="text-black hover:underline font-semibold"
+                >
+                  Edit
+                </Button>
+              </div>
+              <ChangePasswordModal
+                hide={changePasswordDisclosure.hide}
+                isOpen={changePasswordDisclosure.isOpen}
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -70,7 +78,7 @@ const Account = ({ me }) => {
               <p className="font-bold text-black">Delete account</p>
               <p className="text-sm text-gray-500 font-medium">Permanently delete your account.</p>
             </div>
-            {/* <DeleteAccountModal client={me} /> */}
+            <DeleteAccountModal client={me} />
           </div>
         </div>
       </div>

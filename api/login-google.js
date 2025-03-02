@@ -16,6 +16,7 @@ const loginGoogle = async (data) => {
 
   // Notify user and other actions
   toaster.success("Autentificare reușită");
+
   if (role == "client" && !hasPreferences) {
     router.push("/client/preferences");
     return;

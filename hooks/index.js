@@ -15,6 +15,7 @@ export { default as useOnClickOutside } from "./use-onclick-outside";
 export { default as useProfile } from "./use-profile";
 export { default as useQuery } from "./use-query";
 export { default as useRerender } from "./use-rerender";
+export { default as useScroll } from "./use-scroll";
 export { default as useSelect } from "./use-select";
 export { default as useSwipeable } from "./use-swipeable";
 export { default as useToggle } from "./use-toggle";

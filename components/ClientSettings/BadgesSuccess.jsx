@@ -4,18 +4,12 @@ import { ProgressBar } from "react-bootstrap";
 import Badge from "./Badge";
 
 const BadgesSuccess = ({ data, xp }) => {
-
   const { scrollContainerRef, showLeftButton, showRightButton, scrollLeft, scrollRight } =
     useScroll();
 
-  const totalXpRequired = useMemo(() => {
-    if (!data || !data.length) return 0;
-    return data.reduce((total, badge) => total + badge.xpRequired, 0);
-  }, [data]);
-
   const progressPercentage = useMemo(() => {
-    return Math.min(100, Math.round((xp / (totalXpRequired || 1)) * 100));
-  }, [xp, totalXpRequired]);
+    return Math.min(100, Math.round((xp / (9000 || 1)) * 100));
+  }, [xp]);
 
   const processedBadges = useMemo(() => {
     if (!data || !data.length) return [];
@@ -36,9 +30,7 @@ const BadgesSuccess = ({ data, xp }) => {
       <ProgressBar now={progressPercentage} variant="primary" className="mb-1 h-2" />
       <div className="flex justify-between text-xs text-gray-500 px-1">
         <span>Progress: {progressPercentage}%</span>
-        <span>
-          {xp}/{totalXpRequired} XP
-        </span>
+        <span>{xp}/9000 XP</span>
       </div>
       <div className="relative">
         {showLeftButton && (

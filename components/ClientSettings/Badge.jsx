@@ -20,14 +20,14 @@ const Badge = ({ image, name, earned = false, description }) => {
       </div>
       <div
         className={classnames(
-          "w-16 h-16 flex items-center justify-center rounded-full mb-4 overflow-hidden",
+          "w-20 h-20 flex items-center justify-center rounded-full mb-4 overflow-hidden",
           !earned && "bg-gray-100"
         )}
       >
         <img
           src={image}
           alt={name}
-          className={classnames("w-16 h-16 object-contain", !earned && "opacity-10")}
+          className={classnames("w-20 h-20 object-contain", !earned && "opacity-10")}
         />
       </div>
       <Trim className="text-lg font-bold mb-1 text-center" value={name} limit={20} />

@@ -2,6 +2,7 @@
  * @see https://css-tricks.com/perfect-full-page-background-image/
  * @see https://css-tricks.com/almanac/properties/b/background-blend-mode/
  */
+
 .cover,
 .cover-error {
   background: no-repeat center center / cover fixed;

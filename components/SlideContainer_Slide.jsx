@@ -1,62 +1,80 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSwipeable } from "react-swipeable";
+import IntroSectionIndex from "@components/IntroSectionIndex";
+import SecondContainerIndex from "@components/SecondContainerIndex";
+import AboutContainerIndex from "@components/AboutContainerIndex";
 
-const SlideContainer_Slide = ({ children }) => {
-  const containerRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+const slides = [
+  { id: 1, component: <IntroSectionIndex /> },
+  { id: 2, component: <SecondContainerIndex /> },
+  { id: 3, component: <AboutContainerIndex /> },
+];
+
+export default function Carousel() {
+  const [index, setIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [yPosition, setYPosition] = useState(0); 
+
+  const nextSlide = () => {
+    if (isScrolling) return; 
+    setIsScrolling(true);
+    setIndex((prev) => {
+      const nextIndex = prev + 1;
+      return nextIndex < slides.length ? nextIndex : prev;
+    });
+    setYPosition((prev) => prev - 100);
+  };
+
+  const prevSlide = () => {
+    if (isScrolling) return; 
+    setIsScrolling(true);
+    setIndex((prev) => {
+      const prevIndex = prev - 1;
+      return prevIndex >= 0 ? prevIndex : prev;
+    });
+    setYPosition((prev) => prev + 100); 
+  };
+
+  const handlers = useSwipeable({
+    onSwipedUp: nextSlide,
+    onSwipedDown: prevSlide,
+  });
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      const scrollTop = containerRef.current.scrollTop;
-      const slideHeight = containerRef.current.clientHeight;
-      const index = Math.round(scrollTop / slideHeight);
-      setActiveIndex(index);
+    const handleWheel = (event) => {
+      if (isScrolling) return;
+      if (event.deltaY > 0) nextSlide();
+      else if (event.deltaY < 0) prevSlide();
     };
 
-    const container = containerRef.current;
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [isScrolling]);
+
+  useEffect(() => {
+    if (isScrolling) {
+      const timer = setTimeout(() => setIsScrolling(false), 800); 
+      return () => clearTimeout(timer);
+    }
+  }, [isScrolling]);
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center">
-      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2">
-        {children.map((_, index) => (
-          <span
-            key={index}
-            className={`h-3 w-3 rounded-full transition-all ${
-              index === activeIndex ? "bg-green-800 scale-125" : "bg-gray-400"
-            }`}
-          ></span>
-        ))}
-      </div>
-
-
-      <div
-        ref={containerRef}
-        className="w-full h-full overflow-y-scroll snap-y snap-mandatory custom-scrollbar rounded-3xl shadow-[0px_0px_20px_rgba(255,255,255,0.9)]"
-      >
-        {children.map((child, index) => (
-          <div
-            key={index}
-            className="h-screen flex justify-center items-center snap-center bg-transparent p-6 rounded-lg shadow-xl "
+    <div {...handlers} className="relative w-screen h-screen overflow-hidden">
+      <div className="absolute w-full h-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={slides[index].id}
+            initial={{ opacity: 0, y: yPosition }}
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -yPosition }} 
+            transition={{ duration: 0.5 }}
+            className="absolute w-full h-full flex items-center justify-center"
           >
-            {child}
-          </div>
-        ))}
+            {slides[index].component}
+          </motion.div>
+        </AnimatePresence>
       </div>
-      <style jsx>{`
-        .custom-scrollbar {
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* IE and Edge */
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-          display: none; /* Chrome, Safari */
-        }
-      `}</style>
     </div>
   );
-};
-
-export default SlideContainer_Slide;
+}

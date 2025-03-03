@@ -1,6 +1,6 @@
-import { ProfileLoading, ProfileMenu, ProfileSuccess } from '@components';
-import { useDisclosure, useOnClickOutside, useProfile } from '@hooks';
-import { useRef } from 'react';
+import { ProfileLoading, ProfileMenu, ProfileSuccess } from "@components";
+import { useDisclosure, useOnClickOutside, useProfile } from "@hooks";
+import { useRef } from "react";
 
 const Profile = () => {
   const { status, me } = useProfile();
@@ -17,8 +17,8 @@ const Profile = () => {
         role="button"
       >
         <div className="flex items-center gap-2">
-          {status === 'loading' && <ProfileLoading />}
-          {status === 'success' && <ProfileSuccess {...me} />}
+          {status === "loading" && <ProfileLoading />}
+          {status === "success" && <ProfileSuccess {...me} />}
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
             <i className="fas fa-user text-lg text-white"></i>
           </div>

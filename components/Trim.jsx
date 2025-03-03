@@ -1,11 +1,11 @@
-import { classnames } from '@lib';
+import { classnames } from "@lib";
 
-const Trim = ({ extraClass, value }) => {
+const Trim = ({ extraClass, value, limit }) => {
   if (!value) {
-    return '';
+    return "";
   }
 
-  const format = (value, limit = 50) => {
+  const format = (value, limit) => {
     if (value.length < limit) {
       return value;
     }
@@ -19,10 +19,10 @@ const Trim = ({ extraClass, value }) => {
 
   return (
     <div
-      className={classnames('cursor-default overflow-x-auto whitespace-nowrap', extraClass)}
+      className={classnames("cursor-default overflow-x-auto whitespace-nowrap", extraClass)}
       title={value}
     >
-      {format(value)}
+      {format(value, limit)}
     </div>
   );
 };

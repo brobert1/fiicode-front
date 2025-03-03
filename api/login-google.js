@@ -1,21 +1,26 @@
-import { store } from '@auth';
-import { axios, router, toaster } from '@lib';
-import { decode } from 'jsonwebtoken';
+import { store } from "@auth";
+import { axios, router, toaster } from "@lib";
+import { decode } from "jsonwebtoken";
 
 const loginGoogle = async (data) => {
-  const { token } = await axios.post('/login-google', data);
+  const { token } = await axios.post("/login-google", data);
   const decoded = decode(token);
   if (!decoded) {
-    throw new Error('Eroare! Nu te putem autentifica în acest moment');
+    throw new Error("Eroare! Nu te putem autentifica în acest moment");
   }
-  store.dispatch({ type: 'SET', jwt: token });
-  const { role } = decoded;
+  store.dispatch({ type: "SET", jwt: token });
+  const { role, hasPreferences } = decoded;
   if (!role) {
-    throw new Error('Error! We cannot log you in at the moment');
+    throw new Error("Error! We cannot log you in at the moment");
   }
-  
+
   // Notify user and other actions
-  toaster.success('Autentificare reușită');
+  toaster.success("Autentificare reușită");
+
+  if (role == "client" && !hasPreferences) {
+    router.push("/client/preferences");
+    return;
+  }
   router.push(`/${role}`);
 };
 

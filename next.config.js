@@ -1,5 +1,5 @@
-require('dotenv').config();
-const headers = require('./headers');
+require("dotenv").config();
+const headers = require("./headers");
 
 module.exports = {
   env: {
@@ -11,6 +11,8 @@ module.exports = {
     SHOW_FORM_DEBUG: process.env.SHOW_FORM_DEBUG,
     SHOW_LOGS_EVERYWHERE: process.env.SHOW_LOGS_EVERYWHERE,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+    GOOGLE_MAPS_ID: process.env.GOOGLE_MAPS_ID,
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -18,7 +20,7 @@ module.exports = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers,
       },
     ];

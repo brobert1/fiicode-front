@@ -3,7 +3,7 @@ import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { debounce } from "lodash";
 import { classnames } from "@lib";
 
-const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
+const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }) => {
   const [inputValue, setInputValue] = useState("");
   const [autocompleteService, setAutocompleteService] = useState(null);
   const [placesService, setPlacesService] = useState(null);
@@ -161,10 +161,13 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect }) => {
   if (!isVisible) return null;
 
   return (
-    <div className={classnames(
-      "absolute top-4 left-0 right-0 z-20 px-4",
-      isClosing ? "animate-fadeOut" : "animate-fadeIn"
-    )}>
+    <div
+      className={classnames(
+        "absolute left-0 right-0 z-20 px-4",
+        hasActiveDirections ? "top-[calc(4rem+1px)]" : "top-4",
+        isClosing ? "animate-fadeOut" : "animate-fadeIn"
+      )}
+    >
       <div className="relative max-w-md mx-auto">
         <div className="relative">
           <input

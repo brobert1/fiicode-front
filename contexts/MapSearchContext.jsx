@@ -3,7 +3,7 @@ import React, { createContext, useState } from "react";
 export const MapSearchContext = createContext();
 
 export const MapSearchProvider = ({ children }) => {
-  const [searchVisible, setSearchVisible] = useState(true);
+  const [searchVisible, setSearchVisible] = useState(false);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
 
   const addSearchedPlace = (place) => {

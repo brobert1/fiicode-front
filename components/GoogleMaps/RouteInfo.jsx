@@ -22,10 +22,12 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
   // Store the original routes when directions change
   useEffect(() => {
     if (directions && directions.routes) {
-      setOriginalRoutes(directions.routes.map((route, index) => ({
-        route,
-        originalIndex: index
-      })));
+      setOriginalRoutes(
+        directions.routes.map((route, index) => ({
+          route,
+          originalIndex: index,
+        }))
+      );
       setSelectedRouteIndex(0);
     }
   }, [directions]);
@@ -44,8 +46,8 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
       const primaryRoute = directions.routes[0];
 
       // Find the index of this route in our original routes array
-      const newSelectedIndex = originalRoutes.findIndex(
-        item => isSameRoute(item.route, primaryRoute)
+      const newSelectedIndex = originalRoutes.findIndex((item) =>
+        isSameRoute(item.route, primaryRoute)
       );
 
       if (newSelectedIndex !== -1 && newSelectedIndex !== selectedRouteIndex) {
@@ -54,7 +56,12 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
     }
   }, [directions, originalRoutes, selectedRouteIndex]);
 
-  if (!directions || !directions.routes || directions.routes.length === 0 || originalRoutes.length === 0) {
+  if (
+    !directions ||
+    !directions.routes ||
+    directions.routes.length === 0 ||
+    originalRoutes.length === 0
+  ) {
     return null;
   }
 
@@ -114,7 +121,7 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
         if (routeInfo.onDirectionsUpdate) {
           routeInfo.onDirectionsUpdate(result, {
             ...routeInfo,
-            travelMode: newMode
+            travelMode: newMode,
           });
         }
       } else {
@@ -129,23 +136,23 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
 
     const line = step.transit.line;
     const vehicle = line.vehicle;
-    const departure = step.transit.departure_time?.text || '';
-    const arrival = step.transit.arrival_time?.text || '';
+    const departure = step.transit.departure_time?.text || "";
+    const arrival = step.transit.arrival_time?.text || "";
     const numStops = step.transit.num_stops || 0;
 
     return {
-      name: line.name || '',
-      shortName: line.short_name || '',
-      color: line.color || '#1976D2',
-      textColor: line.text_color || 'white',
-      vehicleType: vehicle?.type || 'BUS',
-      vehicleName: vehicle?.name || 'Bus',
+      name: line.name || "",
+      shortName: line.short_name || "",
+      color: line.color || "#1976D2",
+      textColor: line.text_color || "white",
+      vehicleType: vehicle?.type || "BUS",
+      vehicleName: vehicle?.name || "Bus",
       vehicleIcon: vehicle?.icon || null,
       departure,
       arrival,
       numStops,
-      departureStop: step.transit.departure_stop?.name || '',
-      arrivalStop: step.transit.arrival_stop?.name || ''
+      departureStop: step.transit.departure_stop?.name || "",
+      arrivalStop: step.transit.arrival_stop?.name || "",
     };
   };
 
@@ -176,14 +183,22 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
           </div>
         </div>
 
-        {/* Travel mode selector */}
-        <TravelModeSelector
-          selectedMode={selectedTravelMode}
-          onChange={handleTravelModeChange}
-          isLoading={isChangingMode}
-          loadingMode={selectedTravelMode}
-          className="mt-2 mb-3"
-        />
+        {/* Travel mode selector with hint */}
+        <div className="mt-2 mb-1">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-gray-500">
+              <i className="fas fa-info-circle mr-1"></i>
+              Choose how you want to travel:
+            </span>
+          </div>
+          <TravelModeSelector
+            selectedMode={selectedTravelMode}
+            onChange={handleTravelModeChange}
+            isLoading={isChangingMode}
+            loadingMode={selectedTravelMode}
+            className="mb-2"
+          />
+        </div>
 
         <div className="flex items-center text-sm text-gray-600 mt-1">
           <div className="flex-1 truncate">
@@ -194,13 +209,6 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
             <span className="font-medium">To:</span> {routeInfo.destination.description}
           </div>
         </div>
-
-        {originalRoutes.length > 1 && (
-          <div className="mt-2 text-sm text-blue-600">
-            <i className="fas fa-info-circle mr-1"></i>
-            Click directly on a route on the map to select it
-          </div>
-        )}
       </div>
 
       {isExpanded && (
@@ -244,10 +252,12 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
                           className="px-2 py-1 rounded-md inline-flex items-center text-sm"
                           style={{
                             backgroundColor: transitDetails.color,
-                            color: transitDetails.textColor
+                            color: transitDetails.textColor,
                           }}
                         >
-                          <i className={`fas ${getTransitIcon(transitDetails.vehicleType)} mr-1`}></i>
+                          <i
+                            className={`fas ${getTransitIcon(transitDetails.vehicleType)} mr-1`}
+                          ></i>
                           {transitDetails.shortName || transitDetails.name}
                         </div>
 
@@ -266,7 +276,8 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
                         </div>
 
                         <div className="text-xs text-gray-500 mt-1">
-                          {transitDetails.numStops} {transitDetails.numStops === 1 ? 'stop' : 'stops'}
+                          {transitDetails.numStops}{" "}
+                          {transitDetails.numStops === 1 ? "stop" : "stops"}
                         </div>
                       </div>
                     )}

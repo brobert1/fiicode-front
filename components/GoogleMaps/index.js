@@ -6,3 +6,4 @@ export { default as PlacesSearch } from "./PlacesSearch";
 export { default as UserLocationMarker } from "./UserLocationMarker";
 export { default as DirectionsButton } from "./DirectionsButton";
 export { default as TravelModeSelector } from "./TravelModeSelector";
+export { default as MapClickTooltip } from "./MapClickTooltip";

@@ -4,9 +4,8 @@ import { debounce } from "lodash";
 import { classnames } from "@lib";
 import { Button } from "@components";
 import { Modal } from "react-bootstrap";
-import TravelModeSelector from "@components/GoogleMaps/TravelModeSelector";
 
-const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
+const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound, initialDestination }) => {
   const [originInput, setOriginInput] = useState("");
   const [destinationInput, setDestinationInput] = useState("");
   const [autocompleteService, setAutocompleteService] = useState(null);
@@ -19,7 +18,8 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
   const [destination, setDestination] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [travelMode, setTravelMode] = useState("DRIVING");
+  // Default to driving mode
+  const travelMode = "DRIVING";
 
   const originInputRef = useRef(null);
   const destinationInputRef = useRef(null);
@@ -49,6 +49,26 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
     }
   }, [userLocation, isOpen]);
 
+  // Set initial destination if provided
+  useEffect(() => {
+    if (initialDestination && isOpen) {
+      setDestination({
+        id: initialDestination.id,
+        location: initialDestination.location,
+        description: initialDestination.name || initialDestination.address
+      });
+      setDestinationInput(initialDestination.name || initialDestination.address);
+
+      // If we have both origin and destination, we can automatically get directions
+      if (origin) {
+        // Use a small timeout to ensure the UI has updated
+        setTimeout(() => {
+          handleGetDirections();
+        }, 100);
+      }
+    }
+  }, [initialDestination, isOpen, origin]);
+
   // Handle visibility changes
   useEffect(() => {
     if (!isOpen) {
@@ -59,12 +79,12 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
       setError(null);
 
       // Reset destination input when modal is closed
-      if (destinationInput) {
+      if (destinationInput && !initialDestination) {
         setDestinationInput("");
         setDestination(null);
       }
     }
-  }, [isOpen, destinationInput]);
+  }, [isOpen, destinationInput, initialDestination]);
 
   const fetchPredictions = (input, setStateFn) => {
     if (!autocompleteService || !input) {
@@ -237,11 +257,8 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
 
       <Modal.Body>
         <div className="p-2">
-          {/* Travel mode selector */}
-          <TravelModeSelector selectedMode={travelMode} onChange={setTravelMode} className="mb-4" />
-
           <div className="relative mb-4">
-            <div className="absolute left-3 top-2 text-blue-500">
+            <div className="absolute left-3 top-3 text-blue-500">
               <i className="fas fa-circle text-sm"></i>
             </div>
             <input
@@ -309,7 +326,7 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
           </div>
 
           <div className="relative mb-4">
-            <div className="absolute left-3 top-2 text-red-500">
+            <div className="absolute left-3 top-3 text-red-500">
               <i className="fas fa-map-marker-alt"></i>
             </div>
             <input
@@ -367,7 +384,9 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound }) => {
           </div>
 
           {error && (
-            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>
+            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
           )}
 
           <Button

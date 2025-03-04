@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 
-const PlaceMarker = ({ place, onClose }) => {
+const PlaceMarker = ({ place, onClose, onGetDirections }) => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+
+  const handleGetDirections = (e) => {
+    e.stopPropagation();
+    setIsInfoOpen(false); // Close the info window
+
+    // Call the onGetDirections prop with the place as destination
+    if (onGetDirections) {
+      onGetDirections(place);
+    }
+  };
 
   return (
     <AdvancedMarker position={place.location} onClick={() => setIsInfoOpen(true)}>
@@ -34,15 +44,12 @@ const PlaceMarker = ({ place, onClose }) => {
             </div>
             <p className="text-sm text-gray-600 mb-2">{place.address}</p>
             <div className="flex gap-2 mt-2">
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs bg-blue-500 text-white px-2 py-1 rounded flex items-center"
-                onClick={(e) => e.stopPropagation()}
+              <button
+                onClick={handleGetDirections}
+                className="text-xs w-full justify-center bg-blue-500 text-white px-2 py-1 rounded flex items-center hover:bg-blue-600 transition-colors"
               >
                 <i className="fas fa-directions mr-1"></i> Directions
-              </a>
+              </button>
             </div>
           </div>
         </InfoWindow>

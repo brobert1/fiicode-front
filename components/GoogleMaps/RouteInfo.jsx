@@ -39,7 +39,7 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
   const totalDuration = legs.reduce((total, leg) => total + leg.duration.value, 0);
 
   return (
-    <div className="absolute top-0 left-0 right-0 bg-white shadow-lg rounded-b-lg z-20 max-h-[60vh] overflow-hidden transition-all duration-300">
+    <div className="absolute top-0 left-0 right-0 bg-white shadow-lg rounded-b-lg z-20 max-h-[80vh] sm:max-h-[70vh] md:max-h-[60vh] overflow-hidden transition-all duration-300">
       <RouteHeader
         totalDistance={totalDistance}
         totalDuration={totalDuration}
@@ -54,7 +54,11 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
         allRoutes={allRoutes}
       />
 
-      {isExpanded && <RouteSteps legs={legs} />}
+      {isExpanded && (
+        <div className="route-steps-container">
+          <RouteSteps legs={legs} />
+        </div>
+      )}
     </div>
   );
 };

@@ -20,25 +20,27 @@ const RouteHeader = ({
   const routeCharacteristics = characterizeRoute(selectedRoute, allRoutes, selectedTravelMode);
 
   return (
-    <div className="p-4 border-b border-gray-200">
+    <div className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <h3 className="font-semibold text-gray-800">
+          <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
             {formatDistance(totalDistance)} ({formatDuration(totalDuration)})
           </h3>
         </div>
         <div className="flex gap-2">
           <button
             onClick={toggleExpanded}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 transition-colors p-2"
             title={isExpanded ? "Collapse" : "Expand"}
+            aria-label={isExpanded ? "Collapse route details" : "Expand route details"}
           >
             <i className={`fas fa-chevron-${isExpanded ? "up" : "down"}`}></i>
           </button>
           <button
             onClick={onClearDirections}
-            className="text-gray-500 hover:text-red-500 transition-colors"
+            className="text-gray-500 hover:text-red-500 transition-colors p-2"
             title="Close"
+            aria-label="Close route details"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -65,11 +67,11 @@ const RouteHeader = ({
         />
       </div>
 
-      <div className="flex items-center text-sm text-gray-600 mt-1">
+      <div className="flex items-center text-xs sm:text-sm text-gray-600 mt-1">
         <div className="flex-1 truncate">
           <span className="font-medium">From:</span> {routeInfo.origin.description}
         </div>
-        <i className="fas fa-arrow-right mx-2 text-gray-400"></i>
+        <i className="fas fa-arrow-right mx-10 text-gray-400"></i>
         <div className="flex-1 truncate">
           <span className="font-medium">To:</span> {routeInfo.destination.description}
         </div>

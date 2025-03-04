@@ -5,7 +5,7 @@ const RouteSteps = ({ legs }) => {
   if (!legs || legs.length === 0) return null;
 
   return (
-    <div className="overflow-y-auto max-h-[40vh] p-4">
+    <div className="overflow-y-auto overscroll-contain max-h-[40vh] md:max-h-[40vh] p-4 pb-0 touch-pan-y">
       {legs.map((leg, legIndex) => (
         <div key={legIndex} className="mb-4">
           <div className="flex items-center mb-2">

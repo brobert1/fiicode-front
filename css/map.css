@@ -113,3 +113,27 @@
 .zoom-in-out {
   animation: zoomInOut 0.8s ease-in-out;
 }
+
+/* Route Steps Container */
+.route-steps-container {
+  -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+  position: relative;
+  height: auto;
+  max-height: calc(80vh - 80px); /* Adjust based on header height */
+}
+
+@media (max-width: 640px) {
+  .route-steps-container {
+    max-height: calc(80vh - 70px);
+  }
+}
+
+/* Fix for iOS scrolling issues */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure touch events work properly for scrolling */
+.touch-pan-y {
+  touch-action: pan-y;
+}

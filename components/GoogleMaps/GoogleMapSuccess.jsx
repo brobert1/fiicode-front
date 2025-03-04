@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Map } from "@vis.gl/react-google-maps";
 import {
   LocationButton,
@@ -17,6 +17,7 @@ import { DirectionsModal } from "@components/Modals";
 import RouteInfo from "./RouteInfo";
 import { useDirections, useMapClickTooltip, useMapLoad } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
+import { DirectionsContext } from "../../contexts/DirectionsContext";
 
 const GoogleMapSuccess = ({
   location,
@@ -53,6 +54,21 @@ const GoogleMapSuccess = ({
   });
 
   const onMapLoad = useMapLoad();
+
+  // Get the setDirections function from the DirectionsContext
+  const { setDirections: setGlobalDirections } = useContext(DirectionsContext) || { setDirections: () => {} };
+
+  // Update the global directions state when local directions change
+  useEffect(() => {
+    setGlobalDirections(directions);
+  }, [directions, setGlobalDirections]);
+
+  // Hide search when directions are found
+  useEffect(() => {
+    if (directions) {
+      setSearchVisible(false);
+    }
+  }, [directions, setSearchVisible]);
 
   return (
     <>

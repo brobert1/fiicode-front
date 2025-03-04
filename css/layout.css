@@ -28,3 +28,18 @@
   max-width: 1536px;
   margin: 0 auto;
 }
+
+/* Mobile viewport handling */
+@media (max-width: 640px) {
+  .max {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  body, html {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+}

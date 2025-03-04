@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { debounce } from "lodash";
 import { classnames } from "@lib";
+import PredictionList from "./PredictionList";
 
 const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }) => {
   const [inputValue, setInputValue] = useState("");
@@ -150,14 +151,6 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
     }
   };
 
-  const handleMouseEnter = (index) => {
-    setHighlightedIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHighlightedIndex(-1);
-  };
-
   if (!isVisible) return null;
 
   return (
@@ -192,52 +185,13 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
         </div>
 
         {predictions.length > 0 && (
-          <ul
-            className="absolute mt-1 w-full bg-white rounded-md shadow-lg max-h-60 overflow-y-auto z-30"
-            ref={predictionsRef}
-          >
-            {predictions.map((prediction, index) => (
-              <li
-                key={prediction.place_id}
-                onClick={() => handlePredictionSelect(prediction)}
-                onMouseEnter={() => handleMouseEnter(index)}
-                onMouseLeave={handleMouseLeave}
-                className={classnames(
-                  "px-4 py-2 cursor-pointer flex items-start",
-                  index === highlightedIndex
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
-                    : "hover:bg-gray-100"
-                )}
-              >
-                <i
-                  className={classnames(
-                    "fas fa-map-marker-alt mt-1 mr-2",
-                    index === highlightedIndex ? "text-white" : "text-red-500"
-                  )}
-                ></i>
-                <div>
-                  <div
-                    className={classnames(
-                      "font-medium",
-                      index === highlightedIndex ? "text-white" : "text-gray-800"
-                    )}
-                  >
-                    {prediction.structured_formatting?.main_text ||
-                      prediction.description.split(",")[0]}
-                  </div>
-                  <div
-                    className={classnames(
-                      "text-sm",
-                      index === highlightedIndex ? "text-blue-100" : "text-gray-500"
-                    )}
-                  >
-                    {prediction.structured_formatting?.secondary_text ||
-                      prediction.description.split(",").slice(1).join(",")}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="absolute mt-1 w-full z-30" ref={predictionsRef}>
+            <PredictionList
+              predictions={predictions}
+              highlightedIndex={highlightedIndex}
+              onSelect={handlePredictionSelect}
+            />
+          </div>
         )}
       </div>
     </div>

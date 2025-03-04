@@ -11,3 +11,11 @@ export { default as time } from "./time";
 export { default as toJSON } from "./to-json";
 export { default as translate } from "./translate";
 export { default as whoami } from "./whoami";
+export {
+  isSameRoute,
+  formatDistance,
+  formatDuration,
+  getIconForStep,
+  getTransitIcon,
+  getTransitDetails
+} from "./route-utils";

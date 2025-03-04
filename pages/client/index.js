@@ -9,7 +9,7 @@ const Page = () => {
 
   return (
     <MapClientLayout>
-      <div className="h-full w-full overflow-hidden">
+      <div className="h-full w-full">
         <GoogleMap {...{ location, loading, error, refreshLocation }} />
       </div>
     </MapClientLayout>
@@ -20,4 +20,4 @@ export async function getServerSideProps(context) {
   return await checkAuth(context);
 }
 
-export default withMapSearch(withAuth(Page, checkAuth));
+export default withAuth(withMapSearch(Page));

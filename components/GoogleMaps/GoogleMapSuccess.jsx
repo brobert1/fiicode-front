@@ -61,18 +61,10 @@ const GoogleMapSuccess = ({
         defaultZoom={15}
         mapId={process.env.GOOGLE_MAPS_ID}
         colorScheme="LIGHT"
-        gestureHandling="cooperative"
+        gestureHandling="greedy"
         disableDefaultUI={true}
-        clickableIcons={false}
+        clickableIcons={false} // Disable default POI click behavior
         onLoad={onMapLoad}
-        style={{ width: '100%', height: '100%' }}
-        options={{
-          fullscreenControl: false,
-          scrollwheel: true,
-          zoomControl: false,
-          streetViewControl: false,
-          mapTypeControl: false,
-        }}
       >
         <MapClickHandler onMapClick={handleMapClick} />
 

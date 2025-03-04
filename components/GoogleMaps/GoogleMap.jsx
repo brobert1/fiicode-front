@@ -30,7 +30,7 @@ const GoogleMap = ({ location, loading, error, refreshLocation }) => {
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden">
+    <div className="w-full h-full relative">
       <APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY} libraries={["places", "routes"]}>
         {loading && <GoogleMapLoading />}
         {error && <GoogleMapError error={error} />}

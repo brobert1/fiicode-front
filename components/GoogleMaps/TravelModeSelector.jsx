@@ -11,6 +11,7 @@ const TravelModeSelector = ({
     { id: "DRIVING", icon: "fa-car", label: "Drive" },
     { id: "WALKING", icon: "fa-walking", label: "Walk" },
     { id: "TRANSIT", icon: "fa-bus", label: "Transit" },
+    { id: "RIDESHARING", icon: "fa-car-side", label: "Ride" },
   ];
 
   return (

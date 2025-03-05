@@ -17,6 +17,8 @@ export { default as MultiSelectAsync } from './MultiSelectAsync';
 export { default as Number } from './Number';
 export { default as Option } from './Option';
 export { default as OptionList } from './OptionList';
+export { default as PartnerDropdown } from './PartnerDropdown';
+export { default as PartnerDropdownField } from './PartnerDropdownField';
 export { default as Password } from './Password';
 export { default as Phone } from './Phone';
 export { default as PlusMinus } from './PlusMinus';

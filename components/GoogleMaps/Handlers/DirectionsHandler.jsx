@@ -76,6 +76,8 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         return "#00C853"; // Brighter green
       case "TRANSIT":
         return "#FF3D00"; // Brighter red
+      case "RIDESHARING":
+        return "#9C27B0"; // Purple
       default:
         return "#0066FF"; // Default bright blue
     }
@@ -90,6 +92,8 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         return "#B9F6CA"; // Lighter green with more contrast
       case "TRANSIT":
         return "#FFD0C2"; // Lighter red with more contrast
+      case "RIDESHARING":
+        return "#E1BEE7"; // Lighter purple
       default:
         return "#CCCCCC"; // Lighter grey
     }
@@ -104,6 +108,8 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         return "#006428"; // Darker green
       case "TRANSIT":
         return "#BF2600"; // Darker red
+      case "RIDESHARING":
+        return "#6A1B9A"; // Darker purple
       default:
         return "#003380"; // Default darker blue
     }
@@ -321,6 +327,50 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
 
     // Get the travel mode color
     const travelMode = routeInfo?.travelMode || "DRIVING";
+
+    // If the travel mode is RIDESHARING, only show markers but not polylines
+    if (travelMode === "RIDESHARING") {
+      // Create markers for origin and destination
+      if (directions.routes && directions.routes.length > 0 && directions.routes[0].legs && directions.routes[0].legs.length > 0) {
+        const leg = directions.routes[0].legs[0];
+
+        // Origin marker
+        const originMarker = new window.google.maps.Marker({
+          position: leg.start_location,
+          map: map,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#4CAF50", // Green
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          },
+          title: "Origin",
+          zIndex: 20,
+        });
+        markerRefs.current.push(originMarker);
+
+        // Destination marker
+        const destinationMarker = new window.google.maps.Marker({
+          position: leg.end_location,
+          map: map,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#F44336", // Red
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          },
+          title: "Destination",
+          zIndex: 20,
+        });
+        markerRefs.current.push(destinationMarker);
+      }
+      return;
+    }
+
     const primaryColor = getTravelModeColor(travelMode);
     const secondaryColor = getSecondaryColor(travelMode);
     const outlineColor = getOutlineColor(travelMode);

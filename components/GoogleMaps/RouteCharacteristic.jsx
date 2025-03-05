@@ -2,7 +2,7 @@ import React from "react";
 import { classnames } from "@lib";
 
 const RouteCharacteristic = ({ type, label }) => {
-  
+
   // Define colors and icons based on route type
   const getTypeStyles = (type) => {
     switch (type) {
@@ -47,6 +47,12 @@ const RouteCharacteristic = ({ type, label }) => {
           bgColor: "bg-cyan-100",
           textColor: "text-cyan-700",
           icon: "fa-subway",
+        };
+      case "ridesharing":
+        return {
+          bgColor: "bg-purple-100",
+          textColor: "text-purple-700",
+          icon: "fa-car-side",
         };
       case "recommended":
       default:

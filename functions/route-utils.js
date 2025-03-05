@@ -100,6 +100,8 @@ const getIconForStep = (step) => {
     return "fa-bicycle";
   } else if (travelMode === "TRANSIT") {
     return getTransitIcon(step.transit?.line?.vehicle?.type);
+  } else if (travelMode === "RIDESHARING") {
+    return "fa-car-side";
   } else if (travelMode === "DRIVING") {
     // Check for specific driving instructions
     const instructions = step.instructions?.toLowerCase() || "";
@@ -288,6 +290,10 @@ const characterizeRoute = (route, allRoutes, travelMode) => {
       type = "convenient";
       label = "Fewer Transfers";
     }
+  } else if (travelMode === "RIDESHARING") {
+    // For ridesharing, we'll always show a specific label
+    type = "ridesharing";
+    label = "Ridesharing Options";
   }
 
   // If this is the preferred route according to Google

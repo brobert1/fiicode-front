@@ -8,6 +8,7 @@ export { default as MarkerIcon } from "./MarkerIcon";
 export { default as PlaceMarker } from "./PlaceMarker";
 export { default as PlacesSearch } from "./PlacesSearch";
 export { default as PredictionList } from "./PredictionList";
+export { default as RidesharingPartners } from "./RidesharingPartners";
 export { default as RouteCharacteristic } from "./RouteCharacteristic";
 export { default as RouteHeader } from "./RouteHeader";
 export { default as RouteStep } from "./RouteStep";

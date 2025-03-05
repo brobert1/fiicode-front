@@ -72,12 +72,25 @@ const useRouteManager = ({ directions, routeInfo, onDirectionsUpdate }) => {
         return;
       }
 
+      setSelectedTravelMode(newMode);
+
+      // For RIDESHARING mode, we don't need to make a directions request
+      if (newMode === "RIDESHARING") {
+        if (onDirectionsUpdate && directions) {
+          // Just update the travel mode without changing the directions
+          onDirectionsUpdate(directions, {
+            ...routeInfo,
+            travelMode: newMode,
+          });
+        }
+        return;
+      }
+
       if (!directionsService || !routeInfo?.origin || !routeInfo?.destination) {
         console.error("Cannot change travel mode: missing directionsService or route info");
         return;
       }
 
-      setSelectedTravelMode(newMode);
       setIsChangingMode(true);
 
       const request = {
@@ -103,7 +116,7 @@ const useRouteManager = ({ directions, routeInfo, onDirectionsUpdate }) => {
         }
       });
     },
-    [directionsService, onDirectionsUpdate, routeInfo, routesLibrary, selectedTravelMode]
+    [directionsService, onDirectionsUpdate, routeInfo, routesLibrary, selectedTravelMode, directions]
   );
 
   // Toggle expanded state

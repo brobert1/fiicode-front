@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouteManager } from "@hooks";
 import { RouteHeader, RouteSteps } from ".";
-
+import RidesharingPartners from "./RidesharingPartners";
 
 const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
   const {
@@ -54,7 +54,14 @@ const RouteInfo = ({ directions, routeInfo, onClearDirections }) => {
         allRoutes={allRoutes}
       />
 
-      {isExpanded && (
+      {isExpanded && selectedTravelMode === "RIDESHARING" ? (
+        <div className="p-4 overflow-auto">
+          <RidesharingPartners
+            origin={routeInfo?.origin?.location}
+            destination={routeInfo?.destination?.location}
+          />
+        </div>
+      ) : isExpanded && (
         <div className="route-steps-container">
           <RouteSteps legs={legs} />
         </div>

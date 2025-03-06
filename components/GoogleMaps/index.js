@@ -1,3 +1,4 @@
+export { default as AlertMarker } from "./AlertMarker";
 export { default as DirectionsButton } from "./DirectionsButton";
 export { default as GoogleMap } from "./GoogleMap";
 export { default as LocationButton } from "./LocationButton";

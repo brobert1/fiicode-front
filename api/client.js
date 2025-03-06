@@ -36,3 +36,7 @@ export const clientRemoveAccount = async () => {
 export const changePassword = async (data) => {
   return axiosAuth.post("/client/change-password", data);
 };
+
+export const setAlert = async (data) => {
+  return axiosAuth.post("/client/set-alert", data);
+};

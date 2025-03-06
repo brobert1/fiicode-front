@@ -8,6 +8,7 @@ import {
   PlaceMarker,
   DirectionsButton,
   MapClickTooltip,
+  AlertMarker,
 } from ".";
 import { TrafficLayer, TransitLayer } from "@hooks/use-layers";
 import MapHandler from "./Handlers/MapHandler";
@@ -15,7 +16,7 @@ import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
 import { DirectionsModal } from "@components/Modals";
 import RouteInfo from "./RouteInfo";
-import { useDirections, useMapClickTooltip, useMapLoad } from "@hooks";
+import { useDirections, useMapClickTooltip, useMapLoad, useQuery } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import { DirectionsContext } from "../../contexts/DirectionsContext";
 
@@ -32,7 +33,6 @@ const GoogleMapSuccess = ({
   initialLoad,
   handlePlaceSelect,
 }) => {
-
   // Use custom hooks to manage component state and logic
   const {
     directionsVisible,
@@ -53,10 +53,16 @@ const GoogleMapSuccess = ({
     searchVisible,
   });
 
+  // Fetch alerts from the API
+  const { data: alertsData } = useQuery("/client/alerts");
+  const alerts = alertsData || [];
+
   const onMapLoad = useMapLoad();
 
   // Get the setDirections function from the DirectionsContext
-  const { setDirections: setGlobalDirections } = useContext(DirectionsContext) || { setDirections: () => {} };
+  const { setDirections: setGlobalDirections } = useContext(DirectionsContext) || {
+    setDirections: () => {},
+  };
 
   // Update the global directions state when local directions change
   useEffect(() => {
@@ -93,6 +99,9 @@ const GoogleMapSuccess = ({
 
         <TrafficLayer visible={layers.traffic} />
         <TransitLayer visible={layers.transit} />
+
+        {/* Display alert markers */}
+        {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
 
         {searchedPlaces.map((place) => (
           <PlaceMarker

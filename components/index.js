@@ -10,7 +10,6 @@ export { default as EmailMask } from "./EmailMask";
 export { default as Error } from "./Error";
 export { default as ErrorBoundary } from "./ErrorBoundary";
 export { default as ErrorFallback } from "./ErrorFallback";
-export { default as Favicon } from "./Favicon";
 export { default as FloatingMenu } from "./FloatingMenu";
 export { default as GoogleLogin } from "./GoogleLogin";
 export { default as Layout } from "./Layout";

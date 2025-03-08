@@ -1,12 +1,7 @@
 require("dotenv").config();
 const headers = require("./headers");
-const withPWA = require("next-pwa")({
-  dest: "public",
-  register: true,
-  skipWaiting: true
-});
 
-module.exports = withPWA({
+module.exports = {
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
     APP_BASE_URL: process.env.APP_BASE_URL,
@@ -43,4 +38,4 @@ module.exports = withPWA({
   compiler: {
     styledComponents: true,
   },
-});
+};

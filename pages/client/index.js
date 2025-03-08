@@ -1,5 +1,5 @@
 import { checkAuth, withAuth } from "@auth";
-import { MapClientLayout } from "@components";
+import { MapClientLayout, PWAInstallPrompt } from "@components";
 import { GoogleMap } from "@components/GoogleMaps";
 import { useUserLocation } from "@hooks";
 import withMapSearch from "@components/withMapSearch";
@@ -11,6 +11,7 @@ const Page = () => {
     <MapClientLayout>
       <div className="h-full w-full">
         <GoogleMap {...{ location, loading, error, refreshLocation }} />
+        <PWAInstallPrompt />
       </div>
     </MapClientLayout>
   );

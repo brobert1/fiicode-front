@@ -48,3 +48,4 @@ export { default as TranslateAll } from "./TranslateAll";
 export { default as Trim } from "./Trim";
 export { default as withMapSearch } from "./withMapSearch";
 export { default as withRouter } from "./withRouter";
+export { default as PWAInstallPrompt } from "./PWAInstallPrompt";

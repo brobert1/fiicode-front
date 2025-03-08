@@ -5,6 +5,7 @@ yarn.lock
 
 # Firebase configuration
 public/firebase-config.json
+public/firebase-messaging-sw.js
 
 # Logs
 logs
@@ -109,3 +110,12 @@ build/
 !.vscode/settings.json
 
 certificates
+
+#PWA FILES
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+

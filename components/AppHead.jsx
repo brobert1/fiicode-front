@@ -17,6 +17,7 @@ const AppHead = () => {
       <meta name="description" content={description} />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />
+      <link rel="manifest" href="/manifest.json" />
       {stylesheets.map(showStylesheets)}
       {scripts.map(showScripts)}
       <img src="/icons/loading.gif" alt="loading" className="hidden" />

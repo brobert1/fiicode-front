@@ -3,6 +3,9 @@ NOTES.txt
 yarn.lock
 .DS_Store
 
+# Firebase configuration
+public/firebase-config.json
+
 # Logs
 logs
 *.log
@@ -104,3 +107,5 @@ build/
 # vscode
 .vscode/*
 !.vscode/settings.json
+
+certificates

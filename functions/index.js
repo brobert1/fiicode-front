@@ -11,6 +11,7 @@ export { default as time } from "./time";
 export { default as toJSON } from "./to-json";
 export { default as translate } from "./translate";
 export { default as whoami } from "./whoami";
+export { default as getDeviceType } from "./get-device-type";
 export {
   isSameRoute,
   formatDistance,

@@ -1,14 +1,43 @@
+import { useEffect, useState } from "react";
 import { Button } from "@components";
-import { useDisclosure } from "@hooks";
+import { useDisclosure, useMutation } from "@hooks";
 import ImageCombo from "./Image/ImageCombo";
 import { Badges } from "./index";
 import { ChangePasswordModal, DeleteAccountModal, EditClientInfoModal } from "@components/Modals";
+import { generateToken } from "@lib/firebase"; // Import getDeviceType
+import { setFCMToken } from "@api/client";
+import { getDeviceType } from "@functions";
 
 const Account = ({ me }) => {
+  const mutation = useMutation(setFCMToken, {
+    invalidateQueries: ["/client/account"],
+  });
   const editInfoDisclosure = useDisclosure();
   const changePasswordDisclosure = useDisclosure();
+  const [currentDevice, setCurrentDevice] = useState(null);
+  const [isNotificationsDisabled, setIsNotificationsDisabled] = useState(false);
 
   const accType = me?.type;
+
+  useEffect(() => {
+    const detectDevice = async () => {
+      const deviceType = getDeviceType();
+      setCurrentDevice(deviceType);
+
+      // Check if any of the stored tokens match the current device type
+      const hasExistingToken = me?.fcmTokens?.some((tokenObj) => tokenObj.device === deviceType);
+      if (hasExistingToken) {
+        setIsNotificationsDisabled(true);
+      }
+    };
+
+    detectDevice();
+  }, [me?.fcmTokens]);
+
+  const enableNotifications = async () => {
+    const { token, deviceType } = await generateToken();
+    await mutation.mutate({ fcmToken: token, device: deviceType });
+  };
 
   return (
     <div className="flex flex-col p-10 gap-10 w-full max-w-2xl">
@@ -67,6 +96,21 @@ const Account = ({ me }) => {
               />
             </>
           )}
+          <div className="flex justify-between py-4">
+            <div className="flex flex-col gap-1">
+              <p className="font-bold text-black">Notifications</p>
+              <p className="text-sm text-gray-500 font-medium">
+                Enable notifications to get updates.
+              </p>
+            </div>
+            <Button
+              onClick={enableNotifications}
+              className="button full primary"
+              disabled={mutation.isPending || isNotificationsDisabled}
+            >
+              {isNotificationsDisabled ? "Enabled" : "Enable"}
+            </Button>
+          </div>
         </div>
       </div>
 

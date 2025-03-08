@@ -40,3 +40,7 @@ export const changePassword = async (data) => {
 export const setAlert = async (data) => {
   return axiosAuth.post("/client/set-alert", data);
 };
+
+export const setFCMToken = async (data) => {
+  return axiosAuth.put("/client/set-fcm-token", data);
+};

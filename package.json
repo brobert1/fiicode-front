@@ -4,7 +4,7 @@
   "description": "starter",
   "main": "index.js",
   "scripts": {
-    "dev": "next ",
+    "dev": "next",
     "build": "next build",
     "start": "next start",
     "export": "next build && next export",
@@ -34,6 +34,7 @@
     "date-fns": "^2.21.1",
     "dotenv": "^16.0.1",
     "downshift": "^6.1.12",
+    "firebase": "^11.4.0",
     "framer-motion": "^12.4.7",
     "js-cookie": "^3.0.5",
     "js-file-download": "^0.4.12",

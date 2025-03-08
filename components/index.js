@@ -37,6 +37,7 @@ export { default as Profile } from "./Profile";
 export { default as ProfileLoading } from "./ProfileLoading";
 export { default as ProfileMenu } from "./ProfileMenu";
 export { default as ProfileSuccess } from "./ProfileSuccess";
+export { default as PWAProvider } from "./PWAProvider";
 export { default as ScreenSizeInfo } from "./ScreenSizeInfo";
 export { default as ShowMore } from "./ShowMore";
 export { default as Spinner } from "./Spinner";

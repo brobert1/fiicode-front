@@ -1,4 +1,4 @@
-import { ErrorBoundary, ScreenSizeInfo, Toaster } from "@components";
+import { ErrorBoundary, PWAProvider, ScreenSizeInfo, Toaster } from "@components";
 import { sitename } from "@site.config";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -19,7 +19,9 @@ const Root = (props) => {
       </Head>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <Component {...pageProps} />
+          <PWAProvider>
+            <Component {...pageProps} />
+          </PWAProvider>
         </QueryClientProvider>
         <Toaster />
         <ScreenSizeInfo />

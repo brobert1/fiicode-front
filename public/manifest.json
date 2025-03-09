@@ -1,6 +1,6 @@
 {
-  "theme_color": "#8936FF",
-  "background_color": "#2EC6FE",
+  "theme_color": "#FFFFFF",
+  "background_color": "#7eec00",
   "icons": [
     {
       "purpose": "maskable",
@@ -15,7 +15,7 @@
   "dir": "auto",
   "lang": "ro-RO",
   "name": "Pathly",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/login",
+  "scope": "/login",
   "short_name": "Pathly"
 }

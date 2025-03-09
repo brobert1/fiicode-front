@@ -1,9 +1,7 @@
-import { ThankYouBg } from "@components";
-
 const Page = () => {
   return (
-    <ThankYouBg>
-      <div className="my-8 flex w-full max-w-xl flex-col rounded-lg px-4 py-8 lg:px-12 text-white bg-white shadow-xl">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-8">
+      <div className="my-8 flex w-full max-w-xl flex-col rounded-lg px-4 py-8 lg:px-12 text-white bg-white">
         <img
           className="mb-4 w-80 h-50 rounded-full mx-auto"
           src="/images/logo.png"
@@ -19,7 +17,7 @@ const Page = () => {
           <li>After confirming your account, you will be able to access the app.</li>
         </ol>
       </div>
-    </ThankYouBg>
+    </main>
   );
 };
 export default Page;

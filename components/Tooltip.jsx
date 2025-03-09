@@ -13,7 +13,7 @@ const Tooltip = ({
       rootClose={trigger === "click"}
       overlay={<Popover className="tooltip">{children}</Popover>}
     >
-      <div className="flex h-8 w-8 items-center justify-center text-green-500">
+      <div className="flex h-8 w-8 items-center justify-center text-secondary">
         <i className={icon}></i>
       </div>
     </OverlayTrigger>

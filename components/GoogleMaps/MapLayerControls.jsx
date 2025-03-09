@@ -26,7 +26,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
         className="bg-white h-12 w-12 p-3 rounded-lg shadow-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
         title="Map layers"
       >
-        <i className="fas fa-layer-group text-blue-500"></i>
+        <i className="fas fa-layer-group text-secondary"></i>
       </Button>
 
       {isOpen && (
@@ -40,7 +40,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                 className={classnames(
                   "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
                   layers.traffic
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-secondary text-white hover:bg-secondary"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 )}
                 onClick={() => toggleLayer("traffic")}
@@ -50,7 +50,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                   <i
                     className={classnames(
                       "fas fa-traffic-light mr-2",
-                      layers.traffic ? "text-white" : "text-blue-500"
+                      layers.traffic ? "text-white" : "text-secondary"
                     )}
                   ></i>
                   Traffic
@@ -67,7 +67,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                 className={classnames(
                   "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
                   layers.transit
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-secondary text-white hover:bg-secondary"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 )}
                 onClick={() => toggleLayer("transit")}
@@ -77,7 +77,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                   <i
                     className={classnames(
                       "fas fa-subway mr-2",
-                      layers.transit ? "text-white" : "text-blue-500"
+                      layers.transit ? "text-white" : "text-secondary"
                     )}
                   ></i>
                   Transit

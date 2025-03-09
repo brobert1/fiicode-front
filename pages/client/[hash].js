@@ -1,5 +1,5 @@
 import confirm from "@api/confirm";
-import { Link, ThankYouBg } from "@components";
+import { Link } from "@components";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
@@ -13,8 +13,8 @@ const Page = () => {
   const { status } = useQuery(`/public/confirm/${hash}`, () => confirm(hash));
 
   return (
-    <ThankYouBg>
-      <div className="bg-white p-8 rounded-lg shadow-xl mx-auto">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-8">
+      <div className="bg-white p-8 rounded-lg mx-auto">
         <h2 className="font-bold text-2xl mb-4 text-center">Account status</h2>
         {status === "loading" && (
           <p className="flex flex-col gap-1 text-center">
@@ -32,7 +32,7 @@ const Page = () => {
         )}
         {status === "success" && (
           <div className="flex w-full flex-col gap-2 items-center">
-            <p className="animated fadeIn text-green-700">
+            <p className="animated fadeIn text-center text-green-700">
               Your email address has been successfully confirmed.
             </p>
             <Link href="/login" className="button primary full animated fadeIn mt-4">
@@ -41,7 +41,7 @@ const Page = () => {
           </div>
         )}
       </div>
-    </ThankYouBg>
+    </main>
   );
 };
 

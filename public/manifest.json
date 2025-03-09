@@ -16,6 +16,6 @@
   "lang": "ro-RO",
   "name": "Pathly",
   "start_url": "/login",
-  "scope": "/login",
+  "scope": "/",
   "short_name": "Pathly"
 }

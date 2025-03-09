@@ -49,6 +49,11 @@ const useDirections = ({ removeSearchedPlace }) => {
     // Set the destination place and open the directions modal
     setDestinationPlace(place);
     setDirectionsVisible(true);
+
+    // Immediately set the direction destination ID to hide the marker
+    if (place && place.id) {
+      setDirectionDestinationId(place.id);
+    }
   }, []);
 
   const openDirectionsModal = useCallback(() => {
@@ -74,7 +79,8 @@ const useDirections = ({ removeSearchedPlace }) => {
     handleRouteChange,
     handleDirectionsUpdate,
     handleGetDirections,
-    openDirectionsModal
+    openDirectionsModal,
+    directionDestinationId
   };
 };
 

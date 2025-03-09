@@ -78,7 +78,22 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
     placesService.getDetails(
       {
         placeId: prediction.place_id,
-        fields: ["name", "geometry", "formatted_address", "place_id"],
+        fields: [
+          "name",
+          "geometry",
+          "formatted_address",
+          "place_id",
+          "formatted_phone_number",
+          "international_phone_number",
+          "website",
+          "url",
+          "opening_hours",
+          "rating",
+          "user_ratings_total",
+          "photos",
+          "types",
+          "price_level"
+        ],
       },
       (place, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
@@ -103,6 +118,22 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
                   },
                 }
               : null,
+            // Add additional place details
+            phone: place.formatted_phone_number || place.international_phone_number,
+            website: place.website,
+            googleMapsUrl: place.url,
+            openingHours: place.opening_hours ? {
+              isOpen: place.opening_hours.isOpen(),
+              weekdayText: place.opening_hours.weekday_text
+            } : null,
+            rating: place.rating,
+            userRatingsTotal: place.user_ratings_total,
+            photos: place.photos ? place.photos.map(photo => ({
+              url: photo.getUrl({ maxWidth: 400, maxHeight: 300 }),
+              attribution: photo.html_attributions
+            })).slice(0, 3) : [], // Limit to 3 photos
+            types: place.types,
+            priceLevel: place.price_level
           });
 
           // Clear input and predictions

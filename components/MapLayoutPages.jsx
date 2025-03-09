@@ -42,7 +42,7 @@ const MapLayoutPages = () => {
         </Button>
       )}
       <MenuItem
-        href="#"
+        href="/client/notifications"
         className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
       >
         <i className="fa fa-bell"></i>

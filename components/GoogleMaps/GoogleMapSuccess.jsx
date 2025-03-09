@@ -16,7 +16,7 @@ import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
 import { DirectionsModal } from "@components/Modals";
 import RouteInfo from "./RouteInfo";
-import { useDirections, useMapClickTooltip, useMapLoad, useQuery } from "@hooks";
+import { useDirections, useMapClickTooltip, useMapLoad, useQuery, useColorScheme } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import { DirectionsContext } from "../../contexts/DirectionsContext";
 
@@ -46,6 +46,7 @@ const GoogleMapSuccess = ({
     handleDirectionsUpdate,
     handleGetDirections,
     openDirectionsModal,
+    directionDestinationId
   } = useDirections({ removeSearchedPlace });
 
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
@@ -56,6 +57,9 @@ const GoogleMapSuccess = ({
   // Fetch alerts from the API
   const { data: alertsData } = useQuery("/client/alerts");
   const alerts = alertsData || [];
+
+  // Get color scheme based on time of day
+  const colorScheme = useColorScheme();
 
   const onMapLoad = useMapLoad();
 
@@ -82,7 +86,7 @@ const GoogleMapSuccess = ({
         defaultCenter={location}
         defaultZoom={15}
         mapId={process.env.GOOGLE_MAPS_ID}
-        colorScheme="LIGHT"
+        colorScheme={colorScheme}
         gestureHandling="greedy"
         disableDefaultUI={true}
         clickableIcons={false} // Disable default POI click behavior
@@ -103,14 +107,16 @@ const GoogleMapSuccess = ({
         {/* Display alert markers */}
         {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
 
-        {searchedPlaces.map((place) => (
-          <PlaceMarker
-            key={place.id}
-            place={place}
-            onClose={removeSearchedPlace}
-            onGetDirections={handleGetDirections}
-          />
-        ))}
+        {searchedPlaces
+          .filter(place => place.id !== directionDestinationId)
+          .map((place) => (
+            <PlaceMarker
+              key={place.id}
+              place={place}
+              onClose={removeSearchedPlace}
+              onGetDirections={handleGetDirections}
+            />
+          ))}
 
         {clickedLocation && (
           <MapClickTooltip

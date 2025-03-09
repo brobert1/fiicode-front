@@ -26,7 +26,7 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
         className="bg-white h-12 w-12 p-3 rounded-lg shadow-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
         title="Map layers"
       >
-        <i className="fas fa-layer-group text-secondary"></i>
+        <i className="fas fa-layer-group text-primary"></i>
       </Button>
 
       {isOpen && (

@@ -38,7 +38,7 @@ const LocationButton = ({ refreshLocation, userLocation }) => {
       onClick={handleClick}
       disabled={isAnimating}
       className={classnames(
-        "flex h-12 w-12 items-center justify-center rounded-lg bg-white text-secondary shadow-md hover:bg-gray-50 transition-all duration-200 border border-gray-200",
+        "flex h-12 w-12 items-center justify-center rounded-lg bg-white text-primary shadow-md hover:bg-gray-50 transition-all duration-200 border border-gray-200",
         isAnimating && "location-pulse"
       )}
       aria-label="Get current location"

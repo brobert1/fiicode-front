@@ -3,6 +3,7 @@ import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 
 const PlaceMarker = ({ place, onClose, onGetDirections }) => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   const handleGetDirections = (e) => {
     e.stopPropagation();
@@ -12,6 +13,51 @@ const PlaceMarker = ({ place, onClose, onGetDirections }) => {
     if (onGetDirections) {
       onGetDirections(place);
     }
+  };
+
+  // Helper function to format place types for display
+  const formatPlaceType = (type) => {
+    return type
+      .replace(/_/g, " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  // Helper function to render price level
+  const renderPriceLevel = (priceLevel) => {
+    if (priceLevel === undefined || priceLevel === null) return null;
+
+    const dollars = [];
+    for (let i = 0; i < 4; i++) {
+      dollars.push(
+        <span key={i} className={i < priceLevel ? "text-green-600" : "text-gray-300"}>
+          $
+        </span>
+      );
+    }
+    return <div className="flex">{dollars}</div>;
+  };
+
+  // Helper function to render star rating
+  const renderRating = (rating) => {
+    if (!rating) return null;
+
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(<i key={i} className="fas fa-star text-yellow-400"></i>);
+      } else if (i === fullStars && halfStar) {
+        stars.push(<i key={i} className="fas fa-star-half-alt text-yellow-400"></i>);
+      } else {
+        stars.push(<i key={i} className="far fa-star text-yellow-400"></i>);
+      }
+    }
+
+    return stars;
   };
 
   return (
@@ -28,22 +74,117 @@ const PlaceMarker = ({ place, onClose, onGetDirections }) => {
       </div>
 
       {isInfoOpen && (
-        <InfoWindow position={place.location} onCloseClick={() => setIsInfoOpen(false)}>
+        <InfoWindow
+          position={place.location}
+          onCloseClick={() => {
+            setIsInfoOpen(false);
+            onClose(place.id);
+          }}
+        >
           <div className="p-2 max-w-xs">
-            <div className="flex justify-between items-start mb-2">
+            <div className="mb-2">
               <h3 className="font-bold text-gray-800">{place.name}</h3>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose(place.id);
-                }}
-                className="text-gray-500 hover:text-red-500"
-              >
-                <i className="fas fa-times"></i>
-              </button>
             </div>
+
+            {/* Photo carousel */}
+            {place.photos && place.photos.length > 0 && (
+              <div className="relative mb-3">
+                <div className="w-full h-32 overflow-hidden rounded">
+                  <img
+                    src={place.photos[activePhotoIndex].url}
+                    alt={place.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {place.photos.length > 1 && (
+                  <div className="absolute bottom-2 right-2 flex space-x-1">
+                    {place.photos.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActivePhotoIndex(index);
+                        }}
+                        className={`w-2 h-2 rounded-full ${
+                          index === activePhotoIndex ? "bg-white" : "bg-white/50"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Address */}
             <p className="text-sm text-gray-600 mb-2">{place.address}</p>
-            <div className="flex gap-2 mt-2">
+
+            {/* Place type */}
+            {place.types && place.types.length > 0 && (
+              <div className="mb-2">
+                <span className="text-xs text-gray-500">{formatPlaceType(place.types[0])}</span>
+                {place.priceLevel !== undefined && (
+                  <span className="ml-2">{renderPriceLevel(place.priceLevel)}</span>
+                )}
+              </div>
+            )}
+
+            {/* Rating */}
+            {place.rating && (
+              <div className="flex items-center mb-2">
+                <div className="flex mr-1">{renderRating(place.rating)}</div>
+                <span className="text-xs text-gray-600">
+                  {place.rating.toFixed(1)}
+                  {place.userRatingsTotal && (
+                    <span className="ml-1">({place.userRatingsTotal})</span>
+                  )}
+                </span>
+              </div>
+            )}
+
+            {/* Opening hours */}
+            {place.openingHours && (
+              <div className="mb-2">
+                <div className="flex items-center text-xs">
+                  <i className="far fa-clock mr-1 text-gray-500"></i>
+                  <span className={place.openingHours.isOpen ? "text-green-600" : "text-red-600"}>
+                    {place.openingHours.isOpen ? "Open now" : "Closed now"}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Contact info */}
+            {place.phone && (
+              <div className="flex items-center mb-2 text-xs">
+                <i className="fas fa-phone mr-1 text-gray-500"></i>
+                <a
+                  href={`tel:${place.phone}`}
+                  className="text-blue-600 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {place.phone}
+                </a>
+              </div>
+            )}
+
+            {/* Website */}
+            {place.website && (
+              <div className="flex items-center mb-2 text-xs">
+                <i className="fas fa-globe mr-1 text-gray-500"></i>
+                <a
+                  href={place.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline truncate"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {new URL(place.website).hostname}
+                </a>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2 mt-3">
               <button
                 onClick={handleGetDirections}
                 className="text-xs w-full justify-center bg-blue-500 text-white px-2 py-1 rounded flex items-center hover:bg-blue-600 transition-colors"

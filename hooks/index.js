@@ -1,6 +1,7 @@
 export { default as useArray } from "./use-array";
 export { default as useChildren } from "./use-children";
 export { default as useCollapsible } from "./use-collapsible";
+export { default as useColorScheme } from "./use-color-scheme";
 export { default as useCombobox } from "./use-combobox";
 export { default as useDebounce } from "./use-debounce";
 export { default as useDelayedStateReset } from "./use-delayed-state-reset";

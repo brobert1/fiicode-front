@@ -1,15 +1,11 @@
-import React from 'react';
+import TableOperations from "../Admin/TableOperations";
 
-const TableRow = ({ row }) => {
+const TableRow = ({ row, onDelete }) => {
   return (
-    <tr {...row.getRowProps()}>
-      {row.cells.map((cell) => {
-        return (
-          <td key={cell} className="px-4 py-2 group" {...cell.getCellProps()}>
-            {cell.render('Cell')}
-          </td>
-        );
-      })}
+    <tr>
+      <td className="px-4 py-2">{row.name}</td>
+      <td className="px-4 py-2">{row.email}</td>
+      <TableOperations row={row} onDelete={onDelete} />
     </tr>
   );
 };

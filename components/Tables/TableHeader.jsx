@@ -3,7 +3,7 @@ import { classnames } from '@lib';
 const TableHeader = ({ headers }) => {
   return (
     <thead className="bg-gray-100">
-      <tr className="border-b text-xs text-primary">
+      <tr className="border-b text-xs text-secondary">
         {headers.map((column) => (
           <th
             key={column.Header}

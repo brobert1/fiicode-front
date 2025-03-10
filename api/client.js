@@ -44,3 +44,11 @@ export const setAlert = async (data) => {
 export const setFCMToken = async (data) => {
   return axiosAuth.put("/client/set-fcm-token", data);
 };
+
+export const addFavouritePlace = async (data) => {
+  return axiosAuth.post("/client/add-favourite-place", data);
+};
+
+export const removeFavouritePlace = async (data) => {
+  return axiosAuth.put("/client/remove-favourite-place", data);
+};

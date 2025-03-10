@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "@components";
+import { Button, Toggle } from "@components";
 import { useDisclosure, useMutation } from "@hooks";
 import ImageCombo from "./Image/ImageCombo";
 import { Badges } from "./index";
@@ -15,7 +15,7 @@ const Account = ({ me }) => {
   const editInfoDisclosure = useDisclosure();
   const changePasswordDisclosure = useDisclosure();
   const [currentDevice, setCurrentDevice] = useState(null);
-  const [isNotificationsDisabled, setIsNotificationsDisabled] = useState(false);
+  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
 
   const accType = me?.type;
 
@@ -27,7 +27,7 @@ const Account = ({ me }) => {
       // Check if any of the stored tokens match the current device type
       const hasExistingToken = me?.fcmTokens?.some((tokenObj) => tokenObj.device === deviceType);
       if (hasExistingToken) {
-        setIsNotificationsDisabled(true);
+        setIsNotificationsEnabled(true);
       }
     };
 
@@ -35,8 +35,13 @@ const Account = ({ me }) => {
   }, [me?.fcmTokens]);
 
   const enableNotifications = async () => {
-    const { token, deviceType } = await generateToken();
-    await mutation.mutate({ fcmToken: token, device: deviceType });
+    try {
+      const { token, deviceType } = await generateToken();
+      await mutation.mutate({ fcmToken: token, device: deviceType });
+      setIsNotificationsEnabled(true);
+    } catch (error) {
+      console.error("Error enabling notifications:", error);
+    }
   };
 
   return (
@@ -103,13 +108,16 @@ const Account = ({ me }) => {
                 Enable notifications to get updates.
               </p>
             </div>
-            <Button
-              onClick={enableNotifications}
-              className="button full primary"
-              disabled={mutation.isPending || isNotificationsDisabled}
-            >
-              {isNotificationsDisabled ? "Enabled" : "Enable"}
-            </Button>
+            <Toggle
+              label=""
+              checked={isNotificationsEnabled}
+              onToggle={async (newState) => {
+                if (newState && !isNotificationsEnabled) {
+                  await enableNotifications();
+                }
+              }}
+              disabled={mutation.isPending || isNotificationsEnabled}
+            />
           </div>
         </div>
       </div>

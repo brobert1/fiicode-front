@@ -46,7 +46,7 @@ const GoogleMapSuccess = ({
     handleDirectionsUpdate,
     handleGetDirections,
     openDirectionsModal,
-    directionDestinationId
+    directionDestinationId,
   } = useDirections({ removeSearchedPlace });
 
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
@@ -56,6 +56,7 @@ const GoogleMapSuccess = ({
 
   // Fetch alerts from the API
   const { data: alertsData } = useQuery("/client/alerts");
+  const { data: favouritePlacesData } = useQuery("/client/favourite-places");
   const alerts = alertsData || [];
 
   // Get color scheme based on time of day
@@ -108,13 +109,14 @@ const GoogleMapSuccess = ({
         {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
 
         {searchedPlaces
-          .filter(place => place.id !== directionDestinationId)
+          .filter((place) => place.id !== directionDestinationId)
           .map((place) => (
             <PlaceMarker
               key={place.id}
               place={place}
               onClose={removeSearchedPlace}
               onGetDirections={handleGetDirections}
+              favouritePlacesData={favouritePlacesData}
             />
           ))}
 

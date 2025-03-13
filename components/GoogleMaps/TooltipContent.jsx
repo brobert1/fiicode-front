@@ -1,6 +1,10 @@
+import { Button } from "@components";
+import { useProfile } from "@hooks";
+import { classnames } from "@lib";
 import React from "react";
 
 const TooltipContent = ({ placeInfo, loading, error, onGetDirections, onSetAlert }) => {
+  const { me } = useProfile();
   if (loading) {
     return (
       <div className="flex items-center justify-center py-2">
@@ -29,19 +33,23 @@ const TooltipContent = ({ placeInfo, loading, error, onGetDirections, onSetAlert
       <p className="text-sm text-gray-600 mb-2">{placeInfo.address}</p>
 
       <div className="flex gap-2 mt-2">
-        <button
-          onClick={onGetDirections}
-          className="text-xs w-1/2 justify-center bg-blue-500 text-white px-2 py-1 rounded flex items-center hover:bg-blue-600 transition-colors"
-        >
-          <i className="fas fa-directions mr-1"></i> Directions
-        </button>
-
-        <button
+        {me?.role === "client" && (
+          <Button
+            onClick={onGetDirections}
+            className="text-xs w-1/2 justify-center bg-blue-500 text-white px-2 py-1 rounded flex items-center hover:bg-blue-600 transition-colors"
+          >
+            <i className="fas fa-directions mr-1"></i> Directions
+          </Button>
+        )}
+        <Button
           onClick={() => onSetAlert && onSetAlert(placeInfo)}
-          className="text-xs w-1/2 justify-center bg-yellow-500 text-white px-2 py-1 rounded flex items-center hover:bg-yellow-600 transition-colors"
+          className={classnames(
+            "text-xs w-full justify-center bg-yellow-500 text-white px-2 py-1 rounded flex items-center hover:bg-yellow-600 transition-colors",
+            me?.role === "client" && "w-1/2"
+          )}
         >
           <i className="fas fa-bell mr-1"></i> Add Alert
-        </button>
+        </Button>
       </div>
     </>
   );

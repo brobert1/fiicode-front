@@ -55,7 +55,7 @@ const GoogleMapSuccess = ({
   });
 
   // Fetch alerts from the API
-  const { data: alertsData } = useQuery("/client/alerts");
+  const { data: alertsData } = useQuery("/alerts");
   const { data: favouritePlacesData } = useQuery("/client/favourite-places");
   const alerts = alertsData || [];
 

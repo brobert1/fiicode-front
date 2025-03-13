@@ -4,9 +4,9 @@ import { useMutation } from "@hooks";
 import { setAlert } from "@api/client";
 import { initialValues, validationSchema } from "@models/alert-form";
 
-const SetAlertForm = ({ location, onComplete }) => {
+const SetAlertFormClient = ({ location, onComplete }) => {
   const mutation = useMutation(setAlert, {
-    invalidateQueries: "/client/alerts",
+    invalidateQueries: "/alerts",
   });
 
   const formInitialValues = {
@@ -59,4 +59,4 @@ const SetAlertForm = ({ location, onComplete }) => {
   );
 };
 
-export default SetAlertForm;
+export default SetAlertFormClient;

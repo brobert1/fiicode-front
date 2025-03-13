@@ -29,6 +29,4 @@ messaging.onBackgroundMessage((payload) => {
     body: payload.notification.body,
     icon: "/favicon.png", // Add a default icon path
   };
-
-  return self.registration.showNotification(notificationTitle, notificationOptions);
 });

@@ -1,9 +1,13 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Button } from "@components";
-import SetAlertForm from "@components/Forms/Client/SetAlertForm";
+import SetAlertFormClient from "@components/Forms/Client/SetAlertFormClient";
+import { useProfile } from "@hooks";
+import { SetAlertFormAdmin } from "@components/Forms/Client";
 
 const AlertModal = ({ isOpen, hide, location, onComplete }) => {
+  const { me } = useProfile();
+
   // Handle form completion
   const handleFormComplete = () => {
     // Close the modal
@@ -29,7 +33,11 @@ const AlertModal = ({ isOpen, hide, location, onComplete }) => {
       </Modal.Header>
 
       <Modal.Body>
-        <SetAlertForm location={location} onComplete={handleFormComplete} />
+        {me?.role === "client" ? (
+          <SetAlertFormClient location={location} onComplete={handleFormComplete} />
+        ) : (
+          <SetAlertFormAdmin location={location} onComplete={handleFormComplete} />
+        )}
       </Modal.Body>
     </Modal>
   );

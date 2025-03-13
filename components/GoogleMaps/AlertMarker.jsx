@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { useMutation, useProfile } from "@hooks";
+import { deleteAlert } from "@api/admin";
+import { Button } from "@components";
+import { ago } from "@functions";
 
 const getAlertIconByType = (type) => {
   switch (type) {
@@ -34,10 +38,18 @@ const MIN_ZOOM_LEVEL = 12;
 
 const AlertMarker = ({ alert }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const position = { lat: alert.location.latitude, lng: alert.location.longitude };
   const iconClass = getAlertIconByType(alert.type);
   const colorClass = getAlertColorByType(alert.type);
   const map = useMap();
+
+  const mutation = useMutation(deleteAlert, {
+    invalidateQueries: ["/alerts", "/admin/alerts", "/admin/stats"],
+  });
+
+  const { me } = useProfile();
+  const isAdmin = me?.role === "admin";
 
   // Update marker visibility based on zoom level
   useEffect(() => {
@@ -62,11 +74,27 @@ const AlertMarker = ({ alert }) => {
     };
   }, [map]);
 
+  const handleMarkerClick = () => {
+    if (isAdmin) {
+      setIsInfoOpen(true);
+    }
+  };
+
+  const handleCloseInfo = () => {
+    setIsInfoOpen(false);
+  };
+
+  const handleDeleteAlert = async () => {
+    if (!isAdmin) return;
+
+    await mutation.mutate(alert._id);
+  };
+
   // Don't render anything if not visible
   if (!isVisible) return null;
 
   return (
-    <AdvancedMarker position={position} zIndex={1000} anchor="bottom">
+    <AdvancedMarker position={position} zIndex={1000} anchor="bottom" onClick={handleMarkerClick}>
       <div className="relative">
         <div
           className={`w-8 h-8 ${colorClass} rounded-full border-2 border-white shadow-lg flex items-center justify-center`}
@@ -82,6 +110,32 @@ const AlertMarker = ({ alert }) => {
           ></div>
         </div>
       </div>
+
+      {isInfoOpen && isAdmin && (
+        <InfoWindow position={position} onCloseClick={handleCloseInfo}>
+          <div className="p-3 max-w-xs">
+            <p className="text-sm capitalize text-gray-600">
+              <span className="font-medium">Type: </span>
+              {alert.type}
+            </p>
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-medium">Address: </span>
+              {alert.location.address}
+            </p>
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-medium">Reported: </span>
+              {ago(alert.createdAt)}
+            </p>
+            <Button
+              onClick={handleDeleteAlert}
+              disabled={mutation.isLoading}
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Delete Alert
+            </Button>
+          </div>
+        </InfoWindow>
+      )}
     </AdvancedMarker>
   );
 };

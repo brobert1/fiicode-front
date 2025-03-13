@@ -18,3 +18,4 @@ export { default as TooltipContent } from "./TooltipContent";
 export { default as TransitDetails } from "./TransitDetails";
 export { default as TravelModeSelector } from "./TravelModeSelector";
 export { default as UserLocationMarker } from "./UserLocationMarker";
+export { default as AdminGoogleMap } from "./AdminGoogleMap";

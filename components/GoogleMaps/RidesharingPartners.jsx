@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "@hooks";
+import { useQuery, useRidesharingDeepLinks } from "@hooks";
 
 const RidesharingPartners = ({ origin, destination }) => {
   const { data, status } = useQuery("/client/partners");
   const [partners, setPartners] = useState([]);
+  const { openPartnerDeepLink } = useRidesharingDeepLinks(origin, destination);
 
   useEffect(() => {
     if (status === "success" && data) {
@@ -14,167 +15,10 @@ const RidesharingPartners = ({ origin, destination }) => {
   }, [data, status]);
 
   const handleOpenPartnerApp = (partner) => {
-    if (!partner?.deep_link) return;
+    const success = openPartnerDeepLink(partner);
 
-    // Check if origin and destination coordinates are available
-    if (!origin?.lat || !origin?.lng || !destination?.lat || !destination?.lng) {
-      console.error("Missing coordinates for ridesharing deep link", { origin, destination });
-      alert("Cannot open ridesharing app: Missing location coordinates");
-      return;
-    }
-
-    let formattedLink = "";
-
-    // Create objects for Uber format outside the switch to avoid linter errors
-    const pickupObj = {
-      addressLine1: origin.address || "Origin Location",
-      addressLine2: origin.vicinity || "",
-      latitude: origin.lat,
-      longitude: origin.lng,
-      id: origin.place_id || "",
-      source: "SEARCH",
-      provider: "google_places",
-    };
-
-    const dropoffObj = {
-      addressLine1: destination.address || "Destination Location",
-      addressLine2: destination.vicinity || "",
-      latitude: destination.lat,
-      longitude: destination.lng,
-      id: destination.place_id || "",
-      source: "SEARCH",
-      provider: "google_places",
-    };
-
-    // Format the deep link based on the partner type
-    switch (partner.name.toLowerCase()) {
-      case "uber":
-        // Try multiple Uber deep link formats to increase chances of app opening
-
-        // Format 1: Native URI scheme (higher chance of opening the app)
-        // uber://?action=setPickup&pickup[latitude]={lat}&pickup[longitude]={lng}&pickup[nickname]={name}&dropoff[latitude]={lat}&dropoff[longitude]={lng}&dropoff[nickname]={name}
-        formattedLink = `uber://?action=setPickup&pickup[latitude]=${origin.lat.toFixed(6)}&pickup[longitude]=${origin.lng.toFixed(6)}&pickup[nickname]=${encodeURIComponent(origin.address || "Pickup")}&dropoff[latitude]=${destination.lat.toFixed(6)}&dropoff[longitude]=${destination.lng.toFixed(6)}&dropoff[nickname]=${encodeURIComponent(destination.address || "Dropoff")}`;
-
-        try {
-          // First try to open with the native URI scheme
-          const opened = window.open(formattedLink, "_blank");
-
-          // If it fails or is blocked, fall back to the web URL
-          if (!opened || opened.closed || typeof opened.closed === 'undefined') {
-            // Format 2: Web URL format (fallback)
-            const webLink = `https://m.uber.com/go/drop?drop[0]=${encodeURIComponent(
-              JSON.stringify(dropoffObj)
-            )}&pickup=${encodeURIComponent(JSON.stringify(pickupObj))}`;
-
-            setTimeout(() => {
-              window.open(webLink, "_blank");
-            }, 500);
-          }
-        } catch (error) {
-          // If the URI scheme fails, use the web URL
-          const webLink = `https://m.uber.com/go/drop?drop[0]=${encodeURIComponent(
-            JSON.stringify(dropoffObj)
-          )}&pickup=${encodeURIComponent(JSON.stringify(pickupObj))}`;
-
-          window.open(webLink, "_blank");
-        }
-        return; // Return early since we've handled opening the link
-
-      case "bolt":
-        // Bolt typically uses a simpler format with coordinates
-        // Try native URI scheme first for Bolt
-        formattedLink = `bolt://?pickup_lat=${origin.lat.toFixed(6)}&pickup_lng=${origin.lng.toFixed(6)}&destination_lat=${destination.lat.toFixed(6)}&destination_lng=${destination.lng.toFixed(6)}`;
-
-        try {
-          const opened = window.open(formattedLink, "_blank");
-
-          // If native URI fails, fall back to the web/deep link
-          if (!opened || opened.closed || typeof opened.closed === 'undefined') {
-            const webLink = partner.deep_link
-              .replace("START_LAT", origin.lat.toFixed(6))
-              .replace("START_LON", origin.lng.toFixed(6))
-              .replace("END_LAT", destination.lat.toFixed(6))
-              .replace("END_LON", destination.lng.toFixed(6));
-
-            if (webLink.includes("START_ADDRESS") || webLink.includes("END_ADDRESS")) {
-              formattedLink = webLink
-                .replace("START_ADDRESS", encodeURIComponent(origin.address || ""))
-                .replace("END_ADDRESS", encodeURIComponent(destination.address || ""));
-            } else {
-              formattedLink = webLink;
-            }
-
-            setTimeout(() => {
-              window.open(formattedLink, "_blank");
-            }, 500);
-          }
-        } catch (error) {
-          // Fall back to the web link if URI scheme fails
-          formattedLink = partner.deep_link
-            .replace("START_LAT", origin.lat.toFixed(6))
-            .replace("START_LON", origin.lng.toFixed(6))
-            .replace("END_LAT", destination.lat.toFixed(6))
-            .replace("END_LON", destination.lng.toFixed(6));
-
-          if (formattedLink.includes("START_ADDRESS") || formattedLink.includes("END_ADDRESS")) {
-            formattedLink = formattedLink
-              .replace("START_ADDRESS", encodeURIComponent(origin.address || ""))
-              .replace("END_ADDRESS", encodeURIComponent(destination.address || ""));
-          }
-
-          window.open(formattedLink, "_blank");
-        }
-        return; // Return early since we've handled opening the link
-
-      case "blackcab":
-        // BlackCab format - if they have a specific format, we can customize it here
-        formattedLink = partner.deep_link
-          .replace("START_LAT", origin.lat.toFixed(6))
-          .replace("START_LON", origin.lng.toFixed(6))
-          .replace("END_LAT", destination.lat.toFixed(6))
-          .replace("END_LON", destination.lng.toFixed(6));
-
-        // If BlackCab supports address information, include it
-        if (formattedLink.includes("START_ADDRESS") || formattedLink.includes("END_ADDRESS")) {
-          formattedLink = formattedLink
-            .replace("START_ADDRESS", encodeURIComponent(origin.address || ""))
-            .replace("END_ADDRESS", encodeURIComponent(destination.address || ""));
-        }
-        break;
-
-      default:
-        // For other partners, use the standard placeholder format
-        formattedLink = partner.deep_link
-          .replace("START_LAT", origin.lat.toFixed(6))
-          .replace("START_LON", origin.lng.toFixed(6))
-          .replace("END_LAT", destination.lat.toFixed(6))
-          .replace("END_LON", destination.lng.toFixed(6));
-
-        // If the link still contains placeholders, try alternative formats
-        if (formattedLink.includes("PICKUP_LAT") || formattedLink.includes("PICKUP_LNG")) {
-          formattedLink = formattedLink
-            .replace("PICKUP_LAT", origin.lat.toFixed(6))
-            .replace("PICKUP_LNG", origin.lng.toFixed(6))
-            .replace("PICKUP_LONGITUDE", origin.lng.toFixed(6))
-            .replace("DROPOFF_LAT", destination.lat.toFixed(6))
-            .replace("DROPOFF_LNG", destination.lng.toFixed(6))
-            .replace("DROPOFF_LONGITUDE", destination.lng.toFixed(6));
-        }
-
-        // If the partner supports address information, try to include it
-        if (formattedLink.includes("START_ADDRESS") || formattedLink.includes("END_ADDRESS")) {
-          formattedLink = formattedLink
-            .replace("START_ADDRESS", encodeURIComponent(origin.address || ""))
-            .replace("END_ADDRESS", encodeURIComponent(destination.address || ""));
-        }
-    }
-
-    // Open the deep link for partners not specifically handled above
-    try {
-      window.open(formattedLink, "_blank");
-    } catch (error) {
-      console.error("Error opening ridesharing deep link:", error);
-      alert("Error opening ridesharing app. Please try again.");
+    if (!success) {
+      alert("Cannot open ridesharing app. Please try again.");
     }
   };
 

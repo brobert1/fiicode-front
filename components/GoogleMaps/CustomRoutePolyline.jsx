@@ -1,16 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 
-/**
- * Component to render custom route polylines directly on the map
- *
- * @param {Object} props - Component props
- * @param {Object} props.route - Route object with path data
- * @param {number} props.index - Index of the route in the list
- * @param {boolean} props.isSelected - Whether this route is selected
- * @param {boolean} props.isClient - Whether this is being rendered in client context
- * @returns {React.Component} Custom route polyline component
- */
 const CustomRoutePolyline = ({ route, index, isSelected, isClient = false }) => {
   const map = useMap();
   const polylineRef = useRef(null);
@@ -86,8 +76,8 @@ const CustomRoutePolyline = ({ route, index, isSelected, isClient = false }) => 
     cleanupPolylines();
 
     // Convert route path to Google Maps LatLng objects
-    const path = route.routePath.map(point =>
-      new window.google.maps.LatLng(point.lat, point.lng)
+    const path = route.routePath.map(
+      (point) => new window.google.maps.LatLng(point.lat, point.lng)
     );
 
     // Get styling based on context and selection
@@ -96,16 +86,26 @@ const CustomRoutePolyline = ({ route, index, isSelected, isClient = false }) => 
 
     // For client view, match Google Maps styling
     const strokeWeight = isClient
-      ? (isSelected ? 5 : 4) // Google Maps uses thinner lines
-      : (isSelected ? 7 : 6); // Admin view uses thicker lines
+      ? isSelected
+        ? 5
+        : 4 // Google Maps uses thinner lines
+      : isSelected
+      ? 7
+      : 6; // Admin view uses thicker lines
 
     const strokeOpacity = isClient
-      ? (isSelected ? 1.0 : 0.5) // Google Maps uses lower opacity for alternative routes
+      ? isSelected
+        ? 1.0
+        : 0.5 // Google Maps uses lower opacity for alternative routes
       : 0.9; // Admin view uses consistent opacity
 
     const zIndex = isClient
-      ? (isSelected ? 10 : 5) // Google Maps z-index
-      : (isSelected ? 12 : 11); // Admin view z-index
+      ? isSelected
+        ? 10
+        : 5 // Google Maps z-index
+      : isSelected
+      ? 12
+      : 11; // Admin view z-index
 
     // Create outline polyline for selected routes (gives a border effect)
     if (outlineColor) {
@@ -116,7 +116,7 @@ const CustomRoutePolyline = ({ route, index, isSelected, isClient = false }) => 
         strokeOpacity: 0.7,
         zIndex: zIndex - 1, // Below the main line
         map: map,
-        clickable: false
+        clickable: false,
       });
 
       outlinePolylineRef.current = outlinePolyline;
@@ -130,7 +130,7 @@ const CustomRoutePolyline = ({ route, index, isSelected, isClient = false }) => 
       strokeOpacity: strokeOpacity,
       zIndex: zIndex,
       map: map,
-      clickable: false
+      clickable: false,
     });
 
     // Store reference to polyline for cleanup

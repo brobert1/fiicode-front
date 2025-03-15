@@ -1,31 +1,10 @@
 import React, { useEffect } from "react";
-import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { useColorScheme, useUserLocation, useMapClickTooltip, useQuery } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import MapClickTooltip from "./MapClickTooltip";
 import AlertMarker from "./AlertMarker";
-
-// Custom TrafficLayer component that's always enabled
-const AdminTrafficLayer = () => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) return;
-
-    // Create a traffic layer
-    const trafficLayer = new window.google.maps.TrafficLayer();
-
-    // Set the map on the traffic layer
-    trafficLayer.setMap(map);
-
-    return () => {
-      // Clean up by removing the traffic layer from the map
-      trafficLayer.setMap(null);
-    };
-  }, [map]);
-
-  return null;
-};
+import AdminTrafficLayer from "./AdminTrafficLayer";
 
 const AdminGoogleMap = ({ height, options }) => {
   const colorScheme = useColorScheme();

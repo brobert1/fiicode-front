@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { calculateEstimatedDuration } from "@functions";
 
 /**
  * Custom hook to manage custom route drawing functionality
@@ -112,33 +113,16 @@ const useCustomRouteDrawing = () => {
 
   // Calculate distance between points in meters
   const calculatePathDistance = (path) => {
+    if (!path || path.length < 2 || !window.google?.maps?.geometry?.spherical) return 0;
+
     let totalDistance = 0;
     for (let i = 0; i < path.length - 1; i++) {
-      const p1 = new window.google.maps.LatLng(path[i].lat, path[i].lng);
-      const p2 = new window.google.maps.LatLng(path[i + 1].lat, path[i + 1].lng);
-      totalDistance += window.google.maps.geometry.spherical.computeDistanceBetween(p1, p2);
+      totalDistance += window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(path[i].lat, path[i].lng),
+        new window.google.maps.LatLng(path[i + 1].lat, path[i + 1].lng)
+      );
     }
     return totalDistance;
-  };
-
-  // Calculate estimated duration based on travel mode and distance
-  const calculateEstimatedDuration = (distanceMeters, mode) => {
-    // Only WALKING and DRIVING are supported for custom routes
-    let speedMetersPerSecond;
-    switch (mode) {
-      case 'WALKING':
-        // Average walking speed: ~5 km/h = ~1.4 m/s
-        speedMetersPerSecond = 1.4;
-        break;
-      case 'DRIVING':
-      default:
-        // Average driving speed: ~50 km/h = ~13.9 m/s
-        speedMetersPerSecond = 13.9;
-        break;
-    }
-
-    // Calculate duration in seconds
-    return Math.round(distanceMeters / speedMetersPerSecond);
   };
 
   // Handle custom route submission
@@ -211,7 +195,6 @@ const useCustomRouteDrawing = () => {
     handleCustomRouteSubmit,
     handleContinueDrawing,
     calculatePathDistance,
-    calculateEstimatedDuration,
     clearPath
   };
 };

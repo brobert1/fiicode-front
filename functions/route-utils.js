@@ -57,44 +57,6 @@ const isSameRoute = (route1, route2) => {
 };
 
 /**
- * Format distance in meters to a human-readable string
- *
- * @param {number} meters - Distance in meters
- * @returns {string} Formatted distance
- */
-const formatDistance = (meters) => {
-  if (meters < 1000) {
-    // Round to the nearest 10 meters for values under 1km
-    const roundedMeters = Math.round(meters / 10) * 10;
-    return `${roundedMeters} m`;
-  }
-
-  // For values over 1km, round to 1 decimal place
-  // For values over 10km, round to whole numbers
-  if (meters < 10000) {
-    return `${(meters / 1000).toFixed(1)} km`;
-  } else {
-    return `${Math.round(meters / 1000)} km`;
-  }
-};
-
-/**
- * Format duration in seconds to a human-readable string
- *
- * @param {number} seconds - Duration in seconds
- * @returns {string} Formatted duration
- */
-const formatDuration = (seconds) => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  if (hours > 0) {
-    return `${hours} hr ${minutes} min`;
-  }
-  return `${minutes} min`;
-};
-
-/**
  * Get the appropriate icon for a step based on its travel mode and details
  *
  * @param {Object} step - The step object from directions
@@ -316,8 +278,6 @@ const characterizeRoute = (route, allRoutes, travelMode) => {
 
 export {
   isSameRoute,
-  formatDistance,
-  formatDuration,
   getIconForStep,
   getTransitIcon,
   getTransitDetails,

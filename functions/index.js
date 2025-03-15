@@ -23,5 +23,6 @@ export {
 export {
   formatDistance,
   formatDuration,
-  getTravelModeIcon
+  getTravelModeIcon,
+  calculateEstimatedDuration
 } from "./format-utils";

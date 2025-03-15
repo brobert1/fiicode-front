@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@components";
-import { formatDistance, formatDuration } from "@functions";
+import { formatDistance, formatDuration, calculateEstimatedDuration } from "@functions";
 
 const CustomRouteForm = ({ onSubmit, routeData, handleContinueDrawing }) => {
   // Extract data from routeData
@@ -30,26 +30,6 @@ const CustomRouteForm = ({ onSubmit, routeData, handleContinueDrawing }) => {
     return totalDistance;
   };
 
-  // Calculate estimated duration based on travel mode and distance
-  const calculateEstimatedDuration = (distanceMeters, mode) => {
-    // Only WALKING and DRIVING are supported for custom routes
-    let speedMetersPerSecond;
-    switch (mode) {
-      case 'WALKING':
-        // Average walking speed: ~5 km/h = ~1.4 m/s
-        speedMetersPerSecond = 1.4;
-        break;
-      case 'DRIVING':
-      default:
-        // Average driving speed: ~50 km/h = ~13.9 m/s
-        speedMetersPerSecond = 13.9;
-        break;
-    }
-
-    // Calculate duration in seconds
-    return Math.round(distanceMeters / speedMetersPerSecond);
-  };
-
   // Helper function to get travel mode icon
   const getTravelModeIcon = (mode) => {
     switch (mode) {
@@ -77,7 +57,7 @@ const CustomRouteForm = ({ onSubmit, routeData, handleContinueDrawing }) => {
         travelMode,
         routePath,
         distance: distanceMeters,
-        duration: durationSeconds
+        duration: durationSeconds,
       };
       onSubmit(formData);
     }
@@ -91,22 +71,19 @@ const CustomRouteForm = ({ onSubmit, routeData, handleContinueDrawing }) => {
     <div className="space-y-4">
       <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-sm text-gray-500">Distance</p>
-            <p className="font-semibold">
-              {formatDistance(distanceMeters)}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-500">Est. Time</p>
-            <p className="font-semibold">
-              {formatDuration(durationSeconds)}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-500">Points</p>
-            <p className="font-semibold">{routePath?.length || 0}</p>
+          <div className="flex flex-row w-full justify-between gap-2">
+            <div className="w-1/3">
+              <p className="text-sm text-gray-500">Distance</p>
+              <p className="font-semibold">{formatDistance(distanceMeters)}</p>
+            </div>
+            <div className="w-1/3">
+              <p className="text-sm text-gray-500">Est. Time</p>
+              <p className="font-semibold">{formatDuration(durationSeconds)}</p>
+            </div>
+            <div className="w-1/3">
+              <p className="text-sm text-gray-500">Points</p>
+              <p className="font-semibold">{routePath?.length || 0}</p>
+            </div>
           </div>
 
           {/* Origin coordinates */}

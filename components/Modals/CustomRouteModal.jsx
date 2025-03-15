@@ -1,32 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Button } from "@components";
-import { CustomRouteForm } from "@components/Forms";
+import { calculateEstimatedDuration } from "@functions";
+import { CustomRouteForm } from "@components/Forms/Admin";
 
 const CustomRouteModal = ({ isOpen, hide, routePath, routeType, endpoints, onSave }) => {
   const [routeData, setRouteData] = useState(null);
 
-  // Calculate estimated duration based on travel mode and distance
-  const calculateEstimatedDuration = (distanceMeters, mode) => {
-    // Only WALKING and DRIVING are supported for custom routes
-    let speedMetersPerSecond;
-    switch (mode) {
-      case 'WALKING':
-        // Average walking speed: ~5 km/h = ~1.4 m/s
-        speedMetersPerSecond = 1.4;
-        break;
-      case 'DRIVING':
-      default:
-        // Average driving speed: ~50 km/h = ~13.9 m/s
-        speedMetersPerSecond = 13.9;
-        break;
-    }
-
-    // Calculate duration in seconds
-    return Math.round(distanceMeters / speedMetersPerSecond);
-  };
-
-  // Calculate distance between points in meters
+  // Calculate path distance in meters
   const calculatePathDistance = (path) => {
     if (!path || path.length < 2 || !window.google?.maps?.geometry?.spherical) return 0;
 

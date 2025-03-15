@@ -9,6 +9,7 @@ import {
   DirectionsButton,
   MapClickTooltip,
   AlertMarker,
+  CustomRoutePolyline,
 } from ".";
 import { TrafficLayer, TransitLayer } from "@hooks/use-layers";
 import MapHandler from "./Handlers/MapHandler";
@@ -16,7 +17,14 @@ import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
 import { DirectionsModal } from "@components/Modals";
 import RouteInfo from "./RouteInfo";
-import { useDirections, useMapClickTooltip, useMapLoad, useQuery, useColorScheme } from "@hooks";
+import {
+  useDirections,
+  useMapClickTooltip,
+  useMapLoad,
+  useQuery,
+  useColorScheme,
+  useCustomRoutes
+} from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import { DirectionsContext } from "../../contexts/DirectionsContext";
 
@@ -49,6 +57,29 @@ const GoogleMapSuccess = ({
     directionDestinationId,
   } = useDirections({ removeSearchedPlace });
 
+  // Use custom routes hook to handle custom routes
+  const {
+    displayedCustomRoutes,
+    selectedCustomRouteIndex,
+    handleDirectionsWithCustomRoutes,
+    setDisplayedCustomRoutes,
+    setSelectedCustomRouteIndex
+  } = useCustomRoutes({
+    directions,
+    routeInfo,
+    onDirectionsUpdate: handleDirectionsUpdate
+  });
+
+  // Custom handler to clear both directions and custom routes
+  const handleClearDirectionsAndCustomRoutes = () => {
+    // Clear directions
+    handleClearDirections();
+
+    // Clear custom routes
+    setDisplayedCustomRoutes([]);
+    setSelectedCustomRouteIndex(-1);
+  };
+
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
     directionsActive: directions !== null || directionsVisible,
     searchVisible,
@@ -80,6 +111,40 @@ const GoogleMapSuccess = ({
       setSearchVisible(false);
     }
   }, [directions, setSearchVisible]);
+
+  // Custom handler for directions found that adds relevant custom routes
+  const handleDirectionsWithCustomRoutesWrapper = (directionsResult, info) => {
+    handleDirectionsWithCustomRoutes(directionsResult, info, handleDirectionsFound);
+  };
+
+  // Render custom routes only when their travel mode matches the current travel mode
+  const renderCustomRoutes = () => {
+    if (!displayedCustomRoutes || displayedCustomRoutes.length === 0) {
+      return null;
+    }
+
+    // Get the current travel mode from routeInfo or default to DRIVING
+    const currentTravelMode = routeInfo?.travelMode || 'DRIVING';
+
+    // Filter custom routes by travel mode
+    const filteredRoutes = displayedCustomRoutes.filter(
+      route => route.travelMode === currentTravelMode
+    );
+
+    if (filteredRoutes.length === 0) {
+      return null;
+    }
+
+    return filteredRoutes.map((route, index) => (
+      <CustomRoutePolyline
+        key={`custom-route-${index}`}
+        route={route}
+        index={index}
+        isSelected={index === selectedCustomRouteIndex}
+        isClient={true}
+      />
+    ));
+  };
 
   return (
     <>
@@ -137,6 +202,9 @@ const GoogleMapSuccess = ({
           />
         )}
 
+        {/* Render custom routes directly on the map */}
+        {renderCustomRoutes()}
+
         <UserLocationHandler location={location} initialLoad={initialLoad} />
       </Map>
 
@@ -151,7 +219,7 @@ const GoogleMapSuccess = ({
         isOpen={directionsVisible}
         hide={() => setDirectionsVisible(false)}
         userLocation={location}
-        onDirectionsFound={handleDirectionsFound}
+        onDirectionsFound={handleDirectionsWithCustomRoutesWrapper}
         initialDestination={destinationPlace}
       />
 
@@ -162,7 +230,7 @@ const GoogleMapSuccess = ({
             ...routeInfo,
             onDirectionsUpdate: handleDirectionsUpdate,
           }}
-          onClearDirections={handleClearDirections}
+          onClearDirections={handleClearDirectionsAndCustomRoutes}
         />
       )}
 

@@ -15,3 +15,7 @@ export const setAlert = (data) => {
 export const deleteAlert = (id) => {
   return axiosAuth.delete(`/admin/alerts/${id}`);
 };
+
+export const addCustomRoute = (data) => {
+  return axiosAuth.post("/admin/custom-routes", data);
+};

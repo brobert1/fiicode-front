@@ -64,9 +64,18 @@ const isSameRoute = (route1, route2) => {
  */
 const formatDistance = (meters) => {
   if (meters < 1000) {
-    return `${meters} m`;
+    // Round to the nearest 10 meters for values under 1km
+    const roundedMeters = Math.round(meters / 10) * 10;
+    return `${roundedMeters} m`;
   }
-  return `${(meters / 1000).toFixed(1)} km`;
+
+  // For values over 1km, round to 1 decimal place
+  // For values over 10km, round to whole numbers
+  if (meters < 10000) {
+    return `${(meters / 1000).toFixed(1)} km`;
+  } else {
+    return `${Math.round(meters / 1000)} km`;
+  }
 };
 
 /**

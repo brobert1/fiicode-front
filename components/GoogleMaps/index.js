@@ -19,3 +19,4 @@ export { default as TransitDetails } from "./TransitDetails";
 export { default as TravelModeSelector } from "./TravelModeSelector";
 export { default as UserLocationMarker } from "./UserLocationMarker";
 export { default as AdminGoogleMap } from "./AdminGoogleMap";
+export { default as CustomRoutePolyline } from "./CustomRoutePolyline";

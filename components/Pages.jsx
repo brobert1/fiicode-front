@@ -9,6 +9,9 @@ const Pages = () => {
       <MenuItem href="/admin/clients" level="1">
         <i className="fas fa-users mr-2" /> Clients
       </MenuItem>
+      <MenuItem href="/admin/routes" level="1">
+        <i className="fas fa-map mr-2" /> Routes
+      </MenuItem>
       <MenuItem href="/admin/partners" level="1">
         <i className="fas fa-handshake mr-2" /> Partners
       </MenuItem>

@@ -14,9 +14,15 @@ export { default as whoami } from "./whoami";
 export { default as getDeviceType } from "./get-device-type";
 export {
   isSameRoute,
-  formatDistance,
-  formatDuration,
   getIconForStep,
   getTransitIcon,
   getTransitDetails
 } from "./route-utils";
+
+// Export format utilities
+export {
+  formatDistance,
+  formatDuration,
+  getTravelModeIcon,
+  calculateEstimatedDuration
+} from "./format-utils";

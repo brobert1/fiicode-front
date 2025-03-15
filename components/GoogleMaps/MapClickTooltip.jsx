@@ -7,7 +7,13 @@ import { AlertModal } from "@components/Modals";
 const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const { placeInfo, loading, error } = usePlaceInfo(position);
+
+  // Ensure position is a valid LatLng object
+  const validPosition = position && typeof position.lat === 'number' && typeof position.lng === 'number'
+    ? position
+    : null;
+
+  const { placeInfo, loading, error } = usePlaceInfo(validPosition);
 
   // Use the useDisclosure hook to manage the alert modal state
   const alertModal = useDisclosure(false);
@@ -30,19 +36,21 @@ const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
 
   const handleSetAlert = useCallback(
     (place) => {
+      if (!validPosition) return;
+
       // Ensure we have the complete location data including coordinates
       const locationData = {
         ...place,
-        latitude: position.lat,
-        longitude: position.lng,
-        lat: position.lat,
-        lng: position.lng,
+        latitude: validPosition.lat,
+        longitude: validPosition.lng,
+        lat: validPosition.lat,
+        lng: validPosition.lng,
       };
 
       setSelectedPlace(locationData);
       alertModal.show();
     },
-    [position, alertModal]
+    [validPosition, alertModal]
   );
 
   const handleCloseInfo = useCallback(() => {
@@ -66,12 +74,17 @@ const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
     }
   }, [alertModal, onClose]);
 
+  // If position is not valid, don't render anything
+  if (!validPosition) {
+    return null;
+  }
+
   return (
     <>
-      <AdvancedMarker position={position}>
+      <AdvancedMarker position={validPosition}>
         <MarkerIcon />
         {isInfoOpen && (
-          <InfoWindow position={position} onCloseClick={handleCloseInfo}>
+          <InfoWindow position={validPosition} onCloseClick={handleCloseInfo}>
             <div className="p-2 max-w-xs">
               <TooltipContent
                 placeInfo={placeInfo}

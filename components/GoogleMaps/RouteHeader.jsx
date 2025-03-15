@@ -1,5 +1,6 @@
 import React from "react";
-import { formatDistance, formatDuration, characterizeRoute } from "@functions/route-utils";
+import { formatDistance, formatDuration } from "@functions";
+import { characterizeRoute } from "@functions/route-utils";
 import TravelModeSelector from "./TravelModeSelector";
 import RouteCharacteristic from "./RouteCharacteristic";
 

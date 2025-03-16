@@ -40,6 +40,7 @@ export { default as ProfileSuccess } from "./ProfileSuccess";
 export { default as PWAInstallPrompt } from "./PWAInstallPrompt";
 export { default as ScreenSizeInfo } from "./ScreenSizeInfo";
 export { default as ShowMore } from "./ShowMore";
+export { default as SlideUpMenu } from "./SlideUpMenu";
 export { default as Spinner } from "./Spinner";
 export { default as Time } from "./Time";
 export { default as Toaster } from "./Toaster";

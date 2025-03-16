@@ -40,6 +40,7 @@ const GoogleMapSuccess = ({
   selectedPlace,
   initialLoad,
   handlePlaceSelect,
+  onStoreHandleGetDirections,
 }) => {
   // Use custom hooks to manage component state and logic
   const {
@@ -56,6 +57,13 @@ const GoogleMapSuccess = ({
     openDirectionsModal,
     directionDestinationId,
   } = useDirections({ removeSearchedPlace });
+
+  // Store the handleGetDirections function in the parent component
+  useEffect(() => {
+    if (onStoreHandleGetDirections && handleGetDirections) {
+      onStoreHandleGetDirections(handleGetDirections);
+    }
+  }, [onStoreHandleGetDirections, handleGetDirections]);
 
   // Use custom routes hook to handle custom routes
   const {

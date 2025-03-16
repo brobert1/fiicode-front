@@ -3,11 +3,13 @@ import BaseClientLayout from "./BaseClientLayout";
 import { useContext } from "react";
 import { DirectionsContext } from "../contexts/DirectionsContext";
 
-const MapClientLayout = ({ children }) => {
+const MapClientLayout = ({ children, onGetDirections }) => {
   const { directions } = useContext(DirectionsContext) || { directions: null };
 
   return (
-    <BaseClientLayout floatingMenu={!directions && <FloatingMenu />}>{children}</BaseClientLayout>
+    <BaseClientLayout floatingMenu={!directions && <FloatingMenu onGetDirections={onGetDirections} />}>
+      {children}
+    </BaseClientLayout>
   );
 };
 

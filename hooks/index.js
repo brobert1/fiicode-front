@@ -9,6 +9,7 @@ export { default as useDirections } from "./use-directions";
 export { default as useDirectionsModal } from "./use-directions-modal";
 export { default as useDisclosure } from "./use-disclosure";
 export { default as useDropdown } from "./use-dropdown";
+export { default as useFavoriteDirections } from "./use-favorite-directions";
 export { default as useInfiniteQuery } from "./use-infinite-query";
 export { default as useIntersectionObserver } from "./use-intersection-observer";
 export { default as useLayers } from "./use-layers";

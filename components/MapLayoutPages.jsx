@@ -26,39 +26,39 @@ const MapLayoutPages = () => {
     <>
       <MenuItem
         href="/client"
-        className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+        className="flex items-center justify-center py-2"
       >
-        <i className="fa fa-house"></i>
+        <i className="fa fa-house text-xl"></i>
       </MenuItem>
       {isMapPage && (
         <Button
-          className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+          className="flex items-center justify-center py-2"
           onClick={(e) => {
             e.preventDefault();
             setSearchVisible(!searchVisible);
           }}
         >
-          <i className="fa fa-magnifying-glass"></i>
+          <i className="fa fa-magnifying-glass text-xl"></i>
         </Button>
       )}
       <MenuItem
         href="/client/notifications"
-        className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+        className="flex items-center justify-center py-2"
       >
-        <i className="fa fa-bell"></i>
+        <i className="fa fa-bell text-xl"></i>
       </MenuItem>
       <div className="relative inline-block">
         <Button
-          className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+          className="flex items-center justify-center py-2"
           onClick={toggle}
           ref={menuRef}
         >
           <i
-            className={`fa fa-gear transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`}
+            className={`fa fa-gear text-xl transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`}
           ></i>
         </Button>
         {isOpen && (
-          <div className="absolute left-1/2 bottom-full mb-2 w-48 bg-white  rounded-md shadow-lg py-1 z-20 transform -translate-x-1/2 transition-opacity duration-200 ease-in-out opacity-100">
+          <div className="absolute left-1/2 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 transform -translate-x-1/2 transition-opacity duration-200 ease-in-out opacity-100">
             <button
               className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
               onClick={handleLogout}
@@ -71,9 +71,9 @@ const MapLayoutPages = () => {
       </div>
       <MenuItem
         href="/client/account"
-        className="group text-lg flex h-10 items-center justify-center rounded-full px-3 transition-colors md:px-4"
+        className="flex items-center justify-center py-2"
       >
-        <i className="fa fa-user"></i>
+        <i className="fa fa-user text-xl"></i>
       </MenuItem>
     </>
   );

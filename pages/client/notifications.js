@@ -1,7 +1,7 @@
 import { checkAuth, withAuth } from "@auth";
 import { FloatingMenu } from "@components";
 import BaseClientLayout from "@components/BaseClientLayout";
-import Notifications from "@components/ClientSettings/Notifications/Notifications";
+import Notifications from "@components/Client/Notifications/Notifications";
 
 const Page = () => {
   return (

@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 import { Button } from "@components";
-import { useMutation } from "@hooks";
+import { useMutation, useFavoriteDirections } from "@hooks";
 import { addFavouritePlace, removeFavouritePlace } from "@api/client";
 
 const PlaceMarker = ({ place, onClose, onGetDirections, favouritePlacesData }) => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  // Use our custom hook for directions
+  const { handleFavoriteDirections } = useFavoriteDirections({
+    onGetDirections,
+    onMenuClose: () => setIsInfoOpen(false)
+  });
 
   const matchingFavPlace = favouritePlacesData?.find(
     (favPlace) =>
@@ -25,12 +31,9 @@ const PlaceMarker = ({ place, onClose, onGetDirections, favouritePlacesData }) =
 
   const handleGetDirections = (e) => {
     e.stopPropagation();
-    setIsInfoOpen(false); // Close the info window
 
-    // Call the onGetDirections prop with the place as destination
-    if (onGetDirections) {
-      onGetDirections(place);
-    }
+    // Our hook now handles different place formats
+    handleFavoriteDirections(place);
   };
 
   const handleFavouritePlaceToggle = (e) => {

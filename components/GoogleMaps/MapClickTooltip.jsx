@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
-import { usePlaceInfo, useDisclosure } from "@hooks";
+import { usePlaceInfo, useDisclosure, useFavoriteDirections } from "@hooks";
 import { TooltipContent, MarkerIcon } from ".";
 import { AlertModal } from "@components/Modals";
 
@@ -18,20 +18,33 @@ const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
   // Use the useDisclosure hook to manage the alert modal state
   const alertModal = useDisclosure(false);
 
-  const handleGetDirections = useCallback(
-    (e) => {
-      e.stopPropagation();
-
-      if (onGetDirections && placeInfo) {
-        onGetDirections(placeInfo);
-      }
-
+  // Use our custom hook for directions
+  const { handleFavoriteDirections } = useFavoriteDirections({
+    onGetDirections,
+    onMenuClose: () => {
       setIsInfoOpen(false);
       if (onClose) {
         onClose();
       }
+    }
+  });
+
+  const handleGetDirections = useCallback(
+    (e) => {
+      e.stopPropagation();
+
+      if (placeInfo) {
+        // Our hook now handles different place formats
+        handleFavoriteDirections({
+          id: placeInfo.id,
+          name: placeInfo.name,
+          address: placeInfo.address,
+          lat: validPosition.lat,
+          lng: validPosition.lng
+        });
+      }
     },
-    [onGetDirections, placeInfo, onClose]
+    [placeInfo, validPosition, handleFavoriteDirections]
   );
 
   const handleSetAlert = useCallback(

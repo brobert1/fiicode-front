@@ -1,7 +1,7 @@
 import { checkAuth, withAuth } from "@auth";
 import { Error, FloatingMenu, Loading } from "@components";
 import BaseClientLayout from "@components/BaseClientLayout";
-import { Account } from "@components/ClientSettings";
+import { Account } from "@components/Client";
 import { useQuery } from "@hooks";
 
 const Page = () => {

@@ -4,7 +4,7 @@ import { useColorScheme, useUserLocation, useMapClickTooltip, useQuery } from "@
 import MapClickHandler from "./Handlers/MapClickHandler";
 import MapClickTooltip from "./MapClickTooltip";
 import AlertMarker from "./AlertMarker";
-import AdminTrafficLayer from "./AdminTrafficLayer";
+import { TrafficLayer } from "@hooks/use-layers";
 
 const AdminGoogleMap = ({ height, options }) => {
   const colorScheme = useColorScheme();
@@ -47,7 +47,7 @@ const AdminGoogleMap = ({ height, options }) => {
           disableDefaultUI={true}
           clickableIcons={false}
         >
-          <AdminTrafficLayer />
+          <TrafficLayer visible={true} />
           <MapClickHandler onMapClick={handleMapClick} />
 
           {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}

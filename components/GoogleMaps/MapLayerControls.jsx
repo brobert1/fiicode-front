@@ -90,6 +90,33 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                   )}
                 ></i>
               </Button>
+              <Button
+                className={classnames(
+                  "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                  layers.satellite
+                    ? "bg-secondary text-white hover:bg-secondary"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                )}
+                onClick={() => toggleLayer("satellite")}
+                title={layers.satellite ? "Hide satellite layer" : "Show satellite layer"}
+              >
+                <span className="flex items-center">
+                  <i
+                    className={classnames(
+                      "fas fa-satellite mr-2",
+                      layers.satellite ? "text-white" : "text-secondary"
+                    )}
+                  ></i>
+                  Satellite
+                </span>
+                <i
+                  className={classnames(
+                    "fas",
+                    layers.satellite ? "fa-toggle-on" : "fa-toggle-off",
+                    "ml-2"
+                  )}
+                ></i>
+              </Button>
             </div>
           </div>
         </div>

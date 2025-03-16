@@ -9,9 +9,8 @@ import {
   DirectionsButton,
   MapClickTooltip,
   AlertMarker,
-  CustomRoutePolyline,
 } from ".";
-import { TrafficLayer, TransitLayer } from "@hooks/use-layers";
+import { TrafficLayer, TransitLayer, SatelliteLayer } from "@hooks/use-layers";
 import MapHandler from "./Handlers/MapHandler";
 import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
@@ -23,10 +22,11 @@ import {
   useMapLoad,
   useQuery,
   useColorScheme,
-  useCustomRoutes
+  useCustomRoutes,
 } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import { DirectionsContext } from "../../contexts/DirectionsContext";
+import { renderCustomRoutes } from "@functions";
 
 const GoogleMapSuccess = ({
   location,
@@ -63,11 +63,11 @@ const GoogleMapSuccess = ({
     selectedCustomRouteIndex,
     handleDirectionsWithCustomRoutes,
     setDisplayedCustomRoutes,
-    setSelectedCustomRouteIndex
+    setSelectedCustomRouteIndex,
   } = useCustomRoutes({
     directions,
     routeInfo,
-    onDirectionsUpdate: handleDirectionsUpdate
+    onDirectionsUpdate: handleDirectionsUpdate,
   });
 
   // Custom handler to clear both directions and custom routes
@@ -117,35 +117,6 @@ const GoogleMapSuccess = ({
     handleDirectionsWithCustomRoutes(directionsResult, info, handleDirectionsFound);
   };
 
-  // Render custom routes only when their travel mode matches the current travel mode
-  const renderCustomRoutes = () => {
-    if (!displayedCustomRoutes || displayedCustomRoutes.length === 0) {
-      return null;
-    }
-
-    // Get the current travel mode from routeInfo or default to DRIVING
-    const currentTravelMode = routeInfo?.travelMode || 'DRIVING';
-
-    // Filter custom routes by travel mode
-    const filteredRoutes = displayedCustomRoutes.filter(
-      route => route.travelMode === currentTravelMode
-    );
-
-    if (filteredRoutes.length === 0) {
-      return null;
-    }
-
-    return filteredRoutes.map((route, index) => (
-      <CustomRoutePolyline
-        key={`custom-route-${index}`}
-        route={route}
-        index={index}
-        isSelected={index === selectedCustomRouteIndex}
-        isClient={true}
-      />
-    ));
-  };
-
   return (
     <>
       <Map
@@ -169,6 +140,7 @@ const GoogleMapSuccess = ({
 
         <TrafficLayer visible={layers.traffic} />
         <TransitLayer visible={layers.transit} />
+        <SatelliteLayer visible={layers.satellite} />
 
         {/* Display alert markers */}
         {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
@@ -202,8 +174,13 @@ const GoogleMapSuccess = ({
           />
         )}
 
-        {/* Render custom routes directly on the map */}
-        {renderCustomRoutes()}
+        {/* Render custom routes directly on the map using the imported function */}
+        {renderCustomRoutes({
+          displayedCustomRoutes,
+          selectedCustomRouteIndex,
+          routeInfo,
+          isClient: true,
+        })}
 
         <UserLocationHandler location={location} initialLoad={initialLoad} />
       </Map>

@@ -26,3 +26,6 @@ export {
   getTravelModeIcon,
   calculateEstimatedDuration
 } from "./format-utils";
+
+// Export custom routes utilities
+export { default as renderCustomRoutes } from "./render-custom-routes";

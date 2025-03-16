@@ -22,7 +22,7 @@ export { default as usePlaceInfo } from "./use-place-info";
 export { default as useProfile } from "./use-profile";
 export { default as useQuery } from "./use-query";
 export { default as useRerender } from "./use-rerender";
-export { default as useRidesharingDeepLinks } from "./useRidesharingDeepLinks";
+export { default as useRidesharingDeepLinks } from "./use-ridesharing-deep-links";
 export { default as useRouteManager } from "./use-route-manager";
 export { default as useScroll } from "./use-scroll";
 export { default as useSelect } from "./use-select";

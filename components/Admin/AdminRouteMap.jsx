@@ -15,9 +15,9 @@ import CustomDirectionsButton from "../GoogleMaps/Buttons/CustomDirectionsButton
 import { DirectionsModal, CustomRouteModal } from "../Modals";
 import AdminRouteInfo from "./AdminRouteInfo";
 import DrawingModeIndicator from "./DrawingModeIndicator";
-import AdminTrafficLayer from "../GoogleMaps/AdminTrafficLayer";
-import CustomRoutePolyline from "../GoogleMaps/CustomRoutePolyline";
+import { TrafficLayer } from "@hooks/use-layers";
 import { addCustomRoute } from "@api/admin";
+import { renderCustomRoutes } from "@functions";
 
 const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
   const colorScheme = useColorScheme();
@@ -174,35 +174,6 @@ const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
     handleDirectionsWithCustomRoutes(directionsResult, info, handleDirectionsFound);
   };
 
-  // Render custom routes only when not in drawing mode and their travel mode matches the current travel mode
-  const renderCustomRoutes = () => {
-    if (isDrawingEnabled || !displayedCustomRoutes || displayedCustomRoutes.length === 0) {
-      return null;
-    }
-
-    // Get the current travel mode from routeInfo or default to DRIVING
-    const currentTravelMode = routeInfo?.travelMode || "DRIVING";
-
-    // Filter custom routes by travel mode
-    const filteredRoutes = displayedCustomRoutes.filter(
-      (route) => route.travelMode === currentTravelMode
-    );
-
-    if (filteredRoutes.length === 0) {
-      return null;
-    }
-
-    return filteredRoutes.map((route, index) => (
-      <CustomRoutePolyline
-        key={`custom-route-${index}`}
-        route={route}
-        index={index}
-        isSelected={index === selectedCustomRouteIndex}
-        isClient={false}
-      />
-    ));
-  };
-
   return (
     <div className="w-full rounded-lg overflow-hidden shadow-md relative" style={{ height }}>
       <APIProvider
@@ -221,7 +192,7 @@ const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
               disableDefaultUI={true}
               clickableIcons={false}
             >
-              <AdminTrafficLayer />
+              <TrafficLayer visible={true} />
               <RouteDrawingHandler
                 onRouteCreated={handleRouteCreated}
                 onClearRoute={handleClearRoute}
@@ -234,8 +205,14 @@ const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
                 <UnclickableDirectionsHandler directions={directions} routeInfo={routeInfo} />
               )}
 
-              {/* Render custom routes directly on the map */}
-              {renderCustomRoutes()}
+              {/* Render custom routes directly on the map using the imported function */}
+              {renderCustomRoutes({
+                displayedCustomRoutes,
+                selectedCustomRouteIndex,
+                routeInfo,
+                isDrawingEnabled,
+                isClient: false
+              })}
             </Map>
 
             {/* Directions Button - only show when not in drawing mode and no directions */}

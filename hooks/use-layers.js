@@ -52,6 +52,27 @@ export const useTransitLayer = (visible) => {
 };
 
 /**
+ * Custom hook to add a satellite layer to a Google Map
+ * @param {boolean} visible - Whether the layer should be visible
+ */
+export const useSatelliteLayer = (visible) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (visible) {
+      // Use HYBRID instead of SATELLITE to show labels on the satellite imagery
+      map.setMapTypeId(window.google.maps.MapTypeId.HYBRID);
+    } else {
+      map.setMapTypeId(window.google.maps.MapTypeId.ROADMAP);
+    }
+
+    // No cleanup needed as we're just changing the map type
+  }, [map, visible]);
+};
+
+/**
  * Component wrapper for the traffic layer hook.
  */
 export const TrafficLayer = ({ visible }) => {
@@ -68,20 +89,30 @@ export const TransitLayer = ({ visible }) => {
 };
 
 /**
+ * Component wrapper for the satellite layer hook.
+ */
+export const SatelliteLayer = ({ visible }) => {
+  useSatelliteLayer(visible);
+  return null;
+};
+
+/**
  * Custom hook for managing layer toggling.
  * It returns the current layer settings along with a toggle function.
  *
- * @param {Object} initialLayers - Initial state for layers. Defaults to { traffic: true, transit: false }.
+ * @param {Object} initialLayers - Initial state for layers. Defaults to { traffic: true, transit: false, satellite: false }.
  * @returns {[Object, Function]} - An array with the layer state and the toggleLayer function.
  */
-export const useLayerToggle = (initialLayers = { traffic: true, transit: false }) => {
+export const useLayerToggle = (initialLayers = { traffic: true, transit: false, satellite: false }) => {
   const [layers, setLayers] = useState(initialLayers);
 
   const toggleLayer = useCallback((layerName) => {
     if (layerName === "traffic") {
-      setLayers({ traffic: true, transit: false });
+      setLayers({ traffic: true, transit: false, satellite: false });
     } else if (layerName === "transit") {
-      setLayers({ traffic: false, transit: true });
+      setLayers({ traffic: false, transit: true, satellite: false });
+    } else if (layerName === "satellite") {
+      setLayers({ traffic: false, transit: false, satellite: true });
     }
   }, []);
 

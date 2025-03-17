@@ -11,9 +11,7 @@ const Page = () => {
 
   return (
     <Layout title="Dashboard">
-      {/* Main container */}
       <div className="space-y-6">
-        {/* Top stats row */}
         <DashboardStats />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="col-span-2 bg-white rounded-lg shadow p-4">

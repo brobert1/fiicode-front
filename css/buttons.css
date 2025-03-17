@@ -12,7 +12,7 @@ button:focus {
 }
 
 button:active,
-a[role='button']:active {
+a[role="button"]:active {
   outline: 0 !important;
   position: relative;
   top: 1px;
@@ -24,7 +24,6 @@ button:disabled {
 }
 button:disabled > * {
   pointer-events: none;
-  visibility: hidden;
 }
 button:disabled ~ * {
   cursor: not-allowed;

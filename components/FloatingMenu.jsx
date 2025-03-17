@@ -11,7 +11,7 @@ const FloatingMenu = ({ onGetDirections }) => {
     <>
       {isMapPage && <SlideUpMenu onGetDirections={onGetDirections} />}
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="flex h-16 items-center justify-around bg-white border-t shadow-md w-full">
+        <div className="flex h-20 items-center justify-around bg-white border-t shadow-md w-full">
           <MapLayoutPages />
         </div>
       </div>

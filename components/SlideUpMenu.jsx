@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { DirectionsContext } from "../contexts/DirectionsContext";
 import FavouritePlaces from "./Client/FavouritePlaces";
 import { classnames } from "@lib";
+import { Friends } from "./Client";
 
 const SlideUpMenu = ({ onGetDirections }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +33,7 @@ const SlideUpMenu = ({ onGetDirections }) => {
 
   return (
     <div
-      className="fixed bottom-16 left-0 right-0 z-40"
+      className="fixed bottom-20 left-0 right-0 z-40"
       ref={menuRef}
       style={{
         pointerEvents: isOpen ? "auto" : "none",
@@ -57,6 +58,7 @@ const SlideUpMenu = ({ onGetDirections }) => {
         </div>
 
         <FavouritePlaces onGetDirections={onGetDirections} onMenuClose={() => setIsOpen(false)} />
+        <Friends />
       </div>
     </div>
   );

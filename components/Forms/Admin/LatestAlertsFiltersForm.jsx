@@ -9,7 +9,7 @@ const LatestAlertsFiltersForm = () => {
   const values = watch();
 
   return (
-    <div className="hidden lg:flex flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1.5">
         <Fieldset name="type">
           <Field id="type" name="type" as={Dropdown} value={values?.type}>

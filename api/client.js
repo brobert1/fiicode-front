@@ -64,3 +64,7 @@ export const approveFriendRequest = async (id) => {
 export const rejectFriendRequest = async (id) => {
   return axiosAuth.delete(`/client/reject-friend-request/${id}`);
 };
+
+export const updateLocation = async (data) => {
+  return axiosAuth.put("/client/update-location", data);
+};

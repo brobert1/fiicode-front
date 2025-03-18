@@ -2,6 +2,7 @@ import { ErrorBoundary, ScreenSizeInfo, Toaster } from "@components";
 import { sitename } from "@site.config";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { MapNavigationProvider } from "../contexts/MapNavigationContext";
 import "../css/index.css";
 
 const Root = (props) => {
@@ -19,7 +20,9 @@ const Root = (props) => {
       </Head>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <Component {...pageProps} />
+          <MapNavigationProvider>
+            <Component {...pageProps} />
+          </MapNavigationProvider>
         </QueryClientProvider>
         <Toaster />
         <ScreenSizeInfo />

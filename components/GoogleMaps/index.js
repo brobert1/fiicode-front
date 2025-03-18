@@ -20,3 +20,4 @@ export { default as TravelModeSelector } from "./TravelModeSelector";
 export { default as UserLocationMarker } from "./UserLocationMarker";
 export { default as AdminGoogleMap } from "./AdminGoogleMap";
 export { default as CustomRoutePolyline } from "./CustomRoutePolyline";
+export { default as FriendMarker } from "./FriendMarker";

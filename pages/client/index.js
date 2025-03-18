@@ -1,12 +1,15 @@
 import { checkAuth, withAuth } from "@auth";
 import { MapClientLayout, PWAInstallPrompt } from "@components";
 import { GoogleMap } from "@components/GoogleMaps";
-import { useUserLocation } from "@hooks";
+import { useMutation, useUserLocation } from "@hooks";
 import withMapSearch from "@components/withMapSearch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { updateLocation } from "@api/client";
 
 const Page = () => {
+  const mutation = useMutation(updateLocation);
   const { location, loading, error, refreshLocation } = useUserLocation();
+
   const [handleGetDirections, setHandleGetDirections] = useState(null);
 
   const storeHandleGetDirections = (getDirectionsFunc) => {
@@ -14,6 +17,12 @@ const Page = () => {
       setHandleGetDirections(() => getDirectionsFunc);
     }
   };
+
+  useEffect(() => {
+    if (location && !loading && !error) {
+      mutation.mutate(location);
+    }
+  }, [location, loading, error]);
 
   return (
     <MapClientLayout onGetDirections={handleGetDirections}>

@@ -30,7 +30,7 @@ const Search = ({ value, onChange, extraClass, placeholder }) => {
   return (
     <div className={classnames('relative flex items-center', extraClass)}>
       <input
-        className="input pl-8"
+        className="w-full py-3 pl-10 pr-8 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         defaultValue={value}
         onChange={handleChange}
         onKeyUp={handleKeyUp}
@@ -38,12 +38,12 @@ const Search = ({ value, onChange, extraClass, placeholder }) => {
         ref={ref}
         type="text"
       />
-      <div className="absolute left-2 px-1">
-        <i className="fas fa-search text-gray-500"></i>
+      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+        <i className="fas fa-search text-gray-400"></i>
       </div>
       {ref?.current?.value && (
         <button
-          className="absolute right-0 top-0 z-30 h-full px-3 py-2 text-gray-500 outline-none"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
           onClick={resetInputValue}
           tabIndex="-1"
           type="button"

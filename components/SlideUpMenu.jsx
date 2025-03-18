@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { DirectionsContext } from "../contexts/DirectionsContext";
 import FavouritePlaces from "./Client/FavouritePlaces";
 import { classnames } from "@lib";
+import { Friends } from "./Client";
+import SlideUpMenuContext from "../contexts/SlideUpMenuContext";
 
 const SlideUpMenu = ({ onGetDirections }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +17,10 @@ const SlideUpMenu = ({ onGetDirections }) => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
   };
 
   useEffect(() => {
@@ -31,34 +37,37 @@ const SlideUpMenu = ({ onGetDirections }) => {
   }, []);
 
   return (
-    <div
-      className="fixed bottom-16 left-0 right-0 z-40"
-      ref={menuRef}
-      style={{
-        pointerEvents: isOpen ? "auto" : "none",
-      }}
-    >
+    <SlideUpMenuContext.Provider value={{ isOpen, setIsOpen, closeMenu }}>
       <div
-        className={classnames(
-          "bg-white rounded-t-2xl shadow-lg transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-y-0" : "translate-y-calc"
-        )}
+        className="fixed bottom-20 left-0 right-0 z-40"
+        ref={menuRef}
         style={{
-          maxHeight: "80vh",
-          overflowY: "auto",
-          transform: isOpen ? "translateY(0)" : "translateY(calc(100% - 60px))",
-          pointerEvents: "auto",
-          WebkitOverflowScrolling: "touch",
+          pointerEvents: isOpen ? "auto" : "none",
         }}
       >
-        {/* Handle to pull up the menu */}
-        <div className="flex justify-center cursor-pointer py-3" onClick={toggleMenu}>
-          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-        </div>
+        <div
+          className={classnames(
+            "bg-white rounded-t-2xl shadow-lg transition-transform duration-300 ease-in-out",
+            isOpen ? "translate-y-0" : "translate-y-calc"
+          )}
+          style={{
+            maxHeight: "80vh",
+            overflowY: "auto",
+            transform: isOpen ? "translateY(0)" : "translateY(calc(100% - 60px))",
+            pointerEvents: "auto",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          {/* Handle to pull up the menu */}
+          <div className="flex justify-center cursor-pointer py-3" onClick={toggleMenu}>
+            <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+          </div>
 
-        <FavouritePlaces onGetDirections={onGetDirections} onMenuClose={() => setIsOpen(false)} />
+          <FavouritePlaces onGetDirections={onGetDirections} onMenuClose={closeMenu} />
+          <Friends />
+        </div>
       </div>
-    </div>
+    </SlideUpMenuContext.Provider>
   );
 };
 

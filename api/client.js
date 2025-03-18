@@ -52,3 +52,19 @@ export const addFavouritePlace = async (data) => {
 export const removeFavouritePlace = async (data) => {
   return axiosAuth.put("/client/remove-favourite-place", data);
 };
+
+export const sendFriendRequest = async (data) => {
+  return axiosAuth.post("/client/send-friend-request", data);
+};
+
+export const approveFriendRequest = async (id) => {
+  return axiosAuth.put(`/client/approve-friend-request/${id}`);
+};
+
+export const rejectFriendRequest = async (id) => {
+  return axiosAuth.delete(`/client/reject-friend-request/${id}`);
+};
+
+export const updateLocation = async (data) => {
+  return axiosAuth.put("/client/update-location", data);
+};

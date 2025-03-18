@@ -1,7 +1,12 @@
+import { Link } from "@components";
 import { ago } from "@functions";
 import { motion } from "framer-motion";
 
-const getAlertIconByType = (type) => {
+const getAlertIconByType = (type, notificationType) => {
+  if (notificationType === 'friendRequestNotification') {
+    return 'fa-user-friends';
+  }
+
   switch (type) {
     case "accident":
       return "fa-car-crash";
@@ -15,7 +20,11 @@ const getAlertIconByType = (type) => {
   }
 };
 
-const getAlertColorByType = (type) => {
+const getAlertColorByType = (type, notificationType) => {
+  if (notificationType === 'friendRequestNotification') {
+    return 'bg-purple-500';
+  }
+
   switch (type) {
     case "accident":
       return "bg-red-500";
@@ -30,8 +39,9 @@ const getAlertColorByType = (type) => {
 };
 
 const NotificationItem = ({ notification, onDelete, onSwipe, isActive }) => {
-  const iconClass = getAlertIconByType(notification.type);
-  const colorClass = getAlertColorByType(notification.type);
+  const iconClass = getAlertIconByType(notification.type, notification.__t);
+  const colorClass = getAlertColorByType(notification.type, notification.__t);
+  const isFriendRequest = notification.__t === 'friendRequestNotification';
 
   const handleDragEnd = (_, info) => {
     if (info.offset.x < -40) {
@@ -43,11 +53,21 @@ const NotificationItem = ({ notification, onDelete, onSwipe, isActive }) => {
 
   return (
     <div className="relative overflow-hidden rounded-lg mb-3">
-      <div
-        className="absolute inset-y-0 right-0 flex items-center justify-center bg-red-500 text-white font-medium h-full px-6 cursor-pointer"
-        onClick={() => onDelete(notification._id)}
-      >
-        Delete
+      <div className="absolute inset-y-0 right-0 flex items-center justify-center h-full">
+        {isFriendRequest && (
+          <Link
+            href="/client/friend-requests"
+            className="bg-purple-500 text-white font-medium px-6 cursor-pointer h-full flex items-center w-20 justify-center"
+          >
+            See
+          </Link>
+        )}
+        <div
+          className="bg-red-500 text-white font-medium px-6 cursor-pointer h-full flex items-center w-20 justify-center"
+          onClick={() => onDelete(notification._id)}
+        >
+          Delete
+        </div>
       </div>
       <motion.div
         className="bg-white shadow-md rounded-lg p-4 relative z-10"
@@ -56,12 +76,12 @@ const NotificationItem = ({ notification, onDelete, onSwipe, isActive }) => {
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
-        animate={{ x: isActive ? -80 : 0 }}
+        animate={{ x: isActive ? (isFriendRequest ? -160 : -80) : 0 }}
         transition={{
           type: "spring",
           stiffness: 500,
           damping: 50,
-          restDelta: 0.01, // More precise stopping point
+          restDelta: 0.01,
         }}
       >
         <div className="flex items-start">

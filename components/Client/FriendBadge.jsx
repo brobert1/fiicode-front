@@ -1,6 +1,7 @@
 import React from "react";
 import { useMapNavigation } from "../../contexts/MapNavigationContext";
 import { useSlideUpMenu } from "../../contexts/SlideUpMenuContext";
+import { useWebSocket } from "../../contexts/WebSocketContext";
 
 const formatLastSeen = (date) => {
   if (!date) return null;
@@ -16,6 +17,9 @@ const formatLastSeen = (date) => {
 const FriendBadge = ({ friend }) => {
   const { navigateToLocation } = useMapNavigation();
   const { closeMenu } = useSlideUpMenu();
+  const { onlineUsers } = useWebSocket();
+
+  const isOnline = onlineUsers.has(friend._id);
 
   const handleClick = () => {
     if (friend.lastLocation && friend.lastLocation.lat && friend.lastLocation.lng) {
@@ -63,13 +67,24 @@ const FriendBadge = ({ friend }) => {
               <i className="fas fa-map-marker-alt text-white text-[10px]"></i>
             </div>
           )}
+
+          {/* Online status indicator */}
+          {isOnline && (
+            <div className="absolute -left-1 -top-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+          )}
         </div>
 
         <div className="text-sm mt-1 font-medium text-center">{friend.name}</div>
 
-        {friend.lastLoginAt && (
+        {!isOnline && friend.lastLoginAt && (
           <div className="mt-1 min-w-[32px] h-5 rounded-[20px] bg-[#2c2c2c] text-white text-xs flex items-center justify-center px-2 whitespace-nowrap">
             {formatLastSeen(friend.lastLoginAt)}
+          </div>
+        )}
+
+        {isOnline && (
+          <div className="mt-1 min-w-[32px] h-5 rounded-[20px] bg-blue-500 text-white text-xs flex items-center justify-center px-2 whitespace-nowrap">
+            Online
           </div>
         )}
       </div>

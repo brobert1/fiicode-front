@@ -1,6 +1,7 @@
 import { store } from "@auth";
 import { axios, router, toaster } from "@lib";
 import { decode } from "jsonwebtoken";
+import { updateLocation } from "./client";
 
 const loginGoogle = async (data) => {
   const { token } = await axios.post("/login-google", data);
@@ -12,6 +13,26 @@ const loginGoogle = async (data) => {
   const { role, hasPreferences } = decoded;
   if (!role) {
     throw new Error("Error! We cannot log you in at the moment");
+  }
+
+  // Update user location if client role and browser supports geolocation
+  if (role === "client" && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const locationData = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          await updateLocation(locationData);
+        } catch (locationErr) {
+          console.error("Failed to update location:", locationErr);
+          // Don't show error to user, non-critical operation
+        }
+      },
+      (geoError) => console.error("Geolocation error:", geoError),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   }
 
   // Notify user and other actions

@@ -56,11 +56,6 @@ const useDirections = ({ removeSearchedPlace }) => {
     }
   }, []);
 
-  const openDirectionsModal = useCallback(() => {
-    setDestinationPlace(null); // Clear any previous destination
-    setDirectionsVisible(true);
-  }, []);
-
   // Clear destination place when directions modal is closed without getting directions
   useEffect(() => {
     if (!directionsVisible && !directions) {
@@ -79,7 +74,6 @@ const useDirections = ({ removeSearchedPlace }) => {
     handleRouteChange,
     handleDirectionsUpdate,
     handleGetDirections,
-    openDirectionsModal,
     directionDestinationId
   };
 };

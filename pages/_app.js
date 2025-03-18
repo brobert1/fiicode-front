@@ -3,6 +3,7 @@ import { sitename } from "@site.config";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MapNavigationProvider } from "../contexts/MapNavigationContext";
+import { WebSocketProvider } from "../contexts/WebSocketContext";
 import "../css/index.css";
 
 const Root = (props) => {
@@ -20,9 +21,11 @@ const Root = (props) => {
       </Head>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <MapNavigationProvider>
-            <Component {...pageProps} />
-          </MapNavigationProvider>
+          <WebSocketProvider>
+            <MapNavigationProvider>
+              <Component {...pageProps} />
+            </MapNavigationProvider>
+          </WebSocketProvider>
         </QueryClientProvider>
         <Toaster />
         <ScreenSizeInfo />

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { Map, useMap } from "@vis.gl/react-google-maps";
+import React, { useContext, useEffect } from "react";
+import { Map } from "@vis.gl/react-google-maps";
 import {
   LocationButton,
   MapLayerControls,
@@ -15,6 +15,7 @@ import { TrafficLayer, TransitLayer, SatelliteLayer } from "@hooks/use-layers";
 import MapHandler from "./Handlers/MapHandler";
 import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
+import MapNavigationHandler from "./Handlers/MapNavigationHandler";
 import { DirectionsModal } from "@components/Modals";
 import RouteInfo from "./RouteInfo";
 import {
@@ -24,58 +25,12 @@ import {
   useQuery,
   useColorScheme,
   useCustomRoutes,
+  useMutation,
 } from "@hooks";
 import MapClickHandler from "./Handlers/MapClickHandler";
 import { DirectionsContext } from "../../contexts/DirectionsContext";
-import { useMapNavigation } from "../../contexts/MapNavigationContext";
 import { renderCustomRoutes } from "@functions";
-
-// Create a separate component to handle map navigation
-const MapNavigationHandler = () => {
-  const map = useMap();
-  const { targetLocation, setTargetLocation } = useMapNavigation();
-  const prevTargetRef = useRef(null);
-
-  useEffect(() => {
-    if (!map || !targetLocation) {
-      return;
-    }
-
-    // Always navigate to the friend's location when requested
-    map.panTo(targetLocation.position);
-    if (targetLocation.zoom) {
-      map.setZoom(targetLocation.zoom);
-    }
-
-    // Try to find and click the marker
-    setTimeout(() => {
-      const markers = document.querySelectorAll('[aria-label="Map marker"]');
-      markers.forEach(marker => {
-        // Click marker if it's at the target location
-        const markerRect = marker.getBoundingClientRect();
-        const centerX = markerRect.left + markerRect.width / 2;
-        const centerY = markerRect.top + markerRect.height / 2;
-
-        // Get marker screen position to verify it's our target marker
-        if (centerX > 0 && centerY > 0) {
-          marker.click();
-        }
-      });
-    }, 300);
-
-    // Store the current target for reference
-    prevTargetRef.current = targetLocation;
-
-    // Reset the target after navigation is complete
-    const timeoutId = setTimeout(() => {
-      setTargetLocation(null);
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, [map, targetLocation, setTargetLocation]);
-
-  return null;
-};
+import { updateLocation } from "@api/client";
 
 const GoogleMapSuccess = ({
   location,
@@ -90,6 +45,7 @@ const GoogleMapSuccess = ({
   initialLoad,
   handlePlaceSelect,
   onStoreHandleGetDirections,
+  isTracking
 }) => {
   // Use custom hooks to manage component state and logic
   const {
@@ -103,7 +59,6 @@ const GoogleMapSuccess = ({
     handleRouteChange,
     handleDirectionsUpdate,
     handleGetDirections,
-    openDirectionsModal,
     directionDestinationId,
   } = useDirections({ removeSearchedPlace });
 
@@ -113,6 +68,22 @@ const GoogleMapSuccess = ({
       onStoreHandleGetDirections(handleGetDirections);
     }
   }, [onStoreHandleGetDirections, handleGetDirections]);
+
+  // Create the mutation for manual location updates
+  const mutation = useMutation(updateLocation);
+
+  // Custom function to refresh location and update on server
+  const refreshLocationAndUpdate = () => {
+    // Only call refreshLocation if not tracking
+    if (!isTracking) {
+      refreshLocation();
+    }
+
+    // Always update location on server if we have one
+    if (location) {
+      mutation.mutate(location);
+    }
+  };
 
   // Use custom routes hook to handle custom routes
   const {
@@ -195,7 +166,7 @@ const GoogleMapSuccess = ({
           position={location}
           accuracy={location.accuracy || 20}
           heading={location.heading || null}
-          onClick={() => refreshLocation()}
+          pulseEffect={isTracking}
         />
 
         <TrafficLayer visible={layers.traffic} />
@@ -203,13 +174,10 @@ const GoogleMapSuccess = ({
         <SatelliteLayer visible={layers.satellite} />
 
         {/* Display friend markers */}
-        {friends && friends.map((friend) => (
-          <FriendMarker
-            key={friend._id}
-            friend={friend}
-            onGetDirections={handleGetDirections}
-          />
-        ))}
+        {friends &&
+          friends.map((friend) => (
+            <FriendMarker key={friend._id} friend={friend} onGetDirections={handleGetDirections} />
+          ))}
 
         {/* Display alert markers */}
         {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
@@ -283,10 +251,14 @@ const GoogleMapSuccess = ({
       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 flex flex-col gap-2">
         <MapLayerControls layers={layers} toggleLayer={toggleLayer} />
         <DirectionsButton
-          onClick={openDirectionsModal}
-          isActive={directionsVisible || directions !== null}
+          onClick={() => setDirectionsVisible(true)}
+          disabled={directionsVisible}
         />
-        <LocationButton refreshLocation={refreshLocation} userLocation={location} />
+        <LocationButton
+          refreshLocation={refreshLocationAndUpdate}
+          userLocation={location}
+          isTracking={isTracking}
+        />
       </div>
     </>
   );

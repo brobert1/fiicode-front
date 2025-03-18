@@ -3,14 +3,17 @@ import { useMap } from "@vis.gl/react-google-maps";
 import { Button } from "@components";
 import { classnames } from "@lib";
 
-const LocationButton = ({ refreshLocation, userLocation }) => {
+const LocationButton = ({ refreshLocation, userLocation, isTracking = false }) => {
   const map = useMap();
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleClick = () => {
     setIsAnimating(true);
 
-    refreshLocation();
+    // Only call refreshLocation if not actively tracking
+    if (!isTracking) {
+      refreshLocation();
+    }
 
     if (map && userLocation) {
       map.setZoom(14);
@@ -41,8 +44,8 @@ const LocationButton = ({ refreshLocation, userLocation }) => {
         "flex h-12 w-12 items-center justify-center rounded-lg bg-white text-primary shadow-md hover:bg-gray-50 transition-all duration-200 border border-gray-200",
         isAnimating && "location-pulse"
       )}
-      aria-label="Get current location"
-      title="Get current location"
+      aria-label="Center map on your location"
+      title="Center map on your location"
     >
       <i
         className={classnames("fas fa-location-crosshairs text-lg", isAnimating && "zoom-in-out")}

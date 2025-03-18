@@ -8,7 +8,6 @@ const UserLocationMarker = ({
   heading = null,
   showAccuracyCircle = true,
   pulseEffect = true,
-  onClick,
 }) => {
   const [pulsing, setPulsing] = useState(pulseEffect);
   const [isHovered, setIsHovered] = useState(false);
@@ -42,20 +41,10 @@ const UserLocationMarker = ({
 
   const accuracyRadius = Math.min(Math.max(accuracy / 2, 10), 50);
 
-  const handleMarkerClick = () => {
-    if (onClick) {
-      onClick();
-      setPulsing(true);
-      setTimeout(() => {
-        setPulsing(false);
-      }, 2000);
-    }
-  };
-
   return (
-    <AdvancedMarker position={position} onClick={handleMarkerClick}>
+    <AdvancedMarker position={position}>
       <div
-        className="relative cursor-pointer"
+        className="relative cursor-default"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

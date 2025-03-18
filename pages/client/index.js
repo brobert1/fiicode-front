@@ -1,14 +1,22 @@
 import { checkAuth, withAuth } from "@auth";
 import { MapClientLayout, PWAInstallPrompt } from "@components";
 import { GoogleMap } from "@components/GoogleMaps";
-import { useMutation, useUserLocation } from "@hooks";
+import { useUserLocation } from "@hooks";
 import withMapSearch from "@components/withMapSearch";
 import { useState, useEffect } from "react";
-import { updateLocation } from "@api/client";
 
 const Page = () => {
-  const mutation = useMutation(updateLocation);
-  const { location, loading, error, refreshLocation } = useUserLocation();
+  const {
+    location,
+    loading,
+    error,
+    refreshLocation,
+    isTracking,
+    startTracking
+  } = useUserLocation({
+    watchPosition: true, // Always enable real-time tracking
+    watchInterval: 2000  // Update every 2 seconds to balance performance and accuracy
+  });
 
   const [handleGetDirections, setHandleGetDirections] = useState(null);
 
@@ -18,11 +26,22 @@ const Page = () => {
     }
   };
 
+  // Only manage resuming tracking when page becomes visible again
   useEffect(() => {
-    if (location && !loading && !error) {
-      mutation.mutate(location);
-    }
-  }, [location, loading, error]);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !isTracking) {
+        // Resume tracking when page becomes visible if it's not already tracking
+        startTracking();
+      }
+    };
+
+    // Add event listener for page visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isTracking, startTracking]);
 
   return (
     <MapClientLayout onGetDirections={handleGetDirections}>
@@ -33,6 +52,7 @@ const Page = () => {
           error={error}
           refreshLocation={refreshLocation}
           onStoreHandleGetDirections={storeHandleGetDirections}
+          isTracking={isTracking}
         />
         <PWAInstallPrompt />
       </div>

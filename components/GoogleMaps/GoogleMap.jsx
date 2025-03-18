@@ -7,7 +7,14 @@ import GoogleMapError from "./GoogleMapError";
 import GoogleMapSuccess from "./GoogleMapSuccess";
 import { useLayerToggle } from "@hooks/use-layers";
 
-const GoogleMap = ({ location, loading, error, refreshLocation, onStoreHandleGetDirections }) => {
+const GoogleMap = ({
+  location,
+  loading,
+  error,
+  refreshLocation,
+  onStoreHandleGetDirections,
+  isTracking
+}) => {
   const {
     searchVisible,
     setSearchVisible,
@@ -48,6 +55,7 @@ const GoogleMap = ({ location, loading, error, refreshLocation, onStoreHandleGet
             initialLoad={initialLoad}
             handlePlaceSelect={handlePlaceSelect}
             onStoreHandleGetDirections={onStoreHandleGetDirections}
+            isTracking={isTracking}
           />
         )}
       </APIProvider>

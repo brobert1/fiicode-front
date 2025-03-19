@@ -15,7 +15,7 @@
   "dir": "auto",
   "lang": "ro-RO",
   "name": "Pathly",
-  "start_url": "/client",
+  "start_url": "/login",
   "scope": "/",
   "short_name": "Pathly"
 }

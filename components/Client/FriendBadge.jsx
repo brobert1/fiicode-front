@@ -19,6 +19,7 @@ const FriendBadge = ({ friend }) => {
   const { closeMenu } = useSlideUpMenu();
   const { onlineUsers } = useWebSocket();
 
+  // Check if friend is in the set of online users
   const isOnline = onlineUsers.has(friend._id);
 
   const handleClick = () => {
@@ -27,7 +28,7 @@ const FriendBadge = ({ friend }) => {
       navigateToLocation({
         position: friend.lastLocation,
         friendId: friend._id,
-        zoom: 17 // Zoomed in enough to see the friend clearly
+        zoom: 17, // Zoomed in enough to see the friend clearly
       });
 
       // Close the slide-up menu
@@ -35,16 +36,20 @@ const FriendBadge = ({ friend }) => {
     }
   };
 
-  const hasLocation = friend.lastLocation &&
-                      friend.lastLocation.lat &&
-                      friend.lastLocation.lng;
+  const hasLocation = friend.lastLocation && friend.lastLocation.lat && friend.lastLocation.lng;
 
   return (
     <div key={friend._id} className="flex-shrink-0">
       <div
-        className={`flex flex-col items-center ${hasLocation ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+        className={`flex flex-col items-center ${
+          hasLocation ? "cursor-pointer hover:opacity-80 transition-opacity" : ""
+        }`}
         onClick={hasLocation ? handleClick : undefined}
-        title={hasLocation ? `View ${friend.name}'s location` : `${friend.name} hasn't shared their location`}
+        title={
+          hasLocation
+            ? `View ${friend.name}'s location`
+            : `${friend.name} hasn't shared their location`
+        }
       >
         <div className="relative">
           {friend.image?.path ? (
@@ -61,32 +66,17 @@ const FriendBadge = ({ friend }) => {
             />
           )}
 
-          {/* Location indicator */}
-          {hasLocation && (
-            <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-              <i className="fas fa-map-marker-alt text-white text-[10px]"></i>
+          {isOnline && (
+            <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center"></div>
+          )}
+
+          {!isOnline && friend.lastLoginAt && (
+            <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-gray-500 rounded-full border-2 border-white flex items-center justify-center text-[7px] text-white font-medium">
+              {formatLastSeen(friend.lastLoginAt)}
             </div>
           )}
-
-          {/* Online status indicator */}
-          {isOnline && (
-            <div className="absolute -left-1 -top-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-          )}
         </div>
-
         <div className="text-sm mt-1 font-medium text-center">{friend.name}</div>
-
-        {!isOnline && friend.lastLoginAt && (
-          <div className="mt-1 min-w-[32px] h-5 rounded-[20px] bg-[#2c2c2c] text-white text-xs flex items-center justify-center px-2 whitespace-nowrap">
-            {formatLastSeen(friend.lastLoginAt)}
-          </div>
-        )}
-
-        {isOnline && (
-          <div className="mt-1 min-w-[32px] h-5 rounded-[20px] bg-blue-500 text-white text-xs flex items-center justify-center px-2 whitespace-nowrap">
-            Online
-          </div>
-        )}
       </div>
     </div>
   );

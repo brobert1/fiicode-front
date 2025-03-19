@@ -213,14 +213,11 @@ const Page = () => {
                 <h3 className="font-semibold text-gray-700 mb-3">Product</h3>
                 <ul className="space-y-2">
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      Features
-                    </a>
+                  <Link href="/features">Features</Link>
+
                   </li>
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      How It Works
-                    </a>
+                  <Link href="/howitworks">How it works</Link>
                   </li>
                   <li>
                     <a href="#" className="hover:text-gray-900 transition">
@@ -228,9 +225,7 @@ const Page = () => {
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      FAQ
-                    </a>
+                  <Link href="/faq">FAQ</Link>
                   </li>
                 </ul>
               </div>
@@ -238,9 +233,7 @@ const Page = () => {
                 <h3 className="font-semibold text-gray-700 mb-3">Company</h3>
                 <ul className="space-y-2">
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      About
-                    </a>
+                  <Link href="/about">About </Link>
                   </li>
                   <li>
                     <a href="#" className="hover:text-gray-900 transition">
@@ -268,14 +261,10 @@ const Page = () => {
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      Privacy Policy
-                    </a>
+                  <Link href="/policy">Privacy Policy</Link>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-gray-900 transition">
-                      Cookie Policy
-                    </a>
+                  <Link href="/#">Cookies Policy</Link>
                   </li>
                   <li>
                     <a href="#" className="hover:text-gray-900 transition">

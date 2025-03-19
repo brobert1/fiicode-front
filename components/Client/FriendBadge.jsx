@@ -70,9 +70,9 @@ const FriendBadge = ({ friend }) => {
             <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center"></div>
           )}
 
-          {!isOnline && friend.lastLoginAt && (
+          {!isOnline && friend.lastActiveAt && (
             <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-gray-500 rounded-full border-2 border-white flex items-center justify-center text-[7px] text-white font-medium">
-              {formatLastSeen(friend.lastLoginAt)}
+              {formatLastSeen(friend.lastActiveAt)}
             </div>
           )}
         </div>

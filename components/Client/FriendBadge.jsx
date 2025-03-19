@@ -6,7 +6,6 @@ import { useWebSocket } from "../../contexts/WebSocketContext";
 const formatLastSeen = (date) => {
   if (!date) return null;
   const minutes = Math.floor((new Date() - new Date(date)) / 60000);
-  if (minutes < 1) return "now";
   if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h`;
@@ -65,15 +64,14 @@ const FriendBadge = ({ friend }) => {
               className="w-12 h-12 rounded-full"
             />
           )}
-
-          {isOnline && (
+          {isOnline ? (
             <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center"></div>
-          )}
-
-          {!isOnline && friend.lastActiveAt && (
-            <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-gray-500 rounded-full border-2 border-white flex items-center justify-center text-[7px] text-white font-medium">
-              {formatLastSeen(friend.lastActiveAt)}
-            </div>
+          ) : (
+            friend.lastActiveAt && (
+              <div className="absolute -right-1 -bottom-1 w-5 h-5 bg-gray-500 rounded-full border-2 border-white flex items-center justify-center text-[7px] text-white font-medium">
+                {formatLastSeen(friend.lastActiveAt)}
+              </div>
+            )
           )}
         </div>
         <div className="text-sm mt-1 font-medium text-center">{friend.name}</div>

@@ -118,3 +118,21 @@ export const useLayerToggle = (initialLayers = { traffic: true, transit: false, 
 
   return [layers, toggleLayer];
 };
+
+/**
+ * Main hook that provides access to all layer-related functionality
+ * @returns {Object} - Object containing all layer hooks and components
+ */
+const useLayers = () => {
+  return {
+    useTrafficLayer,
+    useTransitLayer,
+    useSatelliteLayer,
+    useLayerToggle,
+    TrafficLayer,
+    TransitLayer,
+    SatelliteLayer,
+  };
+};
+
+export default useLayers;

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { DirectionsContext } from "../contexts/DirectionsContext";
 import FavouritePlaces from "./Client/FavouritePlaces";
 import { classnames } from "@lib";
-import { Friends } from "./Client";
+import Friends from "./Client/Friends";
 import SlideUpMenuContext from "../contexts/SlideUpMenuContext";
 
 const SlideUpMenu = ({ onGetDirections }) => {

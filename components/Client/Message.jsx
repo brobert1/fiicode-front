@@ -41,8 +41,8 @@ const Message = ({ message, isMe }) => {
       <div className="mr-2 self-end">
         <img
           src={
-            message.sender?.image ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(message.sender?.name || "User")}`
+            message.sender?.image?.path ||
+            `https://ui-avatars.com/api/?name=${message.sender?.name}`
           }
           alt={message.sender?.name || "User"}
           width={30}

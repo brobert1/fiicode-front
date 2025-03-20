@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 import { Button } from "@components";
 import { useMutation, useFavoriteDirections } from "@hooks";
 import { addFavouritePlace, removeFavouritePlace } from "@api/client";
 
-const PlaceMarker = ({ place, onClose, onGetDirections, favouritePlacesData }) => {
+const PlaceMarker = ({
+  place,
+  onGetDirections,
+  favouritePlacesData,
+  autoOpenInfoWindow = false,
+}) => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  // Use effect to automatically open the info window when autoOpenInfoWindow is true
+  useEffect(() => {
+    if (autoOpenInfoWindow) {
+      setIsInfoOpen(true);
+    }
+  }, [autoOpenInfoWindow]);
 
   // Use our custom hook for directions
   const { handleFavoriteDirections } = useFavoriteDirections({
     onGetDirections,
-    onMenuClose: () => setIsInfoOpen(false)
+    onMenuClose: () => setIsInfoOpen(false),
   });
 
   const matchingFavPlace = favouritePlacesData?.find(
@@ -109,13 +121,7 @@ const PlaceMarker = ({ place, onClose, onGetDirections, favouritePlacesData }) =
       </div>
 
       {isInfoOpen && (
-        <InfoWindow
-          position={place.location}
-          onCloseClick={() => {
-            setIsInfoOpen(false);
-            onClose(place.id);
-          }}
-        >
+        <InfoWindow position={place.location} headerDisabled={true}>
           <div className="p-2 max-w-xs">
             <div className="mb-2">
               <h3 className="font-bold text-gray-800">{place.name}</h3>

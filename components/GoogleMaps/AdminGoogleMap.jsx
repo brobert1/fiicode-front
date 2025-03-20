@@ -23,7 +23,6 @@ const AdminGoogleMap = ({ height, options }) => {
   // Handle map click tooltip
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
     directionsActive: false,
-    searchVisible: false,
   });
 
   useEffect(() => {

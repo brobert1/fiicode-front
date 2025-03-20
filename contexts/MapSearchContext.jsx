@@ -7,6 +7,9 @@ export const MapSearchProvider = ({ children }) => {
   const [searchedPlaces, setSearchedPlaces] = useState([]);
 
   const addSearchedPlace = (place) => {
+    // If place is null, do nothing (don't add it to the array)
+    if (!place) return;
+
     setSearchedPlaces((prevPlaces) => {
       // Check if place already exists to avoid duplicates
       const exists = prevPlaces.some((p) => p.id === place.id);

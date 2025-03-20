@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useQuery, useMutation } from "@hooks";
-import { whoami } from "@functions";
+import { useQuery, useMutation, useProfile } from "@hooks";
 import Message from "./Message";
 import { sendMessage, markConversationAsRead } from "@api/client";
 import { useWebSocket } from "contexts/WebSocketContext";
 import { useRouter } from "next/router";
+import { Input } from "@components/Fields";
+import { Button } from "@components";
 
 const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
   const router = useRouter();
-  const me = whoami();
+  const { me } = useProfile();
   const { onlineUsers, sendWebSocketMessage } = useWebSocket();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -21,7 +22,6 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
   const otherParticipant = conversation.participants.find((p) => p._id !== me?.me);
   const isOnline = onlineUsers.has(otherParticipant._id);
 
-  // Fetch messages for the conversation
   const {
     data: messages,
     status,
@@ -29,17 +29,13 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
   } = useQuery(`/client/conversations/${conversation._id}/messages`);
 
   // Mark messages as read mutation
-  const { mutate: markAsRead } = useMutation(
-    () => markConversationAsRead(conversation._id),
-    {
-      onSuccess: () => {
-        // Call the callback to refresh unread counts
-        onMessagesRead();
-      }
-    }
-  );
+  const { mutate: markAsRead } = useMutation(() => markConversationAsRead(conversation._id), {
+    onSuccess: () => {
+      // Call the callback to refresh unread counts
+      onMessagesRead();
+    },
+  });
 
-  // Send message mutation with the imported function
   const { mutate: sendMessageMutation } = useMutation(sendMessage);
 
   // Set up websocket message listeners for real-time updates
@@ -113,13 +109,9 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
     // Check if messages exists and has data property that is an array
     if (!messages || !messages.data || !Array.isArray(messages.data)) return localMessages;
 
-    // Messages from the server may be in reverse order (newest first)
-    // We need to sort them by creation date to show oldest first
-    return [...messages.data, ...localMessages.filter((m) => m.isTemp)]
-      .sort((a, b) => {
-        // Sort by creation timestamp (oldest first)
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      });
+    return [...messages.data, ...localMessages.filter((m) => m.isTemp)].sort((a, b) => {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
   }, [messages, localMessages]);
 
   // Auto-scroll to the bottom when messages change
@@ -197,7 +189,6 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
     if (!isTyping) {
       setIsTyping(true);
 
-      // Send typing notification
       sendWebSocketMessage({
         type: "typing",
         conversationId: conversation._id,
@@ -225,24 +216,25 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
 
   const handleBackToList = () => {
     // Update URL by removing the conversationId query parameter
-    router.push({
-      pathname: router.pathname,
-      query: {}
-    }, undefined, { shallow: true });
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {},
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return (
     <div className="flex flex-col h-full pb-20">
-      {/* Chat header */}
       <div className="px-4 py-3 border-b border-gray-200 flex items-center">
         <button
           onClick={handleBackToList}
           className="mr-2 p-1 rounded-full hover:bg-gray-100 md:hidden"
           aria-label="Back to conversations"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <i className="fa-solid fa-chevron-left"></i>
         </button>
         <div className="relative">
           <img
@@ -265,7 +257,6 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
         </div>
       </div>
 
-      {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {status === "loading" && (
           <div className="text-center py-4 text-gray-500">Loading messages...</div>
@@ -294,42 +285,25 @@ const ChatDetails = ({ conversation, onMessagesRead = () => {} }) => {
         {typingUsers.size > 0 && (
           <div className="text-sm text-gray-500 italic">{otherParticipant.name} is typing...</div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Message input - positioned above the floating menu */}
       <div className="border-t border-gray-200 bg-white z-10">
         <form onSubmit={handleSendMessage} className="p-4">
           <div className="flex items-center">
-            <input
-              type="text"
+            <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleTyping}
               placeholder="Type a message..."
               className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button
+            <Button
               type="submit"
               disabled={!message.trim()}
-              className="ml-2 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="ml-2 bg-blue-600 text-white rounded-full px-4 py-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </button>
+              <i className="fa-solid fa-paper-plane"></i>
+            </Button>
           </div>
         </form>
       </div>

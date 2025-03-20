@@ -8,7 +8,7 @@ import { useQuery } from "@hooks";
 const Chats = ({ conversations: initialConversations }) => {
   // Use the useQuery hook to have access to refetch functionality
   const { data: refreshedConversations, refetch } = useQuery("/client/conversations", {
-    initialData: initialConversations
+    initialData: initialConversations,
   });
 
   const [activeConversation, setActiveConversation] = useState(null);
@@ -27,7 +27,7 @@ const Chats = ({ conversations: initialConversations }) => {
   useEffect(() => {
     const { conversationId } = router.query;
     if (conversationId && allConversations) {
-      const conversation = allConversations.find(c => c._id === conversationId);
+      const conversation = allConversations.find((c) => c._id === conversationId);
       if (conversation) {
         setActiveConversation(conversation);
       }
@@ -41,16 +41,16 @@ const Chats = ({ conversations: initialConversations }) => {
     const handleWebSocketMessage = (event) => {
       const data = event.detail;
 
-      if (data.type === 'messages_read' || data.type === 'new_message') {
+      if (data.type === "messages_read" || data.type === "new_message") {
         // Refetch conversations to get updated unread counts
         refetch();
       }
     };
 
-    window.addEventListener('websocket_message', handleWebSocketMessage);
+    window.addEventListener("websocket_message", handleWebSocketMessage);
 
     return () => {
-      window.removeEventListener('websocket_message', handleWebSocketMessage);
+      window.removeEventListener("websocket_message", handleWebSocketMessage);
     };
   }, [refetch]);
 
@@ -63,16 +63,23 @@ const Chats = ({ conversations: initialConversations }) => {
   const handleSelectConversation = (conversation) => {
     setActiveConversation(conversation);
     // Update URL with conversationId for sharing/direct access
-    router.push({
-      pathname: router.pathname,
-      query: { conversationId: conversation._id }
-    }, undefined, { shallow: true });
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { conversationId: conversation._id },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return (
     <div className="w-full h-screen flex">
-      {/* Left sidebar - Conversations list */}
-      <div className={`md:w-1/3 w-full border-r border-gray-200 overflow-y-auto ${activeConversation ? 'hidden md:block' : 'block'}`}>
+      <div
+        className={`md:w-1/3 w-full border-r border-gray-200 overflow-y-auto ${
+          activeConversation ? "hidden md:block" : "block"
+        }`}
+      >
         <div className="px-4 py-3 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Messages</h2>
         </div>
@@ -84,7 +91,7 @@ const Chats = ({ conversations: initialConversations }) => {
                 conversation={conversation}
                 isActive={activeConversation?._id === conversation._id}
                 isOnline={conversation.participants.some(
-                  p => p._id !== conversation.me && onlineUsers.has(p._id)
+                  (p) => p._id !== conversation.me && onlineUsers.has(p._id)
                 )}
                 onClick={() => handleSelectConversation(conversation)}
               />
@@ -93,23 +100,16 @@ const Chats = ({ conversations: initialConversations }) => {
         ) : (
           <div className="p-4 text-center text-gray-500">
             <p>No conversations yet.</p>
-            <button
-              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              onClick={() => router.push('/client/friends')}
-            >
-              Start a conversation
-            </button>
           </div>
         )}
       </div>
-
-      {/* Right side - Chat content */}
-      <div className={`md:w-2/3 w-full flex flex-col ${activeConversation ? 'block' : 'hidden md:flex'}`}>
+      <div
+        className={`md:w-2/3 w-full flex flex-col ${
+          activeConversation ? "block" : "hidden md:flex"
+        }`}
+      >
         {activeConversation ? (
-          <ChatDetails
-            conversation={activeConversation}
-            onMessagesRead={handleMessagesRead}
-          />
+          <ChatDetails conversation={activeConversation} onMessagesRead={handleMessagesRead} />
         ) : (
           <div className="h-full flex items-center justify-center text-gray-500">
             <div className="text-center">

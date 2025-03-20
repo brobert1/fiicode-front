@@ -4,14 +4,14 @@ import { debounce } from "lodash";
 import { classnames } from "@lib";
 import PredictionList from "./PredictionList";
 
-const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }) => {
+const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
   const [inputValue, setInputValue] = useState("");
   const [autocompleteService, setAutocompleteService] = useState(null);
   const [placesService, setPlacesService] = useState(null);
   const [predictions, setPredictions] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isActive, setIsActive] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [hasSelectedPlace, setHasSelectedPlace] = useState(false);
   const inputRef = useRef(null);
   const predictionsRef = useRef(null);
   const places = useMapsLibrary("places");
@@ -35,12 +35,11 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
     setIsActive(true);
   };
 
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 300);
+  const clearSearch = () => {
+    setInputValue("");
+    setHasSelectedPlace(false);
+    // Notify parent component to clear the marker
+    onPlaceSelect(null);
   };
 
   const fetchPredictions = (input) => {
@@ -67,7 +66,13 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
-    debouncedFetchPredictions(value);
+
+    if (value === "" && hasSelectedPlace) {
+      setHasSelectedPlace(false);
+      onPlaceSelect(null);
+    } else {
+      debouncedFetchPredictions(value);
+    }
   };
 
   const handlePredictionSelect = (prediction) => {
@@ -137,11 +142,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
           // Clear input and predictions
           setInputValue(prediction.description);
           setPredictions([]);
-
-          // Close search after selection
-          setTimeout(() => {
-            handleClose();
-          }, 300);
+          setHasSelectedPlace(true);
         }
       }
     );
@@ -150,7 +151,8 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
   const handleKeyDown = (e) => {
     if (!predictions.length) {
       if (e.key === "Escape") {
-        handleClose();
+        // Clear search instead of closing
+        clearSearch();
       }
       return;
     }
@@ -172,7 +174,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
 
       case "Escape":
         setPredictions([]);
-        handleClose();
+        clearSearch();
         break;
 
       default:
@@ -184,8 +186,7 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
     <div
       className={classnames(
         "absolute left-0 right-0 z-20 px-4",
-        hasActiveDirections ? "top-[calc(4rem+1px)]" : "top-4",
-        isClosing ? "animate-fadeOut" : "animate-fadeIn"
+        hasActiveDirections ? "top-[calc(4rem+1px)]" : "top-4"
       )}
     >
       <div className="relative max-w-md mx-auto">
@@ -206,8 +207,8 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
                 : "outline-none"
             )}
           />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i className={classnames("fas fa-search text-gray-400")}></i>
+          <div className={classnames("absolute inset-y-0 left-0 pl-4 flex items-center", hasSelectedPlace ? "cursor-pointer" : "pointer-events-none")} onClick={hasSelectedPlace ? clearSearch : undefined}>
+            <i className={classnames("fas", hasSelectedPlace ? "fa-times text-gray-600" : "fa-search text-gray-400")}></i>
           </div>
         </div>
 

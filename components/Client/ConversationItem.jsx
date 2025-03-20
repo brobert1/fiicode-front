@@ -3,10 +3,8 @@ import { useProfile } from "@hooks";
 
 const ConversationItem = ({ conversation, isActive, isOnline, onClick }) => {
   const { me } = useProfile();
-  // Find the other participant (assuming 1-on-1 conversations)
   const otherParticipant = conversation.participants.find((p) => p._id !== me?.me);
 
-  // Get last message preview and time
   const lastMessage = conversation.lastMessage;
   const messageTime = lastMessage?.createdAt
     ? formatDistanceToNow(new Date(lastMessage.createdAt), { addSuffix: true })
@@ -23,9 +21,7 @@ const ConversationItem = ({ conversation, isActive, isOnline, onClick }) => {
         <img
           src={
             otherParticipant?.image?.path ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              otherParticipant?.name || "User"
-            )}`
+            `https://ui-avatars.com/api/?name=${otherParticipant?.name}`
           }
           alt={otherParticipant?.name || "User"}
           width={50}

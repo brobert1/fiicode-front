@@ -31,8 +31,12 @@ const GoogleMap = ({
 
   const handlePlaceSelect = (place) => {
     clearSearchedPlaces();
-    addSearchedPlace(place);
-    setSelectedPlace(place);
+    if (place) {
+      addSearchedPlace(place);
+      setSelectedPlace(place);
+    } else {
+      setSelectedPlace(null);
+    }
   };
 
   return (

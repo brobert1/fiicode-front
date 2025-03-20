@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Map } from "@vis.gl/react-google-maps";
 import {
   LocationButton,
@@ -37,7 +37,6 @@ const GoogleMapSuccess = ({
   refreshLocation,
   layers,
   toggleLayer,
-  searchVisible,
   searchedPlaces,
   removeSearchedPlace,
   selectedPlace,
@@ -46,6 +45,9 @@ const GoogleMapSuccess = ({
   onStoreHandleGetDirections,
   isTracking
 }) => {
+  // Add state to track newly selected place
+  const [newlySelectedPlaceId, setNewlySelectedPlaceId] = useState(null);
+
   // Use custom hooks to manage component state and logic
   const {
     directionsVisible,
@@ -109,7 +111,6 @@ const GoogleMapSuccess = ({
 
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
     directionsActive: directions !== null || directionsVisible,
-    searchVisible,
   });
 
   // Fetch alerts from the API
@@ -139,8 +140,20 @@ const GoogleMapSuccess = ({
     handleDirectionsWithCustomRoutes(directionsResult, info, handleDirectionsFound);
   };
 
-  // Dummy function for setSearchVisible - never hide search
-  const setSearchVisible = () => {};
+  // Create a wrapper for handlePlaceSelect to track newly selected places
+  const handlePlaceSelectWithTracking = (place) => {
+    // Call the original handler
+    handlePlaceSelect(place);
+
+    // Set the newly selected place ID
+    if (place) {
+      setNewlySelectedPlaceId(place.id);
+      // Reset the ID after a short delay
+      setTimeout(() => {
+        setNewlySelectedPlaceId(null);
+      }, 1000); // Short delay to ensure the marker is rendered
+    }
+  };
 
   return (
     <>
@@ -178,7 +191,7 @@ const GoogleMapSuccess = ({
         {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
 
         {searchedPlaces
-          .filter((place) => place.id !== directionDestinationId)
+          .filter((place) => place && place.id !== directionDestinationId)
           .map((place) => (
             <PlaceMarker
               key={place.id}
@@ -186,6 +199,7 @@ const GoogleMapSuccess = ({
               onClose={removeSearchedPlace}
               onGetDirections={handleGetDirections}
               favouritePlacesData={favouritePlacesData}
+              autoOpenInfoWindow={place.id === newlySelectedPlaceId}
             />
           ))}
 
@@ -218,9 +232,8 @@ const GoogleMapSuccess = ({
       </Map>
 
       <PlacesSearch
-        isVisible={searchVisible}
-        onClose={setSearchVisible}
-        onPlaceSelect={handlePlaceSelect}
+        isVisible={true}
+        onPlaceSelect={handlePlaceSelectWithTracking}
         hasActiveDirections={directions !== null}
       />
 

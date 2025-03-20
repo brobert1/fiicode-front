@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { debounce } from "lodash";
 import { classnames } from "@lib";
@@ -12,9 +12,18 @@ const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isActive, setIsActive] = useState(false);
   const [hasSelectedPlace, setHasSelectedPlace] = useState(false);
+  const [prevHasActiveDirections, setPrevHasActiveDirections] = useState(hasActiveDirections);
   const inputRef = useRef(null);
   const predictionsRef = useRef(null);
   const places = useMapsLibrary("places");
+
+  // Define clearSearch with useCallback to avoid recreation on each render
+  const clearSearch = useCallback(() => {
+    setInputValue("");
+    setHasSelectedPlace(false);
+    // Notify parent component to clear the marker
+    onPlaceSelect(null);
+  }, [onPlaceSelect]);
 
   // Initialize services when Places library is loaded
   useEffect(() => {
@@ -31,15 +40,19 @@ const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
     }
   }, [isVisible]);
 
+  // Reset search when directions are closed
+  useEffect(() => {
+    // Check if directions were active before but are not active now
+    if (prevHasActiveDirections && !hasActiveDirections) {
+      clearSearch();
+    }
+
+    // Update previous state for next comparison
+    setPrevHasActiveDirections(hasActiveDirections);
+  }, [hasActiveDirections, prevHasActiveDirections, clearSearch]);
+
   const handleInputFocus = () => {
     setIsActive(true);
-  };
-
-  const clearSearch = () => {
-    setInputValue("");
-    setHasSelectedPlace(false);
-    // Notify parent component to clear the marker
-    onPlaceSelect(null);
   };
 
   const fetchPredictions = (input) => {

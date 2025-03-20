@@ -50,7 +50,7 @@ export const addFavouritePlace = async (data) => {
 };
 
 export const removeFavouritePlace = async (data) => {
-  return axiosAuth.put("/client/remove-favourite-place", data);
+  return axiosAuth.delete(`/client/remove-favourite-place/${data._id}`);
 };
 
 export const sendFriendRequest = async (data) => {
@@ -62,7 +62,19 @@ export const approveFriendRequest = async (id) => {
 };
 
 export const rejectFriendRequest = async (id) => {
-  return axiosAuth.delete(`/client/reject-friend-request/${id}`);
+  return axiosAuth.put(`/client/reject-friend-request/${id}`);
+};
+
+export const createConversation = async (data) => {
+  return axiosAuth.post("/client/conversations", data);
+};
+
+export const sendMessage = async (data) => {
+  return axiosAuth.post("/client/messages", data);
+};
+
+export const markConversationAsRead = async (conversationId) => {
+  return axiosAuth.put(`/client/conversations/${conversationId}/read`);
 };
 
 export const updateLocation = async (data) => {

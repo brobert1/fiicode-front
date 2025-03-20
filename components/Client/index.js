@@ -1,4 +1,10 @@
 export { default as Account } from "./Account";
-export { default as AddFriendsList } from "./AddFriendsList";
+export { default as Badge } from "./Badge";
 export { default as Badges } from "./Badges";
 export { default as Friends } from "./Friends";
+export { default as Chats } from "./Chats";
+export { default as ChatDetails } from "./ChatDetails";
+export { default as Message } from "./Message";
+export { default as ConversationItem } from "./ConversationItem";
+export { default as FavouritePlaces } from "./FavouritePlaces";
+export { default as AddFriendsList } from "./AddFriendsList";

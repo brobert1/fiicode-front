@@ -4,8 +4,10 @@ import { GoogleMap } from "@components/GoogleMaps";
 import { useUserLocation } from "@hooks";
 import withMapSearch from "@components/withMapSearch";
 import { useState, useEffect } from "react";
+import { useWebSocket } from "../../contexts/WebSocketContext";
 
 const Page = () => {
+  const { sendLocationUpdate } = useWebSocket();
   const {
     location,
     loading,
@@ -15,7 +17,16 @@ const Page = () => {
     startTracking
   } = useUserLocation({
     watchPosition: true, // Always enable real-time tracking
-    watchInterval: 2000  // Update every 2 seconds to balance performance and accuracy
+    watchInterval: 2000,  // Update every 2 seconds to balance performance and accuracy
+    onLocationUpdate: (newLocation) => {
+      // Send location updates to friends via WebSocket
+      if (newLocation && newLocation.lat && newLocation.lng) {
+        sendLocationUpdate({
+          lat: newLocation.lat,
+          lng: newLocation.lng
+        });
+      }
+    }
   });
 
   const [handleGetDirections, setHandleGetDirections] = useState(null);

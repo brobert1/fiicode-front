@@ -5,12 +5,16 @@ import { store } from "@auth";
 const WebSocketContext = createContext({
   onlineUsers: new Set(),
   isConnected: false,
+  sendWebSocketMessage: () => {},
+  sendLocationUpdate: () => {},
+  friendLocations: {}
 });
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(new Set());
+  const [friendLocations, setFriendLocations] = useState({});
   const heartbeatInterval = useRef(null);
   const me = whoami();
 
@@ -58,7 +62,7 @@ export const WebSocketProvider = ({ children }) => {
         // Set up heartbeat interval to maintain online status
         heartbeatInterval.current = setInterval(() => {
           if (ws.readyState === ws.OPEN) {
-            ws.send(JSON.stringify({ type: 'heartbeat' }));
+            ws.send(JSON.stringify({ type: "heartbeat" }));
           }
         }, 60000); // Send heartbeat every minute
       };
@@ -82,16 +86,42 @@ export const WebSocketProvider = ({ children }) => {
           const data = JSON.parse(event.data);
 
           // Handle different types of messages
-          if (data.type === "status_update") {
-            setOnlineUsers((prev) => {
-              const newSet = new Set(prev);
-              if (data.isOnline) {
-                newSet.add(data.userId);
-              } else {
-                newSet.delete(data.userId);
+          switch (data.type) {
+            case "status_update":
+              setOnlineUsers((prev) => {
+                const newSet = new Set(prev);
+                if (data.isOnline) {
+                  newSet.add(data.userId);
+                } else {
+                  newSet.delete(data.userId);
+                }
+                return newSet;
+              });
+              break;
+
+            case "location_update":
+              if (data.userId && data.location) {
+                setFriendLocations((prev) => ({
+                  ...prev,
+                  [data.userId]: {
+                    ...data.location,
+                    timestamp: new Date().getTime()
+                  }
+                }));
               }
-              return newSet;
-            });
+              break;
+
+            case "new_message":
+            case "messages_read":
+            case "typing":
+            case "stop_typing":
+              // Dispatch a custom event for components to listen to
+              window.dispatchEvent(new CustomEvent("websocket_message", { detail: data }));
+              break;
+
+            default:
+              // Unknown message type, do nothing
+              break;
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -127,8 +157,33 @@ export const WebSocketProvider = ({ children }) => {
     return unsubscribe;
   }, [socket]);
 
+  // Function to send WebSocket messages
+  const sendWebSocketMessage = (message) => {
+    if (socket && socket.readyState === socket.OPEN) {
+      socket.send(JSON.stringify(message));
+      return true;
+    }
+    return false;
+  };
+
+  // Function to send location updates via WebSocket
+  const sendLocationUpdate = (location) => {
+    return sendWebSocketMessage({
+      type: "location_update",
+      location
+    });
+  };
+
   return (
-    <WebSocketContext.Provider value={{ onlineUsers, isConnected }}>
+    <WebSocketContext.Provider
+      value={{
+        onlineUsers,
+        isConnected,
+        sendWebSocketMessage,
+        sendLocationUpdate,
+        friendLocations
+      }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

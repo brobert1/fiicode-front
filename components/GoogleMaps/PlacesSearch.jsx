@@ -23,11 +23,9 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
     setPlacesService(new places.PlacesService(document.createElement("div")));
   }, [places]);
 
-  // Handle visibility changes
+  // Handle visibility changes - modified to only clear results but keep active
   useEffect(() => {
     if (!isVisible) {
-      setIsActive(false);
-      setInputValue("");
       setPredictions([]);
       setHighlightedIndex(-1);
     }
@@ -181,8 +179,6 @@ const PlacesSearch = ({ isVisible, onClose, onPlaceSelect, hasActiveDirections }
         break;
     }
   };
-
-  if (!isVisible) return null;
 
   return (
     <div

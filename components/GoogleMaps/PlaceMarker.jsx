@@ -130,11 +130,12 @@ const PlaceMarker = ({
             {/* Photo carousel */}
             {place.photos && place.photos.length > 0 && (
               <div className="relative mb-3">
-                <div className="w-full h-32 overflow-hidden rounded">
+                <div className="w-full h-32 overflow-hidden rounded bg-gray-100">
                   <img
                     src={place.photos[activePhotoIndex].url}
                     alt={place.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-32 object-cover"
+                    style={{ aspectRatio: "16/9" }}
                   />
                 </div>
                 {place.photos.length > 1 && (

@@ -38,7 +38,6 @@ const GoogleMapSuccess = ({
   layers,
   toggleLayer,
   searchVisible,
-  setSearchVisible,
   searchedPlaces,
   removeSearchedPlace,
   selectedPlace,
@@ -135,17 +134,13 @@ const GoogleMapSuccess = ({
     setGlobalDirections(directions);
   }, [directions, setGlobalDirections]);
 
-  // Hide search when directions are found
-  useEffect(() => {
-    if (directions) {
-      setSearchVisible(false);
-    }
-  }, [directions, setSearchVisible]);
-
   // Custom handler for directions found that adds relevant custom routes
   const handleDirectionsWithCustomRoutesWrapper = (directionsResult, info) => {
     handleDirectionsWithCustomRoutes(directionsResult, info, handleDirectionsFound);
   };
+
+  // Dummy function for setSearchVisible - never hide search
+  const setSearchVisible = () => {};
 
   return (
     <>
@@ -224,7 +219,7 @@ const GoogleMapSuccess = ({
 
       <PlacesSearch
         isVisible={searchVisible}
-        onClose={() => setSearchVisible(false)}
+        onClose={setSearchVisible}
         onPlaceSelect={handlePlaceSelect}
         hasActiveDirections={directions !== null}
       />

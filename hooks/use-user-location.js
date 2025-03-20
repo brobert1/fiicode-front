@@ -5,11 +5,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
  * @param {Object} options Configuration options
  * @param {boolean} options.watchPosition Whether to watch position in real-time
  * @param {number} options.watchInterval Minimum time between updates in milliseconds (default: 1000)
+ * @param {function} options.onLocationUpdate Optional callback when location is updated, receives location object
  * @returns {Object} An object containing the user's location, loading state, error, tracking status, and control functions
  */
 export const useUserLocation = ({
   watchPosition = false,
-  watchInterval = 1000
+  watchInterval = 1000,
+  onLocationUpdate = null
 } = {}) => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,14 +38,21 @@ export const useUserLocation = ({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setLocation({
+        const newLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy,
           heading: position.coords.heading,
           timestamp: new Date().getTime()
-        });
+        };
+
+        setLocation(newLocation);
         setLoading(false);
+
+        // Call the onLocationUpdate callback if provided
+        if (onLocationUpdate && typeof onLocationUpdate === 'function') {
+          onLocationUpdate(newLocation);
+        }
       },
       (error) => {
         setError(error.message);
@@ -51,51 +60,53 @@ export const useUserLocation = ({
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-  }, [isTracking, location]);
+  }, [isTracking, location, onLocationUpdate]);
 
   const startTracking = useCallback(() => {
+    if (isTracking) return; // Already tracking
+
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
       return;
     }
 
-    // Clear any existing watch
-    if (watchIdRef.current) {
-      navigator.geolocation.clearWatch(watchIdRef.current);
-    }
-
+    // Set tracking state
     setIsTracking(true);
+    setError(null);
 
+    // Start watching position
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         const now = new Date().getTime();
+        // Only update if enough time has passed since last update
+        if (now - lastUpdateRef.current >= watchInterval) {
+          lastUpdateRef.current = now;
 
-        // Throttle updates to prevent too many re-renders
-        if (now - lastUpdateRef.current > watchInterval) {
-          setLocation({
+          const newLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
             accuracy: position.coords.accuracy,
             heading: position.coords.heading,
             timestamp: now
-          });
+          };
 
-          lastUpdateRef.current = now;
+          setLocation(newLocation);
           setLoading(false);
+
+          // Call the onLocationUpdate callback if provided
+          if (onLocationUpdate && typeof onLocationUpdate === 'function') {
+            onLocationUpdate(newLocation);
+          }
         }
       },
       (error) => {
         setError(error.message);
-        setLoading(false);
         setIsTracking(false);
+        watchIdRef.current = null;
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
-  }, [watchInterval]);
+  }, [watchInterval, isTracking, onLocationUpdate]);
 
   const stopTracking = useCallback(() => {
     if (watchIdRef.current) {

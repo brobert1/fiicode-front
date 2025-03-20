@@ -1,21 +1,23 @@
-import { Button, MenuItem } from "@components";
-import { useContext, useRef } from "react";
-import { MapSearchContext } from "contexts/MapSearchContext";
+import { MenuItem } from "@components";
+import { useRef } from "react";
 import { useDisclosure, useOnClickOutside } from "@hooks";
 import { logout } from "@api/identity";
 
-const MapLayoutPages = () => {
-  const mapSearchContext = useContext(MapSearchContext);
-  const { searchVisible, setSearchVisible } = mapSearchContext || {
-    searchVisible: false,
-    setSearchVisible: () => {},
-  };
+// Simple button component that doesn't use ref
+const ActionButton = ({ children, onClick, className }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={className}
+  >
+    {children}
+  </button>
+);
 
+const MapLayoutPages = () => {
   const { isOpen, toggle, hide } = useDisclosure();
   const menuRef = useRef();
   useOnClickOutside(menuRef, hide);
-
-  const isMapPage = !!mapSearchContext;
 
   const handleLogout = async () => {
     hide();
@@ -30,33 +32,27 @@ const MapLayoutPages = () => {
       >
         <i className="fa fa-house text-xl"></i>
       </MenuItem>
-      {isMapPage && (
-        <Button
-          className="flex items-center justify-center py-2"
-          onClick={(e) => {
-            e.preventDefault();
-            setSearchVisible(!searchVisible);
-          }}
-        >
-          <i className="fa fa-magnifying-glass text-xl"></i>
-        </Button>
-      )}
+      <MenuItem
+        href="/client/chats"
+        className="flex items-center justify-center py-2"
+      >
+        <i className="fa fa-message text-xl"></i>
+      </MenuItem>
       <MenuItem
         href="/client/notifications"
         className="flex items-center justify-center py-2"
       >
         <i className="fa fa-bell text-xl"></i>
       </MenuItem>
-      <div className="relative inline-block">
-        <Button
-          className="flex items-center justify-center py-2"
+      <div className="relative inline-block" ref={menuRef}>
+        <ActionButton
+          className="menu-item cursor-pointer px-2 py-2 pl-6"
           onClick={toggle}
-          ref={menuRef}
         >
           <i
             className={`fa fa-gear text-xl transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`}
           ></i>
-        </Button>
+        </ActionButton>
         {isOpen && (
           <div className="absolute left-1/2 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 transform -translate-x-1/2 transition-opacity duration-200 ease-in-out opacity-100">
             <button

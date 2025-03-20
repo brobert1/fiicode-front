@@ -17,7 +17,6 @@ const GoogleMap = ({
 }) => {
   const {
     searchVisible,
-    setSearchVisible,
     searchedPlaces,
     addSearchedPlace,
     removeSearchedPlace,
@@ -48,7 +47,6 @@ const GoogleMap = ({
             layers={layers}
             toggleLayer={toggleLayer}
             searchVisible={searchVisible}
-            setSearchVisible={setSearchVisible}
             searchedPlaces={searchedPlaces}
             removeSearchedPlace={removeSearchedPlace}
             selectedPlace={selectedPlace}

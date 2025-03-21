@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 
 const RouteControls = ({
@@ -10,14 +10,19 @@ const RouteControls = ({
   onAddButtonClick
 }) => {
   const map = useMap();
+  const controlDivRef = useRef(null);
+  const addButtonRef = useRef(null);
+  const buttonsCreatedRef = useRef(false);
 
+  // Create buttons only once
   useEffect(() => {
-    if (!map || !drawingEnabled) return;
+    if (!map || !drawingEnabled || buttonsCreatedRef.current) return;
 
     // Create UI container
     const controlDiv = document.createElement("div");
     controlDiv.className = "bg-white rounded-lg shadow-md p-2 m-2 flex flex-col space-y-2";
     controlDiv.style.margin = "10px";
+    controlDivRef.current = controlDiv;
 
     // Clear Route Button
     const clearButton = document.createElement("button");
@@ -43,7 +48,7 @@ const RouteControls = ({
       }
     });
 
-    // Add Route Button (only show if there are at least 2 points)
+    // Add Route Button
     const addButton = document.createElement("button");
     addButton.className = "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-2";
     addButton.textContent = "Add";
@@ -54,11 +59,36 @@ const RouteControls = ({
         onAddButtonClick(pathRef.current);
       }
     });
+    addButtonRef.current = addButton;
 
-    // Update the Add button visibility when the path changes
-    const updateAddButtonVisibility = () => {
-      addButton.style.display = pathRef.current.length >= 2 ? "block" : "none";
+    // Add buttons to container
+    controlDiv.appendChild(clearButton);
+    controlDiv.appendChild(addButton);
+
+    // Add the control to the map
+    map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
+
+    buttonsCreatedRef.current = true;
+
+    // Clean up on unmount
+    return () => {
+      map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].clear();
+      buttonsCreatedRef.current = false;
     };
+  }, [map, drawingEnabled]);
+
+  // Update Add button visibility separately based on path changes
+  useEffect(() => {
+    if (!addButtonRef.current) return;
+
+    const updateAddButtonVisibility = () => {
+      if (addButtonRef.current) {
+        addButtonRef.current.style.display = pathRef.current.length >= 2 ? "block" : "none";
+      }
+    };
+
+    // Initial update
+    updateAddButtonVisibility();
 
     // Set up a MutationObserver to watch for changes to the polyline's path
     if (polylineRef.current) {
@@ -70,16 +100,7 @@ const RouteControls = ({
       }
     }
 
-    // Add buttons to container
-    controlDiv.appendChild(clearButton);
-    controlDiv.appendChild(addButton);
-
-    // Add the control to the map
-    map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
-
-    // Clean up on unmount or when drawing is disabled
     return () => {
-      map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].clear();
       if (polylineRef.current) {
         const path = polylineRef.current.getPath();
         if (path) {
@@ -89,7 +110,20 @@ const RouteControls = ({
         }
       }
     };
-  }, [map, drawingEnabled, onClearRoute, onAddButtonClick, polylineRef, pathRef, markersRef]);
+  }, [polylineRef, pathRef]);
+
+  // Handle drawing mode being disabled
+  useEffect(() => {
+    if (!map || !controlDivRef.current) return;
+
+    if (!drawingEnabled && buttonsCreatedRef.current) {
+      map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].clear();
+      buttonsCreatedRef.current = false;
+    } else if (drawingEnabled && !buttonsCreatedRef.current && controlDivRef.current) {
+      map.controls[window.google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDivRef.current);
+      buttonsCreatedRef.current = true;
+    }
+  }, [map, drawingEnabled]);
 
   return null;
 };

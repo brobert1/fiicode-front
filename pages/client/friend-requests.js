@@ -6,7 +6,7 @@ import FriendRequestsList from "@components/Client/FriendRequestsList";
 const Page = () => {
   return (
     <BaseClientLayout floatingMenu={<FloatingMenu />}>
-      <div className="w-full flex bg-white flex-col items-center gap-8 py-6">
+      <div className="w-full flex bg-white flex-col gap-8 py-6">
         <FriendRequestsList />
       </div>
     </BaseClientLayout>

@@ -1,11 +1,10 @@
-import { MenuItem } from "@components";
+import { Button, Link, MenuItem } from "@components";
 import { useRef, useState, useEffect } from "react";
 import { useDisclosure, useOnClickOutside, useQuery, useMutation } from "@hooks";
 import { logout } from "@api/identity";
 import { useRouter } from "next/router";
 import { markConversationAsRead } from "@api/client";
 
-// Simple button component that doesn't use ref
 const ActionButton = ({ children, onClick, className }) => (
   <button type="button" onClick={onClick} className={className}>
     {children}
@@ -27,7 +26,7 @@ const MapLayoutPages = () => {
 
   // Handle when entering a conversation
   useEffect(() => {
-    const isChatsPage = router.pathname.includes('/client/chats');
+    const isChatsPage = router.pathname.includes("/client/chats");
     const conversationId = router.query.conversationId;
 
     // If we're on the chats page with a specific conversation open,
@@ -41,7 +40,7 @@ const MapLayoutPages = () => {
   useEffect(() => {
     if (conversations && Array.isArray(conversations)) {
       // If we're on the chats page with a specific conversation open, exclude that conversation's count
-      const isChatsPage = router.pathname.includes('/client/chats');
+      const isChatsPage = router.pathname.includes("/client/chats");
       const currentConversationId = router.query.conversationId;
 
       const totalUnread = conversations.reduce((total, conversation) => {
@@ -103,13 +102,21 @@ const MapLayoutPages = () => {
         </ActionButton>
         {isOpen && (
           <div className="absolute left-1/2 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 transform -translate-x-1/2 transition-opacity duration-200 ease-in-out opacity-100">
-            <button
+            <Link
+              href="/client/friend-requests"
+              className="flex w-full items-center px-4 py-2 text-sm text-black
+              hover:bg-gray-100"
+            >
+              <i className="fas fa-user-friends w-6"></i>
+              Friend Requests
+            </Link>
+            <Button
               className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
               onClick={handleLogout}
             >
               <i className="fas fa-sign-out-alt w-6"></i>
               Logout
-            </button>
+            </Button>
           </div>
         )}
       </div>

@@ -41,7 +41,6 @@ const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
     handleDirectionsFound,
     handleClearDirections,
     handleDirectionsUpdate,
-    openDirectionsModal,
   } = useDirections({ removeSearchedPlace });
 
   // Use our custom hooks for drawing endpoints and custom routes
@@ -217,7 +216,7 @@ const AdminRouteMap = ({ height = "600px", onRouteCreated, onClearRoute }) => {
 
             {/* Directions Button - only show when not in drawing mode and no directions */}
             {!directions && !isDrawingEnabled && (
-              <CustomDirectionsButton onClick={openDirectionsModal} />
+              <CustomDirectionsButton onClick={() => setDirectionsVisible(true)} />
             )}
 
             {/* Drawing Mode Indicator */}

@@ -3,7 +3,7 @@ import { useMap } from "@vis.gl/react-google-maps";
 import RouteControls from "../../Admin/RouteControls";
 
 // Component to handle drawing routes
-const RouteDrawingHandler = ({ onRouteCreated, onClearRoute, isDrawingEnabled, routeInfo, onAddButtonClick, endpoints }) => {
+const RouteDrawingHandler = ({ onRouteCreated, onClearRoute, isDrawingEnabled, onAddButtonClick, endpoints }) => {
   const map = useMap();
   const polylineRef = useRef(null);
   const markersRef = useRef([]);
@@ -77,7 +77,7 @@ const RouteDrawingHandler = ({ onRouteCreated, onClearRoute, isDrawingEnabled, r
     return () => {
       clearRoute();
     };
-  }, [isDrawingEnabled, map, routeInfo, endpoints]);
+  }, [isDrawingEnabled, map, endpoints]);
 
   // Function to clear the route
   const clearRoute = () => {
@@ -184,16 +184,17 @@ const RouteDrawingHandler = ({ onRouteCreated, onClearRoute, isDrawingEnabled, r
     };
   }, [map, drawingEnabled]);
 
-  return (
+  // Render the RouteControls component only when drawing is enabled to avoid flickering
+  return drawingEnabled ? (
     <RouteControls
       drawingEnabled={drawingEnabled}
       polylineRef={polylineRef}
       pathRef={pathRef}
       markersRef={markersRef}
-      onClearRoute={onClearRoute}
+      onClearRoute={clearRoute}
       onAddButtonClick={onAddButtonClick}
     />
-  );
+  ) : null;
 };
 
 export default RouteDrawingHandler;

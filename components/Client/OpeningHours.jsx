@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { classnames } from "@lib";
 import { useOpeningHours } from "../../hooks/use-opening-hours";
+import { formatInTimeZone } from "date-fns-tz";
 
 const OpeningHours = ({ openingHours }) => {
   const [showFullSchedule, setShowFullSchedule] = useState(false);
   const { isOpen } = useOpeningHours(openingHours);
+  const romaniaTimeZone = "Europe/Bucharest";
+  const now = new Date();
+  const romaniaTime = formatInTimeZone(now, romaniaTimeZone, "HH:mm");
 
   const toggleSchedule = () => {
     setShowFullSchedule(!showFullSchedule);
@@ -25,6 +29,9 @@ const OpeningHours = ({ openingHours }) => {
               Closed now
             </span>
           )}
+          <span className="ml-2 text-sm text-gray-500">
+            (Local time: {romaniaTime})
+          </span>
         </h3>
 
         {openingHours?.weekdayText && openingHours?.weekdayText?.length > 0 && (
@@ -47,7 +54,12 @@ const OpeningHours = ({ openingHours }) => {
               const parts = day.split(": ");
               const dayName = parts[0];
               const hours = parts.length > 1 ? parts[1] : "Hours not available";
-              const now = new Date();
+
+              // Calculate the current day index based on Romania timezone
+              const romaniaDate = new Date(
+                formatInTimeZone(now, romaniaTimeZone, "yyyy-MM-dd'T'HH:mm:ssXXX")
+              );
+              const dayOfWeek = romaniaDate.getDay();
               const dayMapping = {
                 0: 6, // Sunday
                 1: 0, // Monday
@@ -57,7 +69,8 @@ const OpeningHours = ({ openingHours }) => {
                 5: 4, // Friday
                 6: 5, // Saturday
               };
-              const isToday = index === dayMapping[now.getDay()];
+              const todayIndex = dayMapping[dayOfWeek];
+              const isToday = index === todayIndex;
 
               return (
                 <div

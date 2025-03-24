@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { parse, isWithinInterval } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 export function useOpeningHours(openingHours) {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,8 +11,15 @@ export function useOpeningHours(openingHours) {
     }
 
     try {
+      const romaniaTimeZone = "Europe/Bucharest";
       const now = new Date();
-      const dayOfWeek = now.getDay();
+
+      // Get the day of week in Romania's timezone
+      const romaniaDate = new Date(
+        formatInTimeZone(now, romaniaTimeZone, "yyyy-MM-dd'T'HH:mm:ssXXX")
+      );
+      const dayOfWeek = romaniaDate.getDay();
+
       const dayMapping = {
         0: 6, // Sunday
         1: 0, // Monday
@@ -55,20 +63,24 @@ export function useOpeningHours(openingHours) {
 
       const timeRanges = timeRangesText.split(", ");
 
+      // Get the current time in Romania's timezone
+      const romaniaTimeStr = formatInTimeZone(now, romaniaTimeZone, "HH:mm");
+      const romaniaTime = parse(romaniaTimeStr, "HH:mm", romaniaDate);
+
       let openNow = false;
       for (const range of timeRanges) {
         const separator = range.includes("–") ? "–" : "-";
         const [openStr, closeStr] = range.split(separator).map((s) => s.trim());
         if (openStr && closeStr) {
-          const openDate = parse(openStr, "HH:mm", now);
-          let closeDate = parse(closeStr, "HH:mm", now);
+          const openDate = parse(openStr, "HH:mm", romaniaDate);
+          let closeDate = parse(closeStr, "HH:mm", romaniaDate);
 
           // Handle closing time past midnight
           if (closeDate < openDate) {
             closeDate.setDate(closeDate.getDate() + 1);
           }
 
-          if (isWithinInterval(now, { start: openDate, end: closeDate })) {
+          if (isWithinInterval(romaniaTime, { start: openDate, end: closeDate })) {
             openNow = true;
             break;
           }

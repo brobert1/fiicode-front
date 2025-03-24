@@ -92,7 +92,7 @@ const PlaceDetails = ({ place, onClose, onGetDirections }) => {
 
       {place.photos && place.photos.length > 0 && (
         <div className="mt-4">
-          <PhotoCarousel photos={place.photos} altText={place.name} height={48} />
+          <PhotoCarousel photos={place.photos} altText={place.name} />
         </div>
       )}
 

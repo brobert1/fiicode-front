@@ -1,7 +1,7 @@
 import { Button } from "@components";
 import React, { useState } from "react";
 
-const PhotoCarousel = ({ photos, altText, height = 48 }) => {
+const PhotoCarousel = ({ photos, altText }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   if (!photos || photos.length === 0) return null;
@@ -22,12 +22,12 @@ const PhotoCarousel = ({ photos, altText, height = 48 }) => {
   };
 
   return (
-    <div className="relative">
-      <div className={`h-${height} overflow-hidden rounded-lg relative`}>
+    <div className="relative w-full">
+      <div className="w-full aspect-[16/9] overflow-hidden rounded-lg relative">
         <img
           src={photos[currentPhotoIndex].url}
           alt={altText || "Place photo"}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
 
         {photos.length > 1 && (

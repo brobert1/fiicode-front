@@ -5,12 +5,25 @@ import { Modal } from "react-bootstrap";
 const PWAInstallPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     // Check if the device is iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     setIsIOS(isIOSDevice);
+
+    // Check if the device is Android
+    const isAndroidDevice = /Android/.test(navigator.userAgent);
+    setIsAndroid(isAndroidDevice);
+
+    // Only proceed if on a mobile device (iOS or Android)
+    const isMobileDevice = isIOSDevice || isAndroidDevice;
+
+    if (!isMobileDevice) {
+      // Don't show the prompt on desktop devices
+      return;
+    }
 
     // Handle Android install prompt
     const handleBeforeInstallPrompt = (e) => {
@@ -51,7 +64,7 @@ const PWAInstallPrompt = () => {
     setShowPrompt(false);
   };
 
-  if (!showPrompt) return null;
+  if (!showPrompt || (!isIOS && !isAndroid)) return null;
 
   return (
     <Modal show={showPrompt} onHide={handleClose} centered className="pwa-install-modal">

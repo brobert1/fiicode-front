@@ -2,8 +2,7 @@ module.exports = {
   sitename: "Pathly",
   title: "Pathly",
   description: `
-  Starter template for React and Next.js projects packed with features like authentication,
-  custom hooks, Tailwind support and many more.
+  Pathly. A platform for creating and sharing paths.
   `,
   baseurl: `${process.env.APP_BASE_URL}`,
   image: `${process.env.APP_BASE_URL}/images/logo.png`,

@@ -6,7 +6,7 @@ const IdentitiesList = ({ options }) => {
   const { data: identities, refetch, status } = useQuery("/client/identities", options);
 
   return (
-    <div className="space-y-3 mt-4 overflow-y-auto no-scrollbar">
+    <div className="space-y-3 mt-4 overflow-y-auto no-scrollbar pb-20">
       {status === "loading" && <Loading />}
       {status === "error" && <Error message="Error loading identities" />}
       {status === "success" && identities.length === 0 && (

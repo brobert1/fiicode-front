@@ -62,7 +62,11 @@ export const approveFriendRequest = async (id) => {
 };
 
 export const rejectFriendRequest = async (id) => {
-  return axiosAuth.put(`/client/reject-friend-request/${id}`);
+  return axiosAuth.delete(`/client/reject-friend-request/${id}`);
+};
+
+export const cancelFriendRequest = async (id) => {
+  return axiosAuth.delete(`/client/cancel-friend-request/${id}`);
 };
 
 export const createConversation = async (data) => {

@@ -37,6 +37,11 @@ const SlideUpMenu = ({ onGetDirections }) => {
 
     if (isOpen) {
       setIsOpen(false);
+      setTimeout(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      }, 10);
     } else {
       setIsOpen(true);
     }
@@ -49,6 +54,13 @@ const SlideUpMenu = ({ onGetDirections }) => {
   const closeMenu = () => {
     setIsTransitioning(true);
     setIsOpen(false);
+
+    setTimeout(() => {
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    }, 10);
+
     setTimeout(() => {
       setIsTransitioning(false);
     }, 300);
@@ -62,6 +74,11 @@ const SlideUpMenu = ({ onGetDirections }) => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
+        setTimeout(() => {
+          if (contentRef.current) {
+            contentRef.current.scrollTop = 0;
+          }
+        }, 10);
       }
     };
 

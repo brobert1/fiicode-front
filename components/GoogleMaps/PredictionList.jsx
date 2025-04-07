@@ -1,5 +1,6 @@
 import React from "react";
 import { classnames } from "@lib";
+import { Trim } from "@components";
 
 const PredictionList = ({ predictions, highlightedIndex, onSelect }) => {
   if (predictions.length === 0) return null;
@@ -38,8 +39,11 @@ const PredictionList = ({ predictions, highlightedIndex, onSelect }) => {
                 index === highlightedIndex ? "text-blue-100" : "text-gray-500"
               )}
             >
-              {prediction.structured_formatting?.secondary_text ||
-                prediction.description.split(",").slice(1).join(",")}
+              <Trim
+                value={prediction.structured_formatting?.secondary_text ||
+                  prediction.description.split(",").slice(1).join(",")}
+                limit={30}
+              />
             </div>
           </div>
         </li>

@@ -2,12 +2,15 @@ import React from "react";
 import { classnames } from "@lib";
 import PredictionList from "./PredictionList";
 import usePlacesSearch from "../../hooks/use-places-search";
+import { Trim } from "@components";
 
 const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
   const {
     inputValue,
     inputRef,
     predictions,
+    recentSearches,
+    showRecentSearches,
     predictionsRef,
     highlightedIndex,
     isActive,
@@ -15,9 +18,11 @@ const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
     isTransitioning,
     handleInputChange,
     handleInputFocus,
+    handleInputBlur,
     handleKeyDown,
     handlePredictionSelect,
     handleClearClick,
+    removeRecentSearch,
   } = usePlacesSearch({ isVisible, hasActiveDirections, onPlaceSelect });
 
   return (
@@ -38,6 +43,7 @@ const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             onClick={handleInputFocus}
             placeholder="Search for a place..."
             className={classnames(
@@ -68,7 +74,72 @@ const PlacesSearch = ({ isVisible, onPlaceSelect, hasActiveDirections }) => {
           </div>
         </div>
 
-        {predictions.length > 0 && (
+        {showRecentSearches && recentSearches.length > 0 && (
+          <div
+            className="absolute mt-1 w-full z-30 bg-white rounded-md shadow-lg overflow-hidden"
+            ref={predictionsRef}
+          >
+            <ul className="max-h-60 overflow-y-auto">
+              {recentSearches.map((prediction, index) => (
+                <li
+                  key={prediction.place_id}
+                  onClick={() => handlePredictionSelect(prediction)}
+                  className={classnames(
+                    "px-4 py-2 cursor-pointer flex items-start justify-between transition-colors duration-150 ease-in-out",
+                    index === highlightedIndex
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  )}
+                >
+                  <div className="flex items-start">
+                    <i
+                      className={classnames(
+                        "fa-solid fa-clock-rotate-left mt-1 mr-2 transition-colors duration-150 ease-in-out",
+                        index === highlightedIndex ? "text-white" : "text-blue-500"
+                      )}
+                    ></i>
+                    <div>
+                      <div
+                        className={classnames(
+                          "font-medium transition-colors duration-150 ease-in-out",
+                          index === highlightedIndex ? "text-white" : "text-gray-800"
+                        )}
+                      >
+                        {prediction.structured_formatting?.main_text ||
+                          prediction.description.split(",")[0]}
+                      </div>
+                      <div
+                        className={classnames(
+                          "text-sm transition-colors duration-150 ease-in-out",
+                          index === highlightedIndex ? "text-blue-100" : "text-gray-500"
+                        )}
+                      >
+                        <Trim
+                          value={prediction.structured_formatting?.secondary_text ||
+                            prediction.description.split(",").slice(1).join(",")}
+                          limit={30}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => removeRecentSearch(e, prediction.place_id)}
+                    className={classnames(
+                      "self-center text-xs p-1",
+                      index === highlightedIndex
+                        ? "text-white hover:text-blue-200"
+                        : "text-gray-400 hover:text-red-500"
+                    )}
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {predictions.length > 0 && !showRecentSearches && (
           <div
             className="absolute mt-1 w-full z-30 transition-opacity duration-300 ease-in-out"
             ref={predictionsRef}

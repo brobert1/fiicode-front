@@ -74,10 +74,12 @@ const PlaceDetails = ({ place, onClose, onGetDirections }) => {
   };
 
   return (
-    <div className={classnames(
-      "p-4 transition-all duration-300 ease-in-out",
-      isAnimating ? "animate-fadeIn" : ""
-    )}>
+    <div
+      className={classnames(
+        "p-4 transition-all duration-300 ease-in-out",
+        isAnimating ? "animate-fadeIn" : ""
+      )}
+    >
       <div className="flex justify-between items-start">
         <h2 className="text-xl font-bold text-gray-800">{place.name}</h2>
       </div>
@@ -96,7 +98,7 @@ const PlaceDetails = ({ place, onClose, onGetDirections }) => {
         </div>
       )}
 
-      <OpeningHours openingHours={place.openingHours} />
+      {place.openingHours && <OpeningHours openingHours={place.openingHours} />}
 
       <div className="mt-4 space-y-2">
         {place.phone && (

@@ -1,39 +1,33 @@
 import { useState, useEffect } from "react";
 import { parse, isWithinInterval } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
+import { utcToZonedTime, formatInTimeZone } from "date-fns-tz";
 
 export function useOpeningHours(openingHours) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!openingHours || !openingHours.weekdayText || openingHours.weekdayText.length === 0) {
-      return;
-    }
+    if (!openingHours?.weekdayText?.length) return;
 
     try {
       const romaniaTimeZone = "Europe/Bucharest";
+
+      // Use UTC -> Romania timezone
       const now = new Date();
+      const romaniaNow = utcToZonedTime(now, romaniaTimeZone);
 
-      // Get the day of week in Romania's timezone
-      const romaniaDate = new Date(
-        formatInTimeZone(now, romaniaTimeZone, "yyyy-MM-dd'T'HH:mm:ssXXX")
-      );
-      const dayOfWeek = romaniaDate.getDay();
-
+      const dayOfWeek = romaniaNow.getDay();
       const dayMapping = {
-        0: 6, // Sunday
-        1: 0, // Monday
-        2: 1, // Tuesday
-        3: 2, // Wednesday
-        4: 3, // Thursday
-        5: 4, // Friday
-        6: 5, // Saturday
+        0: 6,
+        1: 0,
+        2: 1,
+        3: 2,
+        4: 3,
+        5: 4,
+        6: 5,
       };
-
       const dayIndex = dayMapping[dayOfWeek];
       const todayText = openingHours.weekdayText[dayIndex];
 
-      // Check for closed text
       if (
         todayText.toLowerCase().includes("closed") ||
         todayText.toLowerCase().includes("închis")
@@ -42,20 +36,13 @@ export function useOpeningHours(openingHours) {
         return;
       }
 
-      // Ensure the expected format is present ("day: ...")
       if (!todayText.includes(": ")) {
         console.error("Unexpected format for opening hours", todayText);
         return;
       }
-      const parts = todayText.split(": ");
-      if (parts.length < 2) {
-        console.error("Cannot parse opening hours properly", todayText);
-        return;
-      }
+      const [, timeRangesText] = todayText.split(": ");
+      if (!timeRangesText) return;
 
-      const timeRangesText = parts[1].trim();
-
-      // Check if the text indicates 24/7 hours
       if (timeRangesText.toLowerCase().includes("24 de ore")) {
         setIsOpen(true);
         return;
@@ -63,24 +50,26 @@ export function useOpeningHours(openingHours) {
 
       const timeRanges = timeRangesText.split(", ");
 
-      // Get the current time in Romania's timezone
-      const romaniaTimeStr = formatInTimeZone(now, romaniaTimeZone, "HH:mm");
-      const romaniaTime = parse(romaniaTimeStr, "HH:mm", romaniaDate);
+      // Get the current time as a string
+      const currentTimeStr = formatInTimeZone(now, romaniaTimeZone, "HH:mm");
+      const fakeDate = new Date(2000, 0, 1); // 2000-01-01 (neutral base date)
+
+      const currentTime = parse(currentTimeStr, "HH:mm", fakeDate);
 
       let openNow = false;
       for (const range of timeRanges) {
         const separator = range.includes("–") ? "–" : "-";
         const [openStr, closeStr] = range.split(separator).map((s) => s.trim());
         if (openStr && closeStr) {
-          const openDate = parse(openStr, "HH:mm", romaniaDate);
-          let closeDate = parse(closeStr, "HH:mm", romaniaDate);
+          const openTime = parse(openStr, "HH:mm", fakeDate);
+          let closeTime = parse(closeStr, "HH:mm", fakeDate);
 
-          // Handle closing time past midnight
-          if (closeDate < openDate) {
-            closeDate.setDate(closeDate.getDate() + 1);
+          // If close time is earlier than open time, it's overnight
+          if (closeTime < openTime) {
+            closeTime.setDate(closeTime.getDate() + 1);
           }
 
-          if (isWithinInterval(romaniaTime, { start: openDate, end: closeDate })) {
+          if (isWithinInterval(currentTime, { start: openTime, end: closeTime })) {
             openNow = true;
             break;
           }

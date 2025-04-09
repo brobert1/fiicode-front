@@ -50,7 +50,7 @@ export const addFavouritePlace = async (data) => {
 };
 
 export const removeFavouritePlace = async (data) => {
-  return axiosAuth.delete(`/client/remove-favourite-place/${data._id}`);
+  return axiosAuth.put(`/client/remove-favourite-place`, data);
 };
 
 export const sendFriendRequest = async (data) => {

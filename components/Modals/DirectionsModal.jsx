@@ -25,6 +25,14 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound, initia
     handleDestinationSelect,
     handleGetDirections,
     handleSwapLocations,
+    // Waypoint related props
+    waypointInputs,
+    waypointPredictions,
+    waypointInputRefs,
+    handleWaypointInputChange,
+    handleWaypointSelect,
+    handleAddWaypoint,
+    handleRemoveWaypoint
   } = useDirectionsModal({
     isOpen,
     userLocation,
@@ -59,6 +67,46 @@ const DirectionsModal = ({ isOpen, hide, userLocation, onDirectionsFound, initia
             onSelect={handleOriginSelect}
             inputRef={originInputRef}
           />
+
+          {/* Waypoints section */}
+          {waypointInputs.map((input, index) => (
+            <div key={`waypoint-${index}`} className="relative">
+              <div className="flex items-center mb-4">
+                <div className="flex-grow">
+                  <LocationInput
+                    value={input}
+                    onChange={(e) => handleWaypointInputChange(e, index)}
+                    placeholder={`Stop ${index + 1}`}
+                    icon="fa-map-pin"
+                    iconColor="text-yellow-500"
+                    predictions={waypointPredictions[index] || []}
+                    highlightedIndex={-1}
+                    onSelect={(prediction) => handleWaypointSelect(prediction, index)}
+                    inputRef={(el) => (waypointInputRefs.current[index] = el)}
+                  />
+                </div>
+                <button
+                  onClick={() => handleRemoveWaypoint(index)}
+                  className="ml-2 bg-white rounded-full w-8 h-8 shadow-md flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors border border-gray-200"
+                  title="Remove stop"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className="absolute left-4 -bottom-2 h-4 w-0.5 bg-gray-300"></div>
+            </div>
+          ))}
+
+          {/* Add waypoint button */}
+          <div className="mb-4">
+            <button
+              onClick={handleAddWaypoint}
+              className="flex items-center text-blue-500 hover:text-blue-700 text-sm font-medium"
+            >
+              <i className="fas fa-plus-circle mr-2"></i>
+              Add stop
+            </button>
+          </div>
 
           <div className="flex justify-center -mt-2 mb-2">
             <button

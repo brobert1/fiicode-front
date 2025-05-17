@@ -84,3 +84,10 @@ export const markConversationAsRead = async (conversationId) => {
 export const updateLocation = async (data) => {
   return axiosAuth.put("/client/update-location", data);
 };
+
+export const validateNoisePollution = async ({ noiseLevel, location }) => {
+  return axiosAuth.post(`/client/validate-noise-pollution`, {
+    noiseLevel,
+    location,
+  });
+};

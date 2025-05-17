@@ -29,8 +29,6 @@ const MapLayoutPages = () => {
     const isChatsPage = router.pathname.includes("/client/chats");
     const conversationId = router.query.conversationId;
 
-    // If we're on the chats page with a specific conversation open,
-    // mark that conversation's messages as read
     if (isChatsPage && conversationId) {
       markAsRead(conversationId);
     }
@@ -39,12 +37,10 @@ const MapLayoutPages = () => {
   // Calculate total unread messages
   useEffect(() => {
     if (conversations && Array.isArray(conversations)) {
-      // If we're on the chats page with a specific conversation open, exclude that conversation's count
       const isChatsPage = router.pathname.includes("/client/chats");
       const currentConversationId = router.query.conversationId;
 
       const totalUnread = conversations.reduce((total, conversation) => {
-        // Skip the current conversation if we're viewing it
         if (isChatsPage && currentConversationId && conversation._id === currentConversationId) {
           return total;
         }
@@ -60,7 +56,6 @@ const MapLayoutPages = () => {
     const handleWebSocketMessage = (event) => {
       const data = event.detail;
       if (data.type === "messages_read" || data.type === "new_message") {
-        // Refetch conversations to get updated unread counts
         refetch();
       }
     };
@@ -92,6 +87,7 @@ const MapLayoutPages = () => {
       <MenuItem href="/client/notifications" className="flex items-center justify-center py-2">
         <i className="fa fa-bell text-xl"></i>
       </MenuItem>
+
       <div className="relative inline-block" ref={menuRef}>
         <ActionButton className="menu-item cursor-pointer px-2 py-2 pl-6" onClick={toggle}>
           <i
@@ -100,18 +96,32 @@ const MapLayoutPages = () => {
             }`}
           ></i>
         </ActionButton>
+
         {isOpen && (
-          <div className="absolute left-1/2 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 transform -translate-x-1/2 transition-opacity duration-200 ease-in-out opacity-100">
+          <div
+            className="
+              absolute left-1/2 bottom-full mb-2
+              min-w-max bg-white rounded-md shadow-lg py-1 z-20
+              transform -translate-x-1/2
+              transition-opacity duration-200 ease-in-out opacity-100
+            "
+          >
             <Link
               href="/client/friend-requests"
-              className="flex w-full items-center px-4 py-2 text-sm text-black
-              hover:bg-gray-100"
+              className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
             >
               <i className="fas fa-user-friends w-6"></i>
               Friend Requests
             </Link>
+            <Link
+              href="/client/check-noise-pollution"
+              className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
+            >
+              <i className="fas fa-ear-deaf w-6"></i>
+              Check noise pollution
+            </Link>
             <Button
-              className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+              className="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100 whitespace-nowrap"
               onClick={handleLogout}
             >
               <i className="fas fa-sign-out-alt w-6"></i>
@@ -120,6 +130,7 @@ const MapLayoutPages = () => {
           </div>
         )}
       </div>
+
       <MenuItem href="/client/account" className="flex items-center justify-center py-2">
         <i className="fa fa-user text-xl"></i>
       </MenuItem>

@@ -1,12 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 
-const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
+const DirectionsHandler = ({ directions, routeInfo, onRouteChange, onLegSelect }) => {
   const map = useMap();
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const polylineRefs = useRef([]);
+  const legPolylineRefs = useRef([]);
+  const outlinePolylineRefs = useRef([]);
   const markerRefs = useRef([]);
   const activeInfoWindow = useRef(null);
+  const [selectedLegIndex, setSelectedLegIndex] = useState(0);
 
   // Clean up polylines and markers when component unmounts or directions change
   useEffect(() => {
@@ -19,6 +22,23 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         }
       });
       polylineRefs.current = [];
+
+      // Clean up leg polylines
+      legPolylineRefs.current.forEach((polyline) => {
+        if (polyline) {
+          window.google.maps.event.clearInstanceListeners(polyline);
+          polyline.setMap(null);
+        }
+      });
+      legPolylineRefs.current = [];
+
+      // Clean up outline polylines
+      outlinePolylineRefs.current.forEach((polyline) => {
+        if (polyline) {
+          polyline.setMap(null);
+        }
+      });
+      outlinePolylineRefs.current = [];
 
       // Clean up markers
       markerRefs.current.forEach((marker) => {
@@ -112,6 +132,22 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         return "#6A1B9A"; // Darker purple
       default:
         return "#003380"; // Default darker blue
+    }
+  };
+
+  // Get inactive color for non-selected legs
+  const getInactiveColor = (travelMode) => {
+    switch (travelMode) {
+      case "DRIVING":
+        return "#C7D8F2"; // Very light blue
+      case "WALKING":
+        return "#D9F2E3"; // Very light green
+      case "TRANSIT":
+        return "#F2D9D1"; // Very light red
+      case "RIDESHARING":
+        return "#E8D9EF"; // Very light purple
+      default:
+        return "#E5E5E5"; // Light grey
     }
   };
 
@@ -296,6 +332,66 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
     });
   };
 
+  // Handle leg selection
+  const handleLegSelect = useCallback((legIndex) => {
+    setSelectedLegIndex(legIndex);
+
+    // Get colors for the travel mode
+    const travelMode = routeInfo?.travelMode || "DRIVING";
+    const primaryColor = getTravelModeColor(travelMode);
+    const inactiveColor = getInactiveColor(travelMode);
+    const outlineColor = getOutlineColor(travelMode);
+
+    // Update polyline colors based on selection
+    legPolylineRefs.current.forEach((polyline, index) => {
+      if (!polyline) return;
+
+      if (index === legIndex) {
+        // Highlight selected leg
+        polyline.setOptions({
+          strokeColor: primaryColor,
+          strokeWeight: 6,
+          strokeOpacity: 1.0,
+          zIndex: 10
+        });
+      } else {
+        // Dim other legs
+        polyline.setOptions({
+          strokeColor: inactiveColor,
+          strokeWeight: 4,
+          strokeOpacity: 0.7,
+          zIndex: 5
+        });
+      }
+    });
+
+    // Update outline polylines
+    outlinePolylineRefs.current.forEach((polyline, index) => {
+      if (!polyline) return;
+
+      if (index === legIndex) {
+        // Highlighted outline for selected leg
+        polyline.setOptions({
+          strokeColor: outlineColor,
+          strokeOpacity: 0.7,
+          zIndex: 9
+        });
+      } else {
+        // Dim outline for other legs
+        polyline.setOptions({
+          strokeColor: "#999999", // Generic gray for non-selected outlines
+          strokeOpacity: 0.4,
+          zIndex: 4
+        });
+      }
+    });
+
+    // Notify parent component about leg selection
+    if (onLegSelect) {
+      onLegSelect(legIndex);
+    }
+  }, [routeInfo, onLegSelect]);
+
   useEffect(() => {
     if (!directionsRenderer || !directions || !map) return;
 
@@ -308,6 +404,21 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
       }
     });
     polylineRefs.current = [];
+
+    legPolylineRefs.current.forEach((polyline) => {
+      if (polyline) {
+        window.google.maps.event.clearInstanceListeners(polyline);
+        polyline.setMap(null);
+      }
+    });
+    legPolylineRefs.current = [];
+
+    outlinePolylineRefs.current.forEach((polyline) => {
+      if (polyline) {
+        polyline.setMap(null);
+      }
+    });
+    outlinePolylineRefs.current = [];
 
     markerRefs.current.forEach((marker) => {
       if (marker) {
@@ -374,10 +485,15 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
     const primaryColor = getTravelModeColor(travelMode);
     const secondaryColor = getSecondaryColor(travelMode);
     const outlineColor = getOutlineColor(travelMode);
+    const inactiveColor = getInactiveColor(travelMode);
 
     // Create custom polylines for each route
     if (directions.routes && directions.routes.length > 0) {
-      directions.routes.forEach((route, index) => {
+      // Handle alternative routes
+      directions.routes.forEach((route, routeIndex) => {
+        // Skip the primary route for now - we'll handle it separately for segments
+        if (routeIndex === 0) return;
+
         const path = [];
 
         // Extract path from route legs
@@ -398,62 +514,41 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
           });
         }
 
-        // For primary route, create an outline polyline first for better visibility
-        if (index === 0) {
-          const outlinePolyline = new window.google.maps.Polyline({
-            path: path,
-            strokeColor: outlineColor,
-            strokeWeight: 8, // Wider than the main line
-            strokeOpacity: 0.7,
-            zIndex: 9, // Below the main line
-            map: map,
-          });
-          polylineRefs.current.push(outlinePolyline);
-
-          // For transit mode, add transfer markers on the primary route
-          if (travelMode === "TRANSIT") {
-            createTransferMarkers(route);
-          }
-        }
-
-        // Create polyline for this route
+        // Create polyline for this alternative route
         const polyline = new window.google.maps.Polyline({
           path: path,
-          strokeColor: index === 0 ? primaryColor : secondaryColor,
-          strokeWeight: index === 0 ? 6 : 4, // Increased weight for primary
-          strokeOpacity: index === 0 ? 1.0 : 0.7, // Increased opacity for better visibility
-          zIndex: index === 0 ? 10 : 5, // Primary route on top
+          strokeColor: secondaryColor,
+          strokeWeight: 4,
+          strokeOpacity: 0.7,
+          zIndex: 5,
           map: map,
-          clickable: true, // Make polyline clickable
-          cursor: "pointer", // Change cursor on hover
+          clickable: true,
+          cursor: "pointer",
         });
 
-        // Add click event listener to all polylines
-        if (onRouteChange && index > 0) {
-          // Only add click handlers to alternative routes
+        // Add click event listener to alternative routes
+        if (onRouteChange) {
           polyline.addListener("click", () => {
-            // Close any open info window when changing routes
             if (activeInfoWindow.current) {
               activeInfoWindow.current.close();
               activeInfoWindow.current = null;
             }
-
-            handleRouteClick(index);
+            handleRouteClick(routeIndex);
           });
 
           // Add hover effects
           polyline.addListener("mouseover", () => {
             polyline.setOptions({
-              strokeColor: primaryColor, // Change to primary color on hover
+              strokeColor: primaryColor,
               strokeOpacity: 0.8,
               strokeWeight: 5,
-              zIndex: 9, // Above other alternatives but below primary
+              zIndex: 9,
             });
           });
 
           polyline.addListener("mouseout", () => {
             polyline.setOptions({
-              strokeColor: secondaryColor, // Back to secondary color
+              strokeColor: secondaryColor,
               strokeOpacity: 0.7,
               strokeWeight: 4,
               zIndex: 5,
@@ -463,6 +558,112 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
 
         polylineRefs.current.push(polyline);
       });
+
+      // Now handle the primary route with segments
+      const primaryRoute = directions.routes[0];
+
+      // Reset leg-related arrays
+      legPolylineRefs.current = [];
+      outlinePolylineRefs.current = [];
+
+      if (primaryRoute.legs && primaryRoute.legs.length > 0) {
+        // Create segment polylines for each leg in the primary route
+        primaryRoute.legs.forEach((leg, legIndex) => {
+          const legPath = [];
+
+          // Extract path from the leg steps
+          if (leg.steps) {
+            leg.steps.forEach((step) => {
+              if (step.path) {
+                legPath.push(...step.path);
+              } else {
+                legPath.push(step.start_location);
+                legPath.push(step.end_location);
+              }
+            });
+          }
+
+          // Create outline polyline for this leg segment
+          const outlinePolyline = new window.google.maps.Polyline({
+            path: legPath,
+            strokeColor: legIndex === selectedLegIndex ? outlineColor : "#999999",
+            strokeWeight: 8,
+            strokeOpacity: legIndex === selectedLegIndex ? 0.7 : 0.4,
+            zIndex: legIndex === selectedLegIndex ? 9 : 4,
+            map: map,
+          });
+          outlinePolylineRefs.current.push(outlinePolyline);
+
+          // Create main polyline for this leg segment
+          const legPolyline = new window.google.maps.Polyline({
+            path: legPath,
+            strokeColor: legIndex === selectedLegIndex ? primaryColor : inactiveColor,
+            strokeWeight: legIndex === selectedLegIndex ? 6 : 4,
+            strokeOpacity: legIndex === selectedLegIndex ? 1.0 : 0.7,
+            zIndex: legIndex === selectedLegIndex ? 10 : 5,
+            map: map,
+            clickable: true,
+            cursor: "pointer",
+          });
+
+          // Add click handler for leg selection
+          legPolyline.addListener("click", () => {
+            if (activeInfoWindow.current) {
+              activeInfoWindow.current.close();
+              activeInfoWindow.current = null;
+            }
+            handleLegSelect(legIndex);
+          });
+
+          // Add hover effects
+          legPolyline.addListener("mouseover", () => {
+            if (legIndex !== selectedLegIndex) {
+              legPolyline.setOptions({
+                strokeColor: primaryColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 5,
+                zIndex: 8,
+              });
+
+              // Also update the outline on hover
+              if (outlinePolylineRefs.current[legIndex]) {
+                outlinePolylineRefs.current[legIndex].setOptions({
+                  strokeColor: outlineColor,
+                  strokeOpacity: 0.5,
+                  zIndex: 7
+                });
+              }
+            }
+          });
+
+          legPolyline.addListener("mouseout", () => {
+            if (legIndex !== selectedLegIndex) {
+              legPolyline.setOptions({
+                strokeColor: inactiveColor,
+                strokeOpacity: 0.7,
+                strokeWeight: 4,
+                zIndex: 5,
+              });
+
+              // Reset outline on mouseout
+              if (outlinePolylineRefs.current[legIndex]) {
+                outlinePolylineRefs.current[legIndex].setOptions({
+                  strokeColor: "#999999",
+                  strokeOpacity: 0.4,
+                  zIndex: 4
+                });
+              }
+            }
+          });
+
+          legPolylineRefs.current.push(legPolyline);
+        });
+
+        // For transit mode, add transfer markers on the primary route
+        if (travelMode === "TRANSIT") {
+          createTransferMarkers(primaryRoute);
+        }
+      }
 
       // Fit the map to the directions
       const bounds = new window.google.maps.LatLngBounds();
@@ -476,7 +677,16 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
         bounds.extend(routeInfo.destination.location);
       }
 
-      // Add all waypoints in all routes to bounds
+      // Add waypoints to bounds if they exist
+      if (routeInfo?.waypoints) {
+        routeInfo.waypoints.forEach(waypoint => {
+          if (waypoint && waypoint.location) {
+            bounds.extend(waypoint.location);
+          }
+        });
+      }
+
+      // Add all steps in the route to bounds
       directions.routes.forEach((route) => {
         if (route.legs) {
           route.legs.forEach((leg) => {
@@ -492,8 +702,11 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
 
       // Fit the map to these bounds
       map.fitBounds(bounds);
+
+      // Automatically select the first leg
+      handleLegSelect(0);
     }
-  }, [directionsRenderer, directions, map, routeInfo, onRouteChange]);
+  }, [directionsRenderer, directions, map, routeInfo, onRouteChange, handleLegSelect]);
 
   // Handle route click
   const handleRouteClick = (index) => {
@@ -510,6 +723,9 @@ const DirectionsHandler = ({ directions, routeInfo, onRouteChange }) => {
 
     // Update the directions in the parent component
     onRouteChange(newDirections);
+
+    // Reset selected leg index when changing routes
+    setSelectedLegIndex(0);
   };
 
   return null;

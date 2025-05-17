@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { Map } from "@vis.gl/react-google-maps";
 import {
   LocationButton,
@@ -48,6 +48,9 @@ const GoogleMapSuccess = ({
 }) => {
   // Add state to track newly selected place
   const [newlySelectedPlaceId, setNewlySelectedPlaceId] = useState(null);
+  const [airQualityData, setAirQualityData] = useState(null);
+  // Add state for selected leg index
+  const [selectedLegIndex, setSelectedLegIndex] = useState(0);
 
   // Use custom hooks to manage component state and logic
   const {
@@ -108,11 +111,32 @@ const GoogleMapSuccess = ({
     // Clear custom routes
     setDisplayedCustomRoutes([]);
     setSelectedCustomRouteIndex(-1);
+
+    // Reset selected leg index
+    setSelectedLegIndex(0);
   };
+
+  // Handle leg selection
+  const handleLegSelect = useCallback((legIndex) => {
+    setSelectedLegIndex(legIndex);
+  }, []);
 
   const { clickedLocation, handleMapClick, handleCloseTooltip } = useMapClickTooltip({
     directionsActive: directions !== null || directionsVisible,
   });
+
+  // Handler for air quality data from AirQualityLayer
+  const handleAirQualityData = useCallback((data) => {
+    if (data) {
+      setAirQualityData(data);
+    }
+  }, []);
+
+  // Reset air quality data when the tooltip is closed
+  const handleCloseTooltipWithReset = useCallback(() => {
+    setAirQualityData(null);
+    handleCloseTooltip();
+  }, [handleCloseTooltip]);
 
   // Fetch alerts from the API
   const { data: alertsData } = useQuery("/alerts");
@@ -181,7 +205,10 @@ const GoogleMapSuccess = ({
         <TrafficLayer visible={layers.traffic} />
         <TransitLayer visible={layers.transit} />
         <SatelliteLayer visible={layers.satellite} />
-        <AirQualityLayer visible={layers.airQuality} />
+        <AirQualityLayer
+          visible={layers.airQuality}
+          onAirQualityData={layers.airQuality ? handleAirQualityData : null}
+        />
 
         {/* Display friend markers */}
         {friends &&
@@ -190,7 +217,7 @@ const GoogleMapSuccess = ({
           ))}
 
         {/* Display alert markers */}
-        {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} />)}
+        {alerts && alerts.map((alert) => <AlertMarker key={alert._id} alert={alert} airQualityLayerVisible={layers.airQuality} />)}
 
         {searchedPlaces
           .filter((place) => place && place.id !== directionDestinationId)
@@ -208,8 +235,9 @@ const GoogleMapSuccess = ({
         {clickedLocation && (
           <MapClickTooltip
             position={clickedLocation}
-            onClose={handleCloseTooltip}
+            onClose={handleCloseTooltipWithReset}
             onGetDirections={handleGetDirections}
+            airQualityData={layers.airQuality ? airQualityData : null}
           />
         )}
 
@@ -219,6 +247,7 @@ const GoogleMapSuccess = ({
             directions={directions}
             routeInfo={routeInfo}
             onRouteChange={handleRouteChange}
+            onLegSelect={handleLegSelect}
           />
         )}
 
@@ -255,6 +284,7 @@ const GoogleMapSuccess = ({
             onDirectionsUpdate: handleDirectionsUpdate,
           }}
           onClearDirections={handleClearDirectionsAndCustomRoutes}
+          selectedLegIndex={selectedLegIndex}
         />
       )}
 

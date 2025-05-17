@@ -3,8 +3,9 @@ import { AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 import { usePlaceInfo, useDisclosure, useFavoriteDirections } from "@hooks";
 import { TooltipContent, MarkerIcon } from ".";
 import { AlertModal } from "@components/Modals";
+import PollutionInfoWindow from "./InfoWindows/PollutionInfoWindow";
 
-const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
+const MapClickTooltip = ({ position, onClose, onGetDirections, airQualityData }) => {
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
@@ -106,6 +107,12 @@ const MapClickTooltip = ({ position, onClose, onGetDirections }) => {
                 onGetDirections={handleGetDirections}
                 onSetAlert={handleSetAlert}
               />
+
+              {airQualityData && (
+                <div className="mt-4 border-t pt-3">
+                  <PollutionInfoWindow data={airQualityData} />
+                </div>
+              )}
             </div>
           </InfoWindow>
         )}

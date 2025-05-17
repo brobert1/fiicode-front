@@ -1,69 +1,101 @@
-import { useEffect, useRef } from 'react';
-import { useMap } from '@vis.gl/react-google-maps';
+import { useEffect, useRef, useCallback } from "react";
+import { useMap } from "@vis.gl/react-google-maps";
 
-const AirQualityLayer = ({ visible }) => {
+const AirQualityLayer = ({ visible, onAirQualityData }) => {
   const map = useMap();
-  const airQualityMapTypeRef = useRef(null); // Use a ref to store the map type instance
+  const airQualityMapTypeRef = useRef(null);
+  const fixedMapType = "UAQI_INDIGO_PERSIAN";
+
+  const fetchConcentrationData = useCallback(async (latLng) => {
+    try {
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      const response = await fetch(
+        `https://airquality.googleapis.com/v1/currentConditions:lookup?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location: {
+              latitude: latLng.lat(),
+              longitude: latLng.lng(),
+            },
+            extraComputations: [
+              "POLLUTANT_CONCENTRATION",
+              "DOMINANT_POLLUTANT_CONCENTRATION",
+              "POLLUTANT_ADDITIONAL_INFO",
+              "HEALTH_RECOMMENDATIONS",
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching concentration data:", error);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
-    // Ensure map instance and Google Maps API are available
-    if (!map || typeof window.google === 'undefined' || typeof window.google.maps === 'undefined') {
-      if (map && (typeof window.google === 'undefined' || typeof window.google.maps === 'undefined')) {
-        // Map is loaded, but google.maps not yet. This case should ideally be handled by useMap or APIProvider.
-        console.warn("AirQualityLayer: map is available, but google.maps is not. Retrying might be needed or check API loading.");
-      }
-      return;
-    }
+    if (!map || typeof window.google === "undefined" || !window.google.maps) return;
 
-    const TILE_SIZE = 256; // Google Maps tile size
-
-    const createLayer = () => {
-      if (airQualityMapTypeRef.current) return; // Already created
-
-      // Try multiple possible environment variable names
-      const apiKey = process.env.GOOGLE_MAPS_API_KEY ||
-                     process.env.REACT_APP_GOOGLE_MAPS_API_KEY ||
-                     process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-      if (!apiKey) {
-        console.error("API Key for Air Quality is missing. Check your environment variables.");
-        return; // Don't create the layer without an API key
-      }
-
-      // Using U.S. AQI color scheme to match the image
-      const airQualityTileLayerOptions = {
-        getTileUrl: (coord, zoom) => {
-          // "US_AQI" is the correct tile type for the U.S. Air Quality Index visualization
-          const tileType = 'US_AQI';
-          const url = `https://airquality.googleapis.com/v1/mapTypes/${tileType}/heatmapTiles/${zoom}/${coord.x}/${coord.y}?key=${apiKey}`;
-          return url;
-        },
-        tileSize: new window.google.maps.Size(TILE_SIZE, TILE_SIZE),
-        isPng: true,
-        name: 'AirQuality',
-        maxZoom: 16,
-        minZoom: 0,
-        opacity: 0.75, // Adjusted for better visibility
-      };
-
-      try {
-        airQualityMapTypeRef.current = new window.google.maps.ImageMapType(airQualityTileLayerOptions);
-        map.overlayMapTypes.insertAt(0, airQualityMapTypeRef.current);
-      } catch (error) {
-        console.error("Error creating Air Quality layer:", error);
-      }
-    };
+    const TILE_SIZE = 256;
+    let zoomListener;
+    let clickListener;
 
     const removeLayer = () => {
-      if (airQualityMapTypeRef.current && map && map.overlayMapTypes) {
+      if (airQualityMapTypeRef.current && map.overlayMapTypes) {
         for (let i = 0; i < map.overlayMapTypes.getLength(); i++) {
-          const layer = map.overlayMapTypes.getAt(i);
-          if (layer === airQualityMapTypeRef.current) { // Compare instance directly
+          if (map.overlayMapTypes.getAt(i) === airQualityMapTypeRef.current) {
             map.overlayMapTypes.removeAt(i);
             break;
           }
         }
         airQualityMapTypeRef.current = null;
+      }
+    };
+
+    const createLayer = () => {
+      if (airQualityMapTypeRef.current) {
+        removeLayer();
+      }
+
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      try {
+        const options = {
+          getTileUrl: (coord, zoom) =>
+            `https://airquality.googleapis.com/v1/mapTypes/${fixedMapType}/heatmapTiles/${zoom}/${coord.x}/${coord.y}?key=${apiKey}`,
+          tileSize: new window.google.maps.Size(TILE_SIZE, TILE_SIZE),
+          isPng: true,
+          name: "AirQuality",
+          maxZoom: 20,
+          minZoom: 0,
+          opacity: 0.8,
+        };
+        airQualityMapTypeRef.current = new window.google.maps.ImageMapType(options);
+        map.overlayMapTypes.insertAt(0, airQualityMapTypeRef.current);
+
+        // Listen for zoom changes
+        zoomListener = map.addListener("zoom_changed", () => {
+          // We can keep track of zoom if needed in the future
+        });
+
+        // Listen for clicks when layer is visible
+        if (typeof onAirQualityData === "function") {
+          clickListener = map.addListener("click", async (event) => {
+            if (map.getZoom() >= 12) {
+              const data = await fetchConcentrationData(event.latLng);
+              if (data) {
+                onAirQualityData(data);
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.error(`Error adding layer ${fixedMapType}:`, error);
       }
     };
 
@@ -73,14 +105,20 @@ const AirQualityLayer = ({ visible }) => {
       removeLayer();
     }
 
-    // Cleanup function
+    // Cleanup on unmount or when dependencies change
     return () => {
-      // Check if map is still available during unmount, as map instance might be destroyed before this cleanup
-      if (map && map.overlayMapTypes && airQualityMapTypeRef.current) {
-         removeLayer();
-      }
+      if (zoomListener) window.google.maps.event.removeListener(zoomListener);
+      if (clickListener) window.google.maps.event.removeListener(clickListener);
+      removeLayer();
     };
-  }, [map, visible]);
+  }, [map, visible, onAirQualityData, fetchConcentrationData]);
+
+  // Export the fetch function for external use
+  useEffect(() => {
+    if (typeof onAirQualityData === "function") {
+      onAirQualityData.fetchData = fetchConcentrationData;
+    }
+  }, [onAirQualityData, fetchConcentrationData]);
 
   return null;
 };

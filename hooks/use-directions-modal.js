@@ -29,6 +29,12 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
   // Default to driving mode
   const travelMode = "DRIVING";
 
+  // Add waypoints state
+  const [waypoints, setWaypoints] = useState([]);
+  const [waypointInputs, setWaypointInputs] = useState([]);
+  const [waypointPredictions, setWaypointPredictions] = useState([]);
+  const waypointInputRefs = useRef([]);
+
   const originInputRef = useRef(null);
   const destinationInputRef = useRef(null);
 
@@ -86,6 +92,11 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
       setDestinationHighlightedIndex(-1);
       setError(null);
 
+      // Clear waypoints when modal is closed
+      setWaypoints([]);
+      setWaypointInputs([]);
+      setWaypointPredictions([]);
+
       // Reset destination input when modal is closed
       if (destinationInput && !initialDestination) {
         setDestinationInput("");
@@ -126,6 +137,36 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
     300
   );
 
+  // Fetch waypoint predictions with debounce
+  const debouncedFetchWaypointPredictions = debounce(
+    (input, index) => {
+      if (!autocompleteService || !input) {
+        const newPredictions = [...waypointPredictions];
+        newPredictions[index] = [];
+        setWaypointPredictions(newPredictions);
+        return;
+      }
+
+      autocompleteService.getPlacePredictions(
+        {
+          input,
+          componentRestrictions: { country: "ro" },
+          types: ["geocode", "establishment"],
+        },
+        (predictions, status) => {
+          const newPredictions = [...waypointPredictions];
+          if (status !== window.google.maps.places.PlacesServiceStatus.OK || !predictions) {
+            newPredictions[index] = [];
+          } else {
+            newPredictions[index] = predictions.slice(0, 5);
+          }
+          setWaypointPredictions(newPredictions);
+        }
+      );
+    },
+    300
+  );
+
   const handleOriginInputChange = (e) => {
     const value = e.target.value;
     setOriginInput(value);
@@ -138,6 +179,22 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
     setDestinationInput(value);
     setDestination(null);
     debouncedFetchDestinationPredictions(value);
+  };
+
+  // Handle waypoint input change
+  const handleWaypointInputChange = (e, index) => {
+    const value = e.target.value;
+    const newWaypointInputs = [...waypointInputs];
+    newWaypointInputs[index] = value;
+    setWaypointInputs(newWaypointInputs);
+
+    // Reset the waypoint at this index
+    const newWaypoints = [...waypoints];
+    newWaypoints[index] = null;
+    setWaypoints(newWaypoints);
+
+    // Fetch predictions for this waypoint
+    debouncedFetchWaypointPredictions(value, index);
   };
 
   const handleOriginSelect = (prediction) => {
@@ -203,17 +260,103 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
     );
   };
 
+  // Handle waypoint selection
+  const handleWaypointSelect = (prediction, index) => {
+    if (!places) return;
+
+    const placesService = new places.PlacesService(document.createElement("div"));
+
+    placesService.getDetails(
+      {
+        placeId: prediction.place_id,
+        fields: ["geometry", "formatted_address", "place_id", "name"],
+      },
+      (place, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+          const selectedWaypoint = {
+            id: prediction.place_id,
+            description: prediction.description,
+            location: {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+            },
+          };
+
+          // Update waypoints array
+          const newWaypoints = [...waypoints];
+          newWaypoints[index] = selectedWaypoint;
+          setWaypoints(newWaypoints);
+
+          // Update waypoint inputs
+          const newWaypointInputs = [...waypointInputs];
+          newWaypointInputs[index] = prediction.description;
+          setWaypointInputs(newWaypointInputs);
+
+          // Clear predictions for this waypoint
+          const newPredictions = [...waypointPredictions];
+          newPredictions[index] = [];
+          setWaypointPredictions(newPredictions);
+
+          // Focus the next waypoint or destination if this is the last waypoint
+          if (index < waypointInputs.length - 1) {
+            waypointInputRefs.current[index + 1]?.focus();
+          } else if (!destination) {
+            destinationInputRef.current?.focus();
+          }
+        }
+      }
+    );
+  };
+
+  // Add a new waypoint
+  const handleAddWaypoint = () => {
+    setWaypointInputs([...waypointInputs, ""]);
+    setWaypoints([...waypoints, null]);
+    setWaypointPredictions([...waypointPredictions, []]);
+
+    // Focus on the newly added waypoint input after it's rendered
+    setTimeout(() => {
+      const newIndex = waypointInputs.length;
+      waypointInputRefs.current[newIndex]?.focus();
+    }, 100);
+  };
+
+  // Remove a waypoint
+  const handleRemoveWaypoint = (index) => {
+    const newWaypointInputs = [...waypointInputs];
+    newWaypointInputs.splice(index, 1);
+    setWaypointInputs(newWaypointInputs);
+
+    const newWaypoints = [...waypoints];
+    newWaypoints.splice(index, 1);
+    setWaypoints(newWaypoints);
+
+    const newPredictions = [...waypointPredictions];
+    newPredictions.splice(index, 1);
+    setWaypointPredictions(newPredictions);
+  };
+
   const handleGetDirections = () => {
     if (!directionsService || !origin || !destination) return;
 
     setIsLoading(true);
     setError(null);
 
+    // Filter out any null waypoints and format them for the directions request
+    const formattedWaypoints = waypoints
+      .filter(waypoint => waypoint !== null)
+      .map(waypoint => ({
+        location: waypoint.location,
+        stopover: true
+      }));
+
     const request = {
       origin: origin.location,
       destination: destination.location,
       travelMode: window.google.maps.TravelMode[travelMode],
       provideRouteAlternatives: true,
+      waypoints: formattedWaypoints,
+      optimizeWaypoints: false // Keep waypoints in the specified order
     };
 
     directionsService.route(request, (result, status) => {
@@ -224,11 +367,15 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
           origin: origin,
           destination: destination,
           travelMode: travelMode,
+          waypoints: waypoints.filter(waypoint => waypoint !== null)
         });
 
-        // Clear destination input after successful search
+        // Clear destination and waypoints after successful search
         setDestinationInput("");
         setDestination(null);
+        setWaypoints([]);
+        setWaypointInputs([]);
+        setWaypointPredictions([]);
 
         // Hide the modal after successful directions retrieval
         if (hide) {
@@ -271,7 +418,16 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
     handleOriginSelect,
     handleDestinationSelect,
     handleGetDirections,
-    handleSwapLocations
+    handleSwapLocations,
+    // Waypoint related returns
+    waypoints,
+    waypointInputs,
+    waypointPredictions,
+    waypointInputRefs,
+    handleWaypointInputChange,
+    handleWaypointSelect,
+    handleAddWaypoint,
+    handleRemoveWaypoint
   };
 };
 

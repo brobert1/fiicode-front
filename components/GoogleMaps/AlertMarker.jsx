@@ -13,6 +13,8 @@ const getAlertIconByType = (type) => {
       return "fa-hard-hat";
     case "congestion":
       return "fa-traffic-light";
+    case "noise":
+      return "fa-volume-high";
     case "other":
     default:
       return "fa-exclamation-triangle";
@@ -27,6 +29,8 @@ const getAlertColorByType = (type) => {
       return "bg-yellow-500";
     case "congestion":
       return "bg-orange-500";
+    case "noise":
+      return "bg-purple-500";
     case "other":
     default:
       return "bg-blue-500";
@@ -36,7 +40,7 @@ const getAlertColorByType = (type) => {
 // Minimum zoom level at which markers should be visible
 const MIN_ZOOM_LEVEL = 12;
 
-const AlertMarker = ({ alert }) => {
+const AlertMarker = ({ alert, airQualityLayerVisible }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const position = { lat: alert.location.latitude, lng: alert.location.longitude };
@@ -51,16 +55,23 @@ const AlertMarker = ({ alert }) => {
   const { me } = useProfile();
   const isAdmin = me?.role === "admin";
 
-  // Update marker visibility based on zoom level
+  // Update marker visibility based on zoom level and, for noise type, air quality layer visibility
   useEffect(() => {
     if (!map) return;
 
     const handleZoomChanged = () => {
       const currentZoom = map.getZoom();
-      setIsVisible(currentZoom >= MIN_ZOOM_LEVEL);
+      const isZoomSufficient = currentZoom >= MIN_ZOOM_LEVEL;
+
+      // For noise alerts, check if air quality layer is visible
+      if (alert.type === "noise") {
+        setIsVisible(isZoomSufficient && airQualityLayerVisible);
+      } else {
+        setIsVisible(isZoomSufficient);
+      }
     };
 
-    // Check initial zoom level
+    // Check initial visibility
     handleZoomChanged();
 
     // Add listener for zoom changes
@@ -72,7 +83,7 @@ const AlertMarker = ({ alert }) => {
         listener.remove();
       }
     };
-  }, [map]);
+  }, [map, alert.type, airQualityLayerVisible]);
 
   const handleMarkerClick = () => {
     if (isAdmin) {

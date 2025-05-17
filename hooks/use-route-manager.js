@@ -93,6 +93,7 @@ const useRouteManager = ({ directions, routeInfo, onDirectionsUpdate }) => {
 
       setIsChangingMode(true);
 
+      // Create the directions request
       const request = {
         origin: routeInfo.origin.location,
         destination: routeInfo.destination.location,
@@ -100,11 +101,23 @@ const useRouteManager = ({ directions, routeInfo, onDirectionsUpdate }) => {
         provideRouteAlternatives: true,
       };
 
+      // Add waypoints if they exist in the route info
+      if (routeInfo.waypoints && routeInfo.waypoints.length > 0) {
+        // Format waypoints for the directions request
+        request.waypoints = routeInfo.waypoints.map(waypoint => ({
+          location: waypoint.location,
+          stopover: true
+        }));
+
+        // Keep waypoints in the same order (don't optimize)
+        request.optimizeWaypoints = false;
+      }
+
       directionsService.route(request, (result, status) => {
         setIsChangingMode(false);
 
         if (status === routesLibrary.DirectionsStatus.OK) {
-          // Update directions with the new travel mode
+          // Update directions with the new travel mode, preserving waypoints
           if (onDirectionsUpdate) {
             onDirectionsUpdate(result, {
               ...routeInfo,
@@ -113,6 +126,11 @@ const useRouteManager = ({ directions, routeInfo, onDirectionsUpdate }) => {
           }
         } else {
           console.error("Directions request failed:", status);
+          // If the route fails with the selected mode, provide feedback
+          // This can happen with certain travel modes (like transit) that may not be available for all routes
+          alert(`Cannot calculate route with ${newMode} mode. Please try a different travel mode.`);
+          // Reset to the previous travel mode
+          setSelectedTravelMode(routeInfo?.travelMode || "DRIVING");
         }
       });
     },

@@ -15,6 +15,9 @@ const Pages = () => {
       <MenuItem href="/admin/partners" level="1">
         <i className="fas fa-handshake mr-2" /> Partners
       </MenuItem>
+      <MenuItem href="/admin/knowledge-feed" level="1">
+        <i className="fas fa-book mr-2" /> Knowledge Base
+      </MenuItem>
     </>
   );
 };

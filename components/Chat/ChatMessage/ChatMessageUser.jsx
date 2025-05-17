@@ -12,7 +12,7 @@ const ChatMessageUser = ({ text }) => {
             wordBreak: 'break-word',
           }}
         >
-          <p className="break-normal leading-6">{text}</p>
+          <p className="break-normal text-black leading-6">{text}</p>
         </div>
       </div>
     </>

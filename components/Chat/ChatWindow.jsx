@@ -5,25 +5,24 @@
  * We are gracefully handling receiving the context here and attaching it to the message.
  */
 
-import { store } from '@auth';
-import { classnames, toaster } from '@lib';
-import { useRef, useState } from 'react';
-import ChatHeader from './ChatHeader';
-import ChatInput from './ChatInput';
-import ChatMessages from './ChatMessages';
-import InteractiveAvatar from '@components/Avatar';
-
+import { store } from "@auth";
+import { classnames, toaster } from "@lib";
+import { useRef, useState } from "react";
+import ChatHeader from "./ChatHeader";
+import ChatInput from "./ChatInput";
+import ChatMessages from "./ChatMessages";
+import InteractiveAvatar from "@components/Avatar";
 
 const ChatWindow = ({ onClose, isShortAnswer }) => {
   // Existing states…
   const [isLoading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState("");
   const [isStreaming, setStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
   // New state: choose between text and avatar output.
-  const [chatMode, setChatMode] = useState('text'); // 'text' or 'avatar'
+  const [chatMode, setChatMode] = useState("text"); // 'text' or 'avatar'
 
   // ... your handleSend remains largely the same.
   // When streaming the answer, update messages as before.
@@ -32,17 +31,17 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
   const handleSend = async () => {
     if (!userInput.trim()) return;
 
-    const newMessage = { text: userInput, sender: 'user' };
+    const newMessage = { text: userInput, sender: "user" };
     setMessages((prev) => [...prev, newMessage]);
-    setUserInput('');
+    setUserInput("");
 
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.API_BASE_URL}/admin/chat/chat-rag`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.API_BASE_URL}/client/chat/chat-rag`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'text/event-stream',
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
           Authorization: `Bearer ${store.getState()}`,
         },
         body: JSON.stringify({
@@ -52,20 +51,20 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
         }),
       });
       if (!response.body) {
-        console.error('ReadableStream not supported in this browser.');
+        console.error("ReadableStream not supported in this browser.");
         setLoading(false);
         return;
       }
 
       const reader = response.body.getReader();
-      const decoder = new TextDecoder('utf-8');
+      const decoder = new TextDecoder("utf-8");
 
-      let buffer = '';
+      let buffer = "";
       let done = false;
 
       // Add an empty bot message to display the streaming response
       setLoading(false);
-      setMessages((prev) => [...prev, { text: '', sender: 'bot' }]);
+      setMessages((prev) => [...prev, { text: "", sender: "bot" }]);
 
       setStreaming(true);
       while (!done) {
@@ -75,39 +74,39 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
         if (chunk) {
           buffer += chunk;
           let index;
-          while ((index = buffer.indexOf('\n\n')) >= 0) {
+          while ((index = buffer.indexOf("\n\n")) >= 0) {
             const rawMessage = buffer.slice(0, index);
             buffer = buffer.slice(index + 2);
-            const lines = rawMessage.split('\n');
+            const lines = rawMessage.split("\n");
             let event = null;
-            let data = '';
+            let data = "";
             for (const line of lines) {
-              if (line.startsWith('event:')) {
+              if (line.startsWith("event:")) {
                 event = line.slice(6).trim();
-              } else if (line.startsWith('data:')) {
+              } else if (line.startsWith("data:")) {
                 data += line.slice(5).trim();
               }
             }
-            if (event === 'answer') {
+            if (event === "answer") {
               const text = JSON.parse(data);
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1].text += text;
                 return updated;
               });
-            } else if (event === 'context') {
+            } else if (event === "context") {
               const context = JSON.parse(data);
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1].context = context;
                 return updated;
               });
-            } else if (event === 'end') {
+            } else if (event === "end") {
               done = true;
               break;
-            } else if (event === 'error') {
-              console.error('Error from server:', JSON.parse(data));
-              toaster.error('Error from server');
+            } else if (event === "error") {
+              console.error("Error from server:", JSON.parse(data));
+              toaster.error("Error from server");
               done = true;
               break;
             }
@@ -116,13 +115,13 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
       }
       setStreaming(false);
     } catch (error) {
-      console.error('Error while streaming:', error);
-      toaster.error('Error while streaming');
+      console.error("Error while streaming:", error);
+      toaster.error("Error while streaming");
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSend();
     }
   };
@@ -133,28 +132,28 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
       <div className="w-full flex gap-4 text-base mt-4">
         <div
           className={classnames(
-            'p-1 cursor-pointer',
-            chatMode === 'text' && 'border-b-2 border-white transition delay-300'
+            "p-1 cursor-pointer",
+            chatMode === "text" && "border-b-2 border-white transition delay-300"
           )}
-          onClick={() => setChatMode('text')}
+          onClick={() => setChatMode("text")}
         >
           Text
         </div>
         <div
           className={classnames(
-            'p-1 cursor-pointer relative',
-            chatMode === 'avatar' && 'border-b-2 border-white'
+            "p-1 cursor-pointer relative",
+            chatMode === "avatar" && "border-b-2 border-white"
           )}
-          onClick={() => setChatMode('avatar')}
+          onClick={() => setChatMode("avatar")}
         >
-          Avatar{' '}
+          Avatar{" "}
           <sup className=" absolute bg-secondary  text-[8px] rounded-full p-1.5 pb-2 top-0 -right-3">
             New
           </sup>
         </div>
       </div>
       <div className="flex-1">
-        {chatMode === 'text' ? (
+        {chatMode === "text" ? (
           <ChatMessages {...{ isLoading, isStreaming, messages, messagesEndRef }} />
         ) : (
           <InteractiveAvatar messages={messages} />

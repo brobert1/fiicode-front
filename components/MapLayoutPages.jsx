@@ -127,6 +127,13 @@ const MapLayoutPages = () => {
               <i className="fas fa-calendar w-6"></i>
               Plan your day
             </Link>
+            <Link
+              href="/client/virtual-agent"
+              className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
+            >
+              <i className="fas fa-robot w-6"></i>
+              Virtual Agent
+            </Link>
             <Button
               className="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100 whitespace-nowrap"
               onClick={handleLogout}

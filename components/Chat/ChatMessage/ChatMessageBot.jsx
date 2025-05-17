@@ -31,7 +31,7 @@ const ChatMessageBot = ({ context, isLoading, isStreaming, text }) => {
       >
         <div
           className={
-            'max-w-72 md:max-w-[800px] rounded-lg px-4 py-2 break-all text-white message-markdown prose'
+            'max-w-72 md:max-w-[800px] rounded-lg px-4 py-2 break-all text-black message-markdown prose'
           }
         >
           {/* If no text, we'll show loading as the message may be ready (non-loading) but just with context, no answer */}

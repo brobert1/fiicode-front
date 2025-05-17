@@ -120,6 +120,13 @@ const MapLayoutPages = () => {
               <i className="fas fa-ear-deaf w-6"></i>
               Check noise pollution
             </Link>
+            <Link
+              href="/client/todo"
+              className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
+            >
+              <i className="fas fa-calendar w-6"></i>
+              Plan your day
+            </Link>
             <Button
               className="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100 whitespace-nowrap"
               onClick={handleLogout}

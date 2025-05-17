@@ -68,13 +68,36 @@ const useDirectionsModal = ({ isOpen, userLocation, onDirectionsFound, initialDe
     if (initialDestination && isOpen) {
       setDestination({
         id: initialDestination.id,
-        location: initialDestination.location,
+        location: initialDestination.geometry?.location || initialDestination.location,
         description: initialDestination.name || initialDestination.address
       });
       setDestinationInput(initialDestination.name || initialDestination.address);
 
+      // If todoWaypoints are provided in the initialDestination, set them up
+      if (initialDestination.todoWaypoints && initialDestination.todoWaypoints.length > 0) {
+        // Set waypoints from todo locations
+        setWaypoints(initialDestination.todoWaypoints.map(wp => ({
+          id: `todo-waypoint-${Math.random().toString(36).substring(2, 11)}`,
+          description: wp.title || "Todo waypoint",
+          location: wp.location
+        })));
+
+        // Set input values for each waypoint
+        setWaypointInputs(initialDestination.todoWaypoints.map(wp => wp.title || "Todo waypoint"));
+      }
+
       // If we have both origin and destination, we can automatically get directions
       if (origin) {
+        // If we have a todoOrigin, override the default origin
+        if (initialDestination.todoOrigin) {
+          const todoOrigin = initialDestination.todoOrigin;
+          setOrigin({
+            location: todoOrigin.location,
+            description: todoOrigin.title || "Starting point",
+          });
+          setOriginInput(todoOrigin.title || "Starting point");
+        }
+
         // Use a small timeout to ensure the UI has updated
         setTimeout(() => {
           handleGetDirections();

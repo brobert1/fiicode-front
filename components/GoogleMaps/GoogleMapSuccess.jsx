@@ -180,6 +180,59 @@ const GoogleMapSuccess = ({
     }
   };
 
+  // Check for todo route locations in localStorage on initial load
+  useEffect(() => {
+    const checkForTodoRoutes = () => {
+      try {
+        const todoRouteLocations = localStorage.getItem('todoRouteLocations');
+
+        if (todoRouteLocations && handleGetDirections) {
+          const locations = JSON.parse(todoRouteLocations);
+
+          if (locations.length >= 2) {
+            // For Google Maps Directions API, we need:
+            // - origin: first todo location
+            // - destination: last todo location
+            // - waypoints: all locations in between
+
+            // Create a destination place object from the last todo location
+            const destination = {
+              geometry: {
+                location: locations[locations.length - 1].location
+              },
+              name: locations[locations.length - 1].title,
+              formatted_address: "Todo location",
+              // Add additional properties needed for the directions API
+              id: `todo-destination-${Date.now()}`,
+              // Store all waypoints (intermediate locations) to be used in directions request
+              todoWaypoints: locations.slice(1, -1).map(loc => ({
+                location: loc.location,
+                title: loc.title
+              })),
+              // Store the origin for reference
+              todoOrigin: locations[0]
+            };
+
+            // Call handleGetDirections with the destination (which includes waypoints metadata)
+            handleGetDirections(destination);
+
+            // Clear the todo route locations from localStorage to prevent showing again on refresh
+            localStorage.removeItem('todoRouteLocations');
+          }
+        }
+      } catch (error) {
+        console.error('Error processing todo route locations:', error);
+      }
+    };
+
+    // Wait a short delay to ensure map and directions services are initialized
+    const timer = setTimeout(() => {
+      checkForTodoRoutes();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [handleGetDirections]);
+
   return (
     <>
       <Map

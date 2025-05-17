@@ -10,14 +10,14 @@ const ChatInput = ({ userInput, setUserInput, handleSend, handleKeyDown }) => {
       const recognitionInstance = new SpeechRecognition();
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
-      recognitionInstance.lang = 'en-US';
+      recognitionInstance.lang = 'ro-RO';
 
       recognitionInstance.onresult = (event) => {
         const transcript = Array.from(event.results)
           .map(result => result[0])
           .map(result => result.transcript)
           .join('');
-        
+
         setUserInput(transcript);
       };
 
@@ -75,16 +75,16 @@ const ChatInput = ({ userInput, setUserInput, handleSend, handleKeyDown }) => {
       <button
         onClick={toggleListening}
         className={`p-2 rounded-lg transition-colors ${
-          isListening 
-            ? 'bg-red-500 hover:bg-red-600 text-white' 
+          isListening
+            ? 'bg-red-500 hover:bg-red-600 text-white'
             : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
         }`}
         title={isListening ? 'Stop recording' : 'Start recording'}
       >
         <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'} text-xl`} />
       </button>
-      <button 
-        onClick={handleSendWithMicStop} 
+      <button
+        onClick={handleSendWithMicStop}
         className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
       >
         <i className="fa-light fa-paper-plane text-xl" />

@@ -5,12 +5,31 @@ export function useTodos() {
   const [todos, setTodos] = useState([]);
   const { me: user } = useProfile();
   const [currentDate, setCurrentDate] = useState("");
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   // Set formatted current date on component mount
   useEffect(() => {
     const now = new Date();
     const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     setCurrentDate(now.toLocaleDateString("en-US", options));
+  }, []);
+
+  // Get current user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting current position:", error);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
   }, []);
 
   // Load todos from localStorage and handle day change
@@ -72,15 +91,27 @@ export function useTodos() {
   const saveRouteAndNavigate = () => {
     const activeTodos = todos.filter((todo) => !todo.completed);
 
-    if (activeTodos.length < 2) {
-      alert("Please add at least two active locations to generate a route");
+    if (activeTodos.length < 1) {
+      alert("Please add at least one active location to generate a route");
       return false;
     }
 
-    const todoLocations = activeTodos.map((todo) => ({
-      location: todo.location,
-      title: todo.title || todo.description,
-    }));
+    if (!currentLocation) {
+      alert("Waiting for your current location. Please try again in a moment.");
+      return false;
+    }
+
+    // Create an array with current location first, followed by all todo locations
+    const todoLocations = [
+      {
+        location: currentLocation,
+        title: "Your current location",
+      },
+      ...activeTodos.map((todo) => ({
+        location: todo.location,
+        title: todo.title || todo.description,
+      })),
+    ];
 
     localStorage.setItem("todoRouteLocations", JSON.stringify(todoLocations));
     return true;
@@ -95,6 +126,7 @@ export function useTodos() {
     completeTodo,
     deleteTodo,
     saveRouteAndNavigate,
-    activeTodosCount
+    activeTodosCount,
+    currentLocation
   };
 }

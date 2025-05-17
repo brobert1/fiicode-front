@@ -60,14 +60,18 @@ const SimpleRouteMap = ({ todos }) => {
 
   useEffect(() => {
     if (directionsService && directionsRenderer && todos.length >= 2) {
+      // The first location in the array is now the user's current location
       const origin = todos[0].location;
-
       const destination = todos[todos.length - 1].location;
 
+      // All locations between first and last are waypoints
       const waypoints = todos.slice(1, -1).map((todo) => ({
         location: new window.google.maps.LatLng(todo.location.lat, todo.location.lng),
         stopover: true,
       }));
+
+      // Create a custom marker for the origin if it's the user's current location
+      const isStartingFromCurrentLocation = todos[0].title === "Your current location";
 
       directionsService.route(
         {
@@ -75,11 +79,39 @@ const SimpleRouteMap = ({ todos }) => {
           destination: new window.google.maps.LatLng(destination.lat, destination.lng),
           waypoints: waypoints,
           travelMode: window.google.maps.TravelMode.DRIVING,
-          optimizeWaypoints: true,
+          optimizeWaypoints: false, // Keep waypoint order as provided
         },
         (result, status) => {
           if (status === window.google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(result);
+
+            // If we're starting from current location, add a special marker
+            if (isStartingFromCurrentLocation && mapRef.current) {
+              // Clear any existing markers first to prevent duplicates
+              const existingMarker = window.currentLocationMarker;
+              if (existingMarker) {
+                existingMarker.setMap(null);
+              }
+
+              // Create a custom marker for current location
+              const marker = new window.google.maps.Marker({
+                position: new window.google.maps.LatLng(origin.lat, origin.lng),
+                map: mapRef.current,
+                icon: {
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 10,
+                  fillColor: "#4285F4",
+                  fillOpacity: 1,
+                  strokeColor: "#FFFFFF",
+                  strokeWeight: 2,
+                },
+                title: "Your current location",
+                zIndex: 1000, // Ensure it appears on top
+              });
+
+              // Store reference to the marker
+              window.currentLocationMarker = marker;
+            }
           } else {
             console.error(`Directions request failed: ${status}`);
           }

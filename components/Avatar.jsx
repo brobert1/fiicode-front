@@ -23,7 +23,7 @@ export default function InteractiveAvatar({ messages }) {
 
   async function fetchAccessToken() {
     try {
-      const response = await fetch(`${process.env.API_BASE_URL}/admin/avatar/get-access-token`, {
+      const response = await fetch(`${process.env.API_BASE_URL}/client/avatar/get-access-token`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${store.getState()}`,
@@ -62,10 +62,10 @@ export default function InteractiveAvatar({ messages }) {
     try {
       const res = await avatar.current.createStartAvatar({
         quality: AvatarQuality.Low,
-        avatarName: "Tyler-incasualsuit-20220721",
+        avatarName: "June_HR_public",
         knowledgeId: "", // Or use a custom `knowledgeBase`.
         voice: {
-          rate: 1.5,
+          rate: 2.0,
           emotion: VoiceEmotion.SOOTHING,
         },
         language: "ro",
@@ -183,7 +183,7 @@ export default function InteractiveAvatar({ messages }) {
               </video>
               <div className="flex sm:flex-col flex-row gap-2 sm:absolute block bottom-50 right-20 sm:mt-0 mt-3 sm:w-fit w-full">
                 <Button
-                  className="border-1 border-stone-500 text-white p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
+                  className="border-1 border-stone-500 text-black p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
                   size="md"
                   variant="shadow"
                   onClick={handleInterrupt}
@@ -191,7 +191,7 @@ export default function InteractiveAvatar({ messages }) {
                   Interrupt
                 </Button>
                 <Button
-                  className="border-1 border-stone-500 text-white p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
+                  className="border-1 border-stone-500 text-black p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
                   size="md"
                   variant="shadow"
                   onClick={endSession}
@@ -203,7 +203,7 @@ export default function InteractiveAvatar({ messages }) {
           ) : !isLoadingSession ? (
             <div className="h-full justify-center items-center flex flex-col gap-8 sm:w-[500px] w-full self-center">
               <Button
-                className="border-1 border-stone-500 text-white p-2 px-12 rounded-lg"
+                className="border-1 border-stone-500 text-black p-2 px-12 rounded-lg"
                 size="md"
                 variant="shadow"
                 onClick={startSession}

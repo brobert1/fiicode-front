@@ -117,6 +117,34 @@ const MapLayerControls = ({ layers, toggleLayer }) => {
                   )}
                 ></i>
               </Button>
+
+              <Button
+                className={classnames(
+                  "flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                  layers.airQuality
+                    ? "bg-secondary text-white hover:bg-secondary"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                )}
+                onClick={() => toggleLayer("airQuality")}
+                title={layers.airQuality ? "Hide air quality layer" : "Show air quality layer"}
+              >
+                <span className="flex items-center">
+                  <i
+                    className={classnames(
+                      "fas fa-wind mr-2",
+                      layers.airQuality ? "text-white" : "text-secondary"
+                    )}
+                  ></i>
+                  Air Quality
+                </span>
+                <i
+                  className={classnames(
+                    "fas",
+                    layers.airQuality ? "fa-toggle-on" : "fa-toggle-off",
+                    "ml-2"
+                  )}
+                ></i>
+              </Button>
             </div>
           </div>
         </div>

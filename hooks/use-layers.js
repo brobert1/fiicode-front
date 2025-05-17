@@ -100,20 +100,35 @@ export const SatelliteLayer = ({ visible }) => {
  * Custom hook for managing layer toggling.
  * It returns the current layer settings along with a toggle function.
  *
- * @param {Object} initialLayers - Initial state for layers. Defaults to { traffic: true, transit: false, satellite: false }.
+ * @param {Object} initialLayers - Initial state for layers. Defaults to { traffic: true, transit: false, satellite: false, airQuality: false }.
  * @returns {[Object, Function]} - An array with the layer state and the toggleLayer function.
  */
-export const useLayerToggle = (initialLayers = { traffic: true, transit: false, satellite: false }) => {
+export const useLayerToggle = (initialLayers = {
+  traffic: true,
+  transit: false,
+  satellite: false,
+  airQuality: false // Added airQuality to initial state
+}) => {
   const [layers, setLayers] = useState(initialLayers);
 
   const toggleLayer = useCallback((layerName) => {
-    if (layerName === "traffic") {
-      setLayers({ traffic: true, transit: false, satellite: false });
-    } else if (layerName === "transit") {
-      setLayers({ traffic: false, transit: true, satellite: false });
-    } else if (layerName === "satellite") {
-      setLayers({ traffic: false, transit: false, satellite: true });
-    }
+    setLayers(prevLayers => {
+      if (layerName === "airQuality") {
+        // Toggle airQuality independently
+        return {
+          ...prevLayers,
+          airQuality: !prevLayers.airQuality
+        };
+      } else {
+        // For traffic, transit, satellite - ensure only one is active, preserve airQuality
+        return {
+          traffic: layerName === "traffic",
+          transit: layerName === "transit",
+          satellite: layerName === "satellite",
+          airQuality: prevLayers.airQuality // Preserve current airQuality state
+        };
+      }
+    });
   }, []);
 
   return [layers, toggleLayer];

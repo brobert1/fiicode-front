@@ -12,6 +12,7 @@ import {
   FriendMarker,
 } from ".";
 import { TrafficLayer, TransitLayer, SatelliteLayer } from "@hooks/use-layers";
+import AirQualityLayer from "./Layers/AirQualityLayer";
 import MapHandler from "./Handlers/MapHandler";
 import UserLocationHandler from "./Handlers/UserLocationHandler";
 import DirectionsHandler from "./Handlers/DirectionsHandler";
@@ -180,6 +181,7 @@ const GoogleMapSuccess = ({
         <TrafficLayer visible={layers.traffic} />
         <TransitLayer visible={layers.transit} />
         <SatelliteLayer visible={layers.satellite} />
+        <AirQualityLayer visible={layers.airQuality} />
 
         {/* Display friend markers */}
         {friends &&

@@ -308,7 +308,7 @@ const Page = () => {
       <div className="w-full flex bg-white flex-col items-center gap-8 py-6 px-4">
         <div className="w-full max-w-md">
           <div className="text-center w-full mb-4">
-            <h2 className="text-xl font-bold mb-2">Check Noise Pollution</h2>
+            <h2 className="text-3xl font-bold mb-2">Check Noise Pollution</h2>
             <p className="text-gray-600">Measure the noise pollution in your environment</p>
           </div>
 
@@ -466,7 +466,7 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div className="w-full max-w-md mt-4 mb-20">
+        <div className="w-full max-w-md  mb-20">
           <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
             <h2 className="text-xl font-bold mb-4">Noise Pollution Information</h2>
             <div className="space-y-4 text-gray-700">

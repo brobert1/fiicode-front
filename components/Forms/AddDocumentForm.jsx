@@ -30,11 +30,11 @@ const AddDocumentForm = () => {
           as={Textarea}
           label={"Input"}
           name="input"
-          placeholder="Write the input question here."
+          placeholder="Write the input question here"
           help="If more than one question, write one question per line."
           autoComplete="off"
           autoFocus={true}
-          className="p-4 rounded-lg bg-veryDarkGray border-secondary border-1 text-white placeholder-mutedGray focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
+          className="p-4 rounded-lg bg-veryDarkGray border-primary border-1 text-black placeholder-mutedGray focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
           rows={6}
         />
         <Field
@@ -44,7 +44,7 @@ const AddDocumentForm = () => {
           placeholder="Write your output data here"
           autoComplete="off"
           autoFocus={false}
-          className="p-4 rounded-lg bg-veryDarkGray border-secondary border-1 text-white placeholder-mutedGray focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
+          className="p-4 rounded-lg bg-veryDarkGray border-primary border-1 text-black placeholder-mutedGray focus:outline-none focus:ring-2 focus:ring-secondary resize-none"
           rows={6}
         />
         <Submit

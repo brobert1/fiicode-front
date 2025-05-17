@@ -19,7 +19,7 @@ const DocumentsList = ({ options, readOnly }) => {
   return (
     <div>
       {hasResults && <h4 className="mb-3 text-lg">Results: {data.length} documents</h4>}
-      <div className="flex gap-6 flex-wrap">
+      <div className=" text-black flex gap-6 flex-wrap">
         {data.map(showDocument)}
         {!hasResults && <DocumentsNotFound />}
       </div>

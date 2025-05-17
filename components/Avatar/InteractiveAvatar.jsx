@@ -164,66 +164,69 @@ export default function InteractiveAvatar({ messages }) {
   }, [stream]);
 
   return (
-    <div className="w-full flex flex-col gap-4">
-      <div>
-        <div className="h-[500px] flex flex-col justify-center items-center">
-          {stream ? (
-            <div className="sm:h-[500px] w-full sm:w-[900px] w-full justify-center items-center flex sm:flex-row flex-col rounded-lg overflow-hidden">
-              <video
-                ref={mediaStream}
-                autoPlay
-                playsInline
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                }}
-              >
-                <track kind="captions" />
-              </video>
-              <div className="flex sm:flex-col flex-row gap-2 sm:absolute block bottom-50 right-20 sm:mt-0 mt-3 sm:w-fit w-full">
-                <Button
-                  className="border-1 border-stone-500 text-white p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
-                  size="md"
-                  variant="shadow"
-                  onClick={handleInterrupt}
-                >
-                  Interrupt
-                </Button>
-                <Button
-                  className="border-1 border-stone-500 text-white p-2 px-6 rounded-lg whitespace-nowrap sm:w-32 w-1/2"
-                  size="md"
-                  variant="shadow"
-                  onClick={endSession}
-                >
-                  End session
-                </Button>
-              </div>
-            </div>
-          ) : !isLoadingSession ? (
-            <div className="h-full justify-center items-center flex flex-col gap-8 sm:w-[500px] w-full self-center">
+    <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex items-center justify-center bg-gray-900 relative">
+        {stream ? (
+          <div className="relative w-full h-full flex flex-col items-center justify-center">
+            <video
+              ref={mediaStream}
+              autoPlay
+              playsInline
+              className="w-full h-full object-contain"
+            >
+              <track kind="captions" />
+            </video>
+            
+            {/* Control buttons */}
+            <div className="absolute bottom-4 right-4 flex flex-col sm:flex-row gap-2">
               <Button
-                className="border-1 border-stone-500 text-white p-2 px-12 rounded-lg"
-                size="md"
-                variant="shadow"
-                onClick={startSession}
+                className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={handleInterrupt}
               >
-                Start session
+                <i className="fas fa-stop mr-2" />
+                Stop
+              </Button>
+              <Button
+                className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={endSession}
+              >
+                <i className="fas fa-times mr-2" />
+                End
               </Button>
             </div>
-          ) : (
-            <div className="h-full justify-center items-center flex flex-col gap-8 w-[500px] self-center">
-              <Button
-                className="border-1 border-stone-500 text-white p-2 px-12 rounded-lg"
-                size="md"
-                variant="shadow"
-                disabled
-              >
-                Loading session...
-              </Button>
+          </div>
+        ) : (
+          <div className="text-center p-4">
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition-colors text-lg shadow-lg"
+              onClick={startSession}
+              disabled={isLoadingSession}
+            >
+              {isLoadingSession ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-2" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-play mr-2 bg-blue-600" />
+                  Start Avatar Session
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* Current message overlay */}
+        {messages.length > 0 && messages[messages.length - 1].sender === 'bot' && (
+          <div className="absolute bottom-20 left-4 right-4">
+            <div className="bg-black bg-opacity-75 text-white p-4 rounded-lg max-w-2xl mx-auto">
+              <p className="text-center text-lg leading-relaxed">
+                {messages[messages.length - 1].text}
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,12 +21,12 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
   const [isStreaming, setStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // New state: choose between text and avatar output.
-  const [chatMode, setChatMode] = useState("text"); // 'text' or 'avatar'
+  // Add avatar mode state
+  const [isAvatarMode, setIsAvatarMode] = useState(false);
 
   // ... your handleSend remains largely the same.
   // When streaming the answer, update messages as before.
-  // (We’ll later pass the answer text to the avatar component if needed.)
+  // (We'll later pass the answer text to the avatar component if needed.)
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
@@ -127,44 +127,46 @@ const ChatWindow = ({ onClose, isShortAnswer }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between min-h-full">
-      {messages.length === 0 && <ChatHeader onClose={onClose} />}
-      <div className="w-full flex gap-4 text-base mt-4">
-        <div
-          className={classnames(
-            "p-1 cursor-pointer",
-            chatMode === "text" && "border-b-2 border-white transition delay-300"
-          )}
-          onClick={() => setChatMode("text")}
-        >
-          Text
-        </div>
-        <div
-          className={classnames(
-            "p-1 cursor-pointer relative",
-            chatMode === "avatar" && "border-b-2 border-white"
-          )}
-          onClick={() => setChatMode("avatar")}
-        >
-          Avatar{" "}
-          <sup className=" absolute bg-secondary  text-[8px] rounded-full p-1.5 pb-2 top-0 -right-3">
-            New
-          </sup>
-        </div>
+    <div className="flex flex-col h-full">
+      <div className="sticky top-0 z-10 bg-white shadow-sm">
+        <ChatHeader 
+          onClose={onClose} 
+          isAvatarMode={isAvatarMode} 
+          onToggleMode={() => setIsAvatarMode(prev => !prev)} 
+        />
       </div>
-      <div className="flex-1">
-        {chatMode === "text" ? (
-          <ChatMessages {...{ isLoading, isStreaming, messages, messagesEndRef }} />
+      
+      <div className="flex-1 overflow-y-auto mb-24">
+        {isAvatarMode ? (
+          <div className="flex flex-col h-full">
+            <div className="flex-1 relative">
+              <InteractiveAvatar messages={messages} />
+              {messages.length > 0 && messages[messages.length - 1].sender === 'bot' && (
+                <div className="absolute bottom-4 left-0 right-0 px-4">
+                  <div className="bg-black bg-opacity-50 text-white p-4 rounded-lg max-w-2xl mx-auto text-center">
+                    {messages[messages.length - 1].text}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         ) : (
-          <InteractiveAvatar messages={messages} />
+          <div className="px-4">
+            <ChatMessages {...{ isLoading, isStreaming, messages, messagesEndRef }} />
+          </div>
         )}
       </div>
-      <ChatInput
-        userInput={userInput}
-        setUserInput={setUserInput}
-        handleSend={handleSend}
-        handleKeyDown={handleKeyDown}
-      />
+
+      <div className="fixed bottom-20 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div className="max-w-7xl mx-auto">
+          <ChatInput
+            userInput={userInput}
+            setUserInput={setUserInput}
+            handleSend={handleSend}
+            handleKeyDown={handleKeyDown}
+          />
+        </div>
+      </div>
     </div>
   );
 };

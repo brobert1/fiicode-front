@@ -1,31 +1,14 @@
 import { checkAuth, withAuth } from "@auth";
-import { BaseClientLayout, FloatingMenu, Toggle } from "@components";
+import { BaseClientLayout, FloatingMenu } from "@components";
 import ChatWindow from "@components/Chat/ChatWindow";
-import { useState } from "react";
 
 const Page = () => {
-  const [isShortAnswer, setIsShortAnswer] = useState(false);
-
-  const toggleComponent = (
-    <Toggle
-      label="Short answer"
-      initialState={false}
-      onToggle={() => setIsShortAnswer((prev) => !prev)}
-      extraClass="peer-checked:bg-secondary"
-    />
-  );
-
   return (
     <BaseClientLayout floatingMenu={<FloatingMenu />}>
-      <div className="max-w-full h-5/6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="mb-4 text-2xl font-semibold">Q&A with ChatBot Starter</h2>
-            <p>This is the place to test ChatBot Starter's performance.</p>
-          </div>
-          <div className="hidden sm:block">{toggleComponent}</div>
+      <div className="max-w-full h-[100dvh] px-2 sm:px-8 py-2 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col">
+          <ChatWindow />
         </div>
-        <ChatWindow isShortAnswer={isShortAnswer} />
       </div>
     </BaseClientLayout>
   );

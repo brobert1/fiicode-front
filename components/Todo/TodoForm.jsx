@@ -61,7 +61,7 @@ const TodoForm = ({ onAddTodo }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-secondary">
+    <div className="bg-white p-6 rounded-lg shadow-lg">
       <h3 className="text-lg text-secondary font-medium mb-4">Add New Todo</h3>
 
       <HookForm
@@ -108,7 +108,7 @@ const TodoForm = ({ onAddTodo }) => {
           </div>
 
           <Submit className="button primary w-full py-2 px-4 border border-transparent font-medium rounded-md text-white bg-secondary hover:bg-gray-800 focus:outline-none">
-            Add Todo
+            Add 
           </Submit>
         </Form>
       </HookForm>

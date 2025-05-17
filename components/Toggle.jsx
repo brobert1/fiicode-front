@@ -21,7 +21,7 @@ const Toggle = ({ label = 'Toggle me', initialState = false, checked, onToggle, 
   return (
     <label
       className={classnames(
-        'inline-flex items-center cursor-pointer',
+        ' inline-flex items-center cursor-pointer',
         disabled && 'opacity-50 cursor-not-allowed'
       )}
     >

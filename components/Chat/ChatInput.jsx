@@ -10,7 +10,7 @@ const ChatInput = ({ userInput, setUserInput, handleSend, handleKeyDown }) => {
       const recognitionInstance = new SpeechRecognition();
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
-      recognitionInstance.lang = 'ro-RO';
+      recognitionInstance.lang = 'en-US';
 
       recognitionInstance.onresult = (event) => {
         const transcript = Array.from(event.results)

@@ -5,10 +5,10 @@ const DocumentCardHeader = ({ createdAt, showModal, tag, title }) => {
 
   return (
     <div className="mb-4">
-      <h3 onClick={showModal} className="text-xl font-bold text-white cursor-pointer mb-2">
+      <h3 onClick={showModal} className="text-xl font-bold text-gray-800 cursor-pointer mb-2">
         {title ?? formattedDate}
       </h3>
-      <span className="bg-veryDarkGray text-secondary rounded-full px-3 py-1 text-xs font-semibold">
+      <span className="bg-primary text-white rounded-full px-3 py-1 text-xs font-semibold">
         #{tag}
       </span>
     </div>

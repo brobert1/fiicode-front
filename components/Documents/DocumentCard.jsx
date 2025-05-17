@@ -8,7 +8,7 @@ const DocumentCard = ({ ...props }) => {
     <>
       <div
         key={props._id}
-        className="w-full max-w-md p-6 rounded-lg bg-darkGray shadow-lg transition-transform duration-300 hover:scale-105 relative"
+        className="w-full max-w-md text-black p-6 rounded-lg bg-white shadow-lg transition-transform duration-300 hover:scale-105 relative"
       >
         <DocumentCardHeader {...props} showModal={() => setIsModalOpen(true)} />
         <DocumentCardBody text={props?.text} />

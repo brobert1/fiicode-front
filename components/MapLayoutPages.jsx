@@ -76,18 +76,15 @@ const MapLayoutPages = () => {
       <MenuItem href="/client" className="flex items-center justify-center py-2">
         <i className="fa fa-house text-xl"></i>
       </MenuItem>
-      <MenuItem href="/client/chats" className="flex items-center justify-center py-2 relative">
-        <i className="fa fa-message text-xl"></i>
-        {unreadMessagesCount > 0 && (
-          <span className="absolute -top-0.5 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {unreadMessagesCount > 99 ? "99+" : unreadMessagesCount}
-          </span>
-        )}
-      </MenuItem>
+      <Link
+        href="/client/virtual-agent"
+        className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
+      >
+        <i className="fas fa-robot text-xl"></i>
+      </Link>
       <MenuItem href="/client/notifications" className="flex items-center justify-center py-2">
         <i className="fa fa-bell text-xl"></i>
       </MenuItem>
-
       <div className="relative inline-block" ref={menuRef}>
         <ActionButton className="menu-item cursor-pointer px-2 py-2 pl-6" onClick={toggle}>
           <i
@@ -128,11 +125,11 @@ const MapLayoutPages = () => {
               Plan your day
             </Link>
             <Link
-              href="/client/virtual-agent"
+              href="/client/chats"
               className="flex items-center px-4 py-2 text-sm text-black hover:bg-gray-100 whitespace-nowrap"
             >
-              <i className="fas fa-robot w-6"></i>
-              Virtual Agent
+              <i className="fas fa-message w-6"></i>
+              Messages
             </Link>
             <Button
               className="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-gray-100 whitespace-nowrap"

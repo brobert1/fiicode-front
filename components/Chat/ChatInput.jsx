@@ -9,8 +9,8 @@ const ChatInput = ({ userInput, setUserInput, handleSend, handleKeyDown }) => {
         placeholder="Scrie un mesaj..."
         className="flex-1 px-4 py-2 rounded-lg bg-gray-100 border border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
       />
-      <button 
-        onClick={handleSend} 
+      <button
+        onClick={handleSend}
         className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
       >
         <i className="fa-light fa-paper-plane text-xl" />

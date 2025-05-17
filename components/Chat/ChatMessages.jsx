@@ -3,7 +3,7 @@ import ChatMessage from './ChatMessage';
 
 const ChatMessages = ({ isLoading, messages, messagesEndRef, isStreaming }) => {
   return (
-    <div className="flex-grow overflow-y-auto my-4">
+    <div className="flex-grow overflow-y-auto my-10">
       {messages.map((msg, index) => (
         <ChatMessage
           key={index}
